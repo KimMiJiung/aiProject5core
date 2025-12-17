@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+	<meta charset="utf-8">
+	<title>이벤트</title>
+	<th:block th:replace="~{top}"></th:block>
+	<style>
+		
+		#container {
+		   width: 100%;
+		   margin: 0 auto; 
+		}
+		
+		/* 상단 */
+		.event-top {
+			margin-top: 20px;
+			padding: 20px;
+			text-align: center;
+			background-color: #f8f8f8;
+		}
+		.event-top > h1 {
+			font-size: 40px;
+			font-weight: bold;
+		}
+		.event-top > p {
+			margin: 50px 0 50px 0;
+			font-size: 0.9em;
+		}
+		
+		/* 상단 슬라이드 */
+		.carousel-container {
+		    position: relative;
+		    max-width: 1170px;
+			/*height: 350px;*/
+		    margin: 50px auto;
+		    border-radius: 5px;
+		    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+		}
+		
+		.carousel-clipper {
+		    overflow: hidden;
+			height: 350px;
+		}
+
+		.carousel-wrapper {
+		    display: flex;
+		    transition: transform 0.5s ease-in-out;
+		}
+
+		.carousel-slide {
+		    min-width: 100%; /* **핵심: 각 슬라이드는 컨테이너 너비만큼 차지** */
+			height: 350px;
+		    box-sizing: border-box;
+		    display: flex;
+		    align-items: center;
+		    justify-content: space-between;
+		    background-color: #f0f0f0; /* 배경색 예시 */
+		}
+
+		.carousel-slide img {
+		    width: 600px;
+			height: 350px;
+		    border-radius: 5px;
+		}
+		
+		.slide-content {
+			padding: 60px;
+		}
+		
+		.detail-btn {
+			width: 100px;
+			height: 40px;
+			background-color: navy;
+			color: white;
+			font-weight: bold;
+			cursor: pointer;
+		}
+		
+		/* 버튼 및 인디케이터 스타일 */
+		.prev-btn, .next-btn {
+		    position: absolute;
+		    top: 50%;
+		    transform: translateY(-50%);
+		    background-color: rgba(0, 0, 0, 0.5);
+		    color: white;
+		    border: none;
+		    padding: 15px 10px;
+		    cursor: pointer;
+		    z-index: 10;
+		    font-size: 1.5rem;
+		}
+
+		.prev-btn {
+		    left: 0;
+		    border-radius: 0 5px 5px 0;
+		}
+
+		.next-btn {
+		    right: 0;
+		    border-radius: 5px 0 0 5px;
+		}
+
+		.carousel-indicators {
+		    position: absolute;
+		    bottom: -30px;
+		    left: 50%;
+		    transform: translateX(-50%);
+		    display: flex;
+		    gap: 8px;
+			z-index: 100;
+		}
+			
+		.indicator-dot {
+		    width: 10px;
+		    height: 10px;
+		    background-color: #666; 
+		    border: none; 
+		    border-radius: 50%;
+		    cursor: pointer;
+		    transition: background-color 0.3s;
+		}
+		
+		.indicator-dot.active {
+			background-color: navy;
+		}
+		
+		/* 중단 */
+		.event-contents {
+			max-width: 1200px;
+			margin: 0 auto;
+		}
+		
+		#event-content-title {
+			margin: 20px 0 0 0;
+			padding: 10px;
+			font-weight: bold;
+			color: #333;
+		}
+		
+		.event-content {
+			float: left;
+			margin: 2px;
+		}
+		
+		.event-content img {
+			width: 370px; height: 250px;
+			margin: 10px;
+		}
+		
+		.caption {
+			text-align: center;
+		}
+		
+		.event-title {
+		    position: relative;
+		    color: #444;
+			font-weight: bold;
+		    text-decoration: none;
+		}
+
+		.event-title::after {
+		    content: ''; 
+		    position: absolute;
+		    bottom: -2px;
+		    left: 0; 
+		    width: 0;
+		    height: 2px;
+		    background-color: navy;
+		    transition: width 0.25s ease;
+		}
+
+		.event-title:hover {
+		    color: navy;
+		}
+
+		.event-title:hover::after {
+		    width: 100%; 
+		}
+		
+		.event-period {
+			color: #666;
+			padding: 10px 0 20px 0;
+			font-size: 0.9em;
+		}
+		
+		.footer-section {
+			clear: both;
+		}
+	</style>
+</head>
+<body>
+	<div id="container">
+		<!-- 상단 -->
+		<div class="event-top">
+			<h1>이벤트</h1>	
+			<p>고객님을 위한 스페셜 이벤트는 계속됩니다. 즐거운 행운과 경품을 만나보세요!</p>
+		</div>
+		
+		<!-- 상단 슬라이드 -->
+		<div class="carousel-container">
+			<button class="prev-btn">❮</button>
+			<button class="next-btn">❯</button>
+			
+			<div class="carousel-clipper">
+				<div class="carousel-wrapper">
+					<!-- 1번 슬라이드 -->
+					<div class="carousel-slide">
+						<img th:src="@{/icons/event01.png}">
+						<div class="slide-content">
+							<p>연말 따뜻한 송파대로 전시장을 방문하여 다양한 선물과 이벤트를 즐겨보세요.</p>
+							<h2>송파대로 전시장 크리스마스 홈파티</h2>
+							<button class="detail-btn">자세히 보기</button>
+						</div>
+					</div>
+					<!-- 2번 슬라이드 -->
+					<div class="carousel-slide">
+						<img th:src="@{/icons/event04.png}">
+						<div class="slide-content">
+							<p>역대급 친구 초대 혜택, 지금 친구 초대하면 할인쿠폰 100% 지급</p>
+							<h2>가입하면 5천원, 첫 구독하면 5만원, 초특급 경품까지!</h2>
+							<button class="detail-btn">자세히 보기</button>
+						</div>
+					</div>
+					<!-- 3번 슬라이드 -->
+					<div class="carousel-slide">
+						<img th:src="@{/icons/event19.png}">
+						<div class="slide-content">
+							<p>현대 제네시스 구독 서비스를 제공합니다.</p>
+							<h2>현대자동차 신규 가입 시 구독 할인 쿠폰 증정</h2>
+							<button class="detail-btn">자세히 보기</button>
+						</div>
+					</div>		
+					<!-- 4번 슬라이드 -->
+					<div class="carousel-slide">
+						<img th:src="@{/icons/event04.png}">
+						<div class="slide-content">
+							<p>신차 구매 시 특별한 할인 혜택을 만나보세요.</p>
+							<h2>내 차 지금 시세는 얼마? 트레이드인 12월 혜택 안내</h2>
+							<button class="detail-btn">자세히 보기</button>
+						</div>
+					</div>
+					<!-- 5번 슬라이드 -->
+					<div class="carousel-slide">
+						<img th:src="@{/icons/event08.png}">
+						<div class="slide-content">
+							<p>현대자동차를 구매했다면? 현대닷컴만의 이벤트 놓치지 마세요! 추첨을 통해 푸짐한 경품을 드립니다.</p>
+							<h2>현대닷컴 구매 후기 EVENT</h2>
+							<button class="detail-btn">자세히 보기</button>
+						</div>
+					</div>											
+				</div>	
+			</div>
+			
+			<div class="carousel-indicators">	
+			</div>
+			
+		</div>
+		<!-- 중단 -->
+		<div class="event-contents">
+		<p id="event-content-title">현대자동차가 준비한 다양한 혜택과 풍성한 이벤트를 만나보세요!</p>
+		<!-- 1번줄 -->
+		<div class="event-content">                
+		    <a th:href="@{/event/eventDetail}"><img th:src="@{/icons/event01.png}"></a>
+		    <div class="caption">
+				<a th:href="@{/event/eventDetail}" class="event-title">송파대로 전시장 크리스마스 홈파티</a>
+				<p class="event-period">모든회원 | 2025년 11월 27일 ~ 2026년 1월 18일</p>
+		    </div>
+		</div>
+		<div class="event-content">                
+		    <a href="#"><img th:src="@{/icons/event02.png}"></a>
+		    <div class="caption">
+				<a href="#" class="event-title">현대자동차 코리아세일페스타 프로모션</a>
+				<p class="event-period">모든회원 | 2025년 11월 3일 ~ 2025년 12월 31일</p>
+		    </div>
+		</div>
+		<div class="event-content">                
+		    <a href="#"><img th:src="@{/icons/event03.png}"></a>
+		    <div class="caption">
+				<a href="#" class="event-title">그랜저 부담 Down 프로모션</a>
+				<p class="event-period">모든회원 | 2025년 11월 1일 ~ 2025년 12월 31일</p>
+		    </div>
+		</div>
+		<!-- 2번줄 -->
+		<div class="event-content">                
+		    <a href="#"><img th:src="@{/icons/event04.png}"></a>
+		    <div class="caption">
+				<a href="#" class="event-title">내 차 지금 시세는 얼마? 트레이드인 11월 혜택 안내</a>
+				<p class="event-period">모든회원 | 2025년 11월 1일 ~ 2026년 11월 30일</p>
+		    </div>
+		</div>
+		<div class="event-content">                
+		    <a href="#"><img th:src="@{/icons/event05.png}"></a>
+		    <div class="caption">
+				<a href="#" class="event-title">현대 EV 부담 Down 프로모션</a>
+				<p class="event-period">모든회원 | 2025년 11월 1일 ~ 2026년 1월 31일</p>
+		    </div>
+		</div>
+		<div class="event-content">                
+		    <a href="#"><img th:src="@{/icons/event06.png}"></a>
+		    <div class="caption">
+				<a href="#" class="event-title">SUV 6개월 0원 할부</a>
+				<p class="event-period">모든회원 | 2025년 11월 1일 ~ 2026년 12월 18일</p>
+		    </div>
+		</div>
+		<!-- 3번줄 -->
+		<div class="event-content">                
+		    <a href="#"><img th:src="@{/icons/event07.png}"></a>
+		    <div class="caption">
+				<a href="#" class="event-title">내 차 리뷰 올리고 조구만 굿즈 받아가자!</a>
+				<p class="event-period">모든회원 | 2025년 11월 27일 ~ 2026년 1월 18일</p>
+		    </div>
+		</div>
+		<div class="event-content">                
+		    <a href="#"><img th:src="@{/icons/event08.png}"></a>
+		    <div class="caption">
+				<a href="#" class="event-title">현대닷컴 구매 후기 EVENT</a>
+				<p class="event-period">모든회원 | 2025년 11월 1일 ~ 2026년 12월 31일</p>
+		    </div>
+		</div>
+		<div class="event-content">                
+		    <a href="#"><img th:src="@{/icons/event09.png}"></a>
+		    <div class="caption">
+				<a href="#" class="event-title">팰리세이드와 떠나는 무료 드라이빙</a>
+				<p class="event-period">모든회원 | 2025년 11월 27일 ~ 2025년 12월 31일</p>
+		    </div>
+		</div>
+		<!-- 4번줄 -->
+		<div class="event-content">                
+		    <a href="#"><img th:src="@{/icons/event10.png}"></a>
+		    <div class="caption">
+				<a href="#" class="event-title">Hyundai Re: 선물 찾기 이벤트</a>
+				<p class="event-period">모든회원 | 2025년 11월 27일 ~ 2026년 1월 31일</p>
+		    </div>
+		</div>
+		<div class="event-content">                
+		    <a href="#"><img th:src="@{/icons/event11.png}"></a>
+		    <div class="caption">
+				<a href="#" class="event-title">현대자동차가 준비한 운전결심만의 전용혜택!</a>
+				<p class="event-period">모든회원 | 2025년 10월 1일 ~ 2026년 11월 30일</p>
+		    </div>
+		</div>
+		<div class="event-content">                
+		    <a href="#"><img th:src="@{/icons/event12.png}"></a>
+		    <div class="caption">
+				<a href="#" class="event-title">만원으로 즐기는 미리크리스마스 서울랜드 이벤트</a>
+				<p class="event-period">모든회원 | 2025년 10월 1일 ~ 2025년 12월 18일</p>
+		    </div>
+		</div>
+		<!-- 5번줄 -->
+		<div class="event-content">                
+		    <a href="#"><img th:src="@{/icons/event13.png}"></a>
+		    <div class="caption">
+				<a href="#" class="event-title">아이오닉 6 N 10 Years Pack</a>
+				<p class="event-period">모든회원 |  2025년 10월 1일 ~ 2026년 3월 31일</p>
+		    </div>
+		</div>
+		<div class="event-content">                
+		    <a href="#"><img th:src="@{/icons/event14.png}"></a>
+		    <div class="caption">
+				<a href="#" class="event-title">라이팅 패턴 x 현대자동차 전용카드 제휴 프로모션</a>
+				<p class="event-period">모든회원 | 2025년 10월 1일 ~ 2025년 12월 31일</p>
+		    </div>
+		</div>
+		<div class="event-content">                
+		    <a href="#"><img th:src="@{/icons/event15.png}"></a>
+		    <div class="caption">
+				<a href="#" class="event-title">가입하면 5천원, 첫 구독하면 5만원, 초특급 경품까지!</a>
+				<p class="event-period">모든회원 | 2025년 9월 1일 ~ 2025년 12월 31일</p>
+		    </div>
+		</div>
+		<!-- 6번줄 -->
+		<div class="event-content">                
+		    <a href="#"><img th:src="@{/icons/event16.png}"></a>
+		    <div class="caption">
+				<a href="#" class="event-title">2026 싼타페와 함께하는 툴레 루프박스 프로모션</a>
+				<p class="event-period">모든회원 | 2025년 8월 7일 ~ 2025년 12월 31일</p>
+		    </div>
+		</div>
+		<div class="event-content">                
+		    <a href="#"><img th:src="@{/icons/event17.png}"></a>
+		    <div class="caption">
+				<a href="#" class="event-title">생애 첫 차 구매 지원 프로모션</a>
+				<p class="event-period">모든회원 | 2025년 6월 9일 ~ 2025년 12월 31일</p>
+		    </div>
+		</div>
+		<div class="event-content">                
+		    <a href="#"><img th:src="@{/icons/event18.png}"></a>
+		    <div class="caption">
+				<a href="#" class="event-title">현대 모빌리티 패스포트 in 오키나와</a>
+				<p class="event-period">모든회원 | 2025년 4월 18일 ~ 2025년 12월 31일</p>
+		    </div>
+		</div>
+		<!-- 7번줄 -->
+		<div class="event-content">                
+		    <a href="#"><img th:src="@{/icons/event19.png}"></a>
+		    <div class="caption">
+				<a href="#" class="event-title">현대 제네시스 셀렉션 신규가입 할인 쿠폰 이벤트</a>
+				<p class="event-period">모든회원 | 2025년 1월 22일 ~ 2025년 12월 31일</p>
+		    </div>
+		</div>
+		<div class="event-content">                
+		    <a href="#"><img th:src="@{/icons/event20.png}"></a>
+		    <div class="caption">
+				<a href="#" class="event-title">현대 EV 구매 고객 전용 긴급충전보험 런칭 이벤트</a>
+				<p class="event-period">모든회원 | 2025년 1월 16일 ~ 2025년 12월 31일</p>
+		    </div>
+		</div>
+		<div class="event-content">                
+		    <a href="#"><img th:src="@{/icons/event21.png}"></a>
+		    <div class="caption">
+				<a href="#" class="event-title">현대자동차 어드밴티지 프로그램</a>
+				<p class="event-period">모든회원 | 2025년 1월 1일 ~ 2025년 12월 31일</p>
+		    </div>
+		</div>
+	</div>
+	<div class="footer-section">
+	<th:block th:replace="~{bottom}"></th:block>
+	</div>
+	<script th:src="@{/js/event-slide.js}"></script>
+</body>
+</html>

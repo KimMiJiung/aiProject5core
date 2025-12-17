@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <th:block th:replace="~{top}"></th:block>
+  <title>구매 목록</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <style>
+    .main-con { max-width: 100%; }
+
+    /* 상단 */
+    .saleList-top {
+      margin-top: -40px;
+      margin-bottom: 50px;
+      padding: 20px;
+      text-align: center;
+      background-color: #f8f8f8;
+    }
+    .saleList-top > h1 {
+      margin-top: 25px;
+      font-size: 40px;
+      font-weight: bold;
+    }
+    .saleList-top > p {
+      margin: 50px 0 50px 0;
+      font-size: 0.9em;
+    }
+
+    .contents { max-width: 1300px; margin: 0 auto; }
+
+    /* 표 */
+    .table thead th {
+      vertical-align: middle;
+      text-align: center;
+      background-color: navy;
+      color: #fff;
+    }
+    .table tbody td { vertical-align: middle; }
+    .table tbody tr:hover { background-color: #e9f0ff; }
+    .text-truncate { max-width: 230px; }
+
+    /* 상담 상태 + 버튼 정렬/스타일 */
+    .status-cell { white-space: nowrap; text-align: center; }
+    .action-cell { white-space: nowrap; text-align: center; }
+    .action-cell .btn-group {
+      display: flex;
+      gap: 0.25rem;
+      justify-content: center;
+    }
+    .status-cell .badge.status-badge {
+      width: 100px;
+      height: 30px;
+      font-size: 0.85rem;
+      padding: 7px;
+    }
+    .action-cell .btn-sm {
+      padding: 0.18rem 0.55rem;
+      font-size: 0.82rem;
+      line-height: 1.1;
+      font-weight: bold;
+      padding: 7px;
+    }
+
+    .btn-cancel {
+      height: 30px;
+      border: 1px solid red;
+      color: #555;
+    }
+    .btn-cancel:hover {
+      border: 1px solid red;
+      background-color: red;
+      color: #fff;
+    }
+    .btn-edit {
+      height: 30px;
+      border: 1px solid navy;
+      color: #555;
+    }
+    .btn-edit:hover {
+      border: 1px solid navy;
+      background-color: navy;
+      color: #fff;
+    }
+
+
+    /* 목록, 엑셀 다운 버튼 */
+    .li-btn {
+      color: white;
+      background-color: navy;
+      border: 1px solid dimgray;
+      font-weight: bold;
+    }
+    .li-btn:hover {
+      background-color: white;
+      color: navy;
+      border: 1px solid dimgray;
+    }
+    .ex-btn {
+      margin-left: 5px;
+      color: gray;
+      border: 1px solid dimgray;
+      font-weight: bold;
+    }
+    .ex-btn:hover {
+      background-color: green;
+      color: white;
+      border: 1px solid dimgray;
+    }
+
+	/* 테이블 셀 크기 조정 */
+	.table thead th:nth-child(1) { width: 4%; }   /* 상담번호 */
+	.table thead th:nth-child(2) { width: 8%; }   /* 고객ID */
+	.table thead th:nth-child(3) { width: 22%; }  /* 담당딜러 */
+	.table thead th:nth-child(4) { width: 14%; }  /* 선택차량 */
+	.table thead th:nth-child(5) { width: 15%; }  /* 가격 */
+	.table thead th:nth-child(6) { width: 15%; }  /* 구매날짜 */
+
+    /* 페이지 버튼 */
+    .page-link { font-weight: bold; }
+    .pagination .page-item .page-link {
+      background-color: #f0f0f0;
+      border-color: #777;
+      color: #333;
+    }
+    .pagination .page-item.active .page-link {
+      background-color: navy;
+      border-color: navy;
+      color: white;
+    }
+    .pagination .page-item .page-link:hover {
+      background-color: lightsteelblue;
+      border-color: #111;
+    }
+  </style>
+</head>
+<body>
+  <div class="container main-con">
+    <div class="saleList-top">
+      <h1>구매 목록</h1>
+	  <p>모든 고객의 구매 목록 입니다.</p>
+    </div>
+
+    <div class="contents">
+      <section class="table-responsive shadow-sm bg-white rounded">
+        <table class="table table-striped table-hover align-middle">
+          <thead class="table-light">
+            <tr>
+              <th class="text-center">
+                <input type="checkbox" id="selectAll" class="form-check-input" aria-label="전체 선택"/>
+              </th>
+			  <th class="text-center">상담번호</th>
+              <th class="text-center">고객ID</th>
+              <th class="text-center">담당딜러</th>
+              <th class="text-center">선택차량</th>
+              <th class="text-center">가격</th>
+              <th class="text-center">구매날짜</th>
+            </tr>
+          </thead>
+          <tbody id="tableBody">
+			<tr th:each="s : ${saleList}">
+				<td class="text-center">
+					<input type="checkbox" class="form-check-input rowCheckbox" onclick="event.stopPropagation();"/>
+				</td>
+				<td class="text-center">[[${s.id}]]</td>
+				<td class="text-center">[[${s.customer.member.memberId}]]</td>
+				<td class="text-center">[[${s.dealer.member.name}]]</td>
+				<td class="text-center">[[${s.vehicle.name}]]</td>
+				<td class="text-center">[[${s.price}]]</td>
+				<td class="text-center">[[${s.saleDate}]]</td>
+			</tr>
+          </tbody>
+        </table>
+      </section>
+
+     <section class="d-flex justify-content-end align-items-center mt-3"> 
+        <div class="mb-2 mb-sm-0">
+          <a th:href="@{|/member/update/${#authentication.getPrincipal().getUsername()}|}" class="btn btn-outline li-btn">
+            회원정보 페이지
+          </a>
+          <button id="btnExcelDownload" class="btn btn-outline-secondary ex-btn" aria-label="엑셀 다운로드">
+            엑셀 다운로드
+          </button>
+        </div>
+      </section>
+    </div>
+  </div>
+
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+      /* ====== 요소 선택 ====== */
+      let selectAllCheckbox = document.getElementById('selectAll');
+      let rowCheckboxes = () => document.querySelectorAll('input.rowCheckbox');
+      let tableBody = document.getElementById('tableBody');
+      let btnExcelDownload = document.getElementById('btnExcelDownload');
+
+      /* ====== 체크박스 기능 ====== */
+      function handleSelectAllChange() {
+        let checked = selectAllCheckbox.checked;
+        rowCheckboxes().forEach((cb) => {
+          cb.checked = checked;
+        });
+      }
+
+      /* ====== 엑셀 다운로드 ====== */
+      function tableToCSVWithSelection() {
+        let rows = [];
+        let headers = [];
+
+        document.querySelectorAll('table thead th').forEach((th, idx) => {
+          if (idx === 0) return; // 체크박스 열 제외
+
+          let text = th.textContent.trim();
+          if (text !== '') headers.push(`"${text}"`);
+        });
+        rows.push(headers.join(','));
+
+        let checkedBoxes = Array.from(rowCheckboxes()).filter((cb) => cb.checked);
+        checkedBoxes.forEach((cb) => {
+          let tr = cb.closest('tr');
+          if (!tr) return;
+          let data = [];
+          tr.querySelectorAll('td').forEach((td, idx) => {
+            if (idx === 0) return; // 체크박스 열 제외
+
+            let text = td.textContent.trim().replace(/"/g, '""');
+            data.push(`"${text}"`);
+          });
+          if (data.length) rows.push(data.join(','));
+        });
+        return rows.join('\n');
+      }
+
+      function downloadCSV(csv, filename) {
+        let BOM = '\uFEFF';
+        let blob = new Blob([BOM + csv], { type: 'text/csv;charset=utf-8;' });
+        let url = URL.createObjectURL(blob);
+        let link = document.createElement('a');
+        link.href = url;
+        link.download = filename;
+        link.style.display = 'none';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+      }
+
+      function handleExcelDownload() {
+        let checkedBoxes = Array.from(rowCheckboxes()).filter((cb) => cb.checked);
+        if (checkedBoxes.length === 0) {
+          alert('다운로드할 구매목록을 선택해 주세요.');
+          return;
+        }
+        if (!confirm(`선택된 ${checkedBoxes.length}건의 데이터를 CSV(엑셀)로 다운로드하시겠습니까?`)) return;
+        let csvData = tableToCSVWithSelection();
+        let dateStr = new Date().toISOString().slice(0, 10);
+        downloadCSV(csvData, `구매신청리스트_${dateStr}.csv`);
+      }
+
+      /* ====== 이벤트 연결 ====== */
+      selectAllCheckbox.addEventListener('change', handleSelectAllChange);
+      btnExcelDownload.addEventListener('click', handleExcelDownload);
+    </script>
+  <th:block th:replace="~{bottom}"></th:block>
+</body>
+</html>

@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>전기차 충전소 검색</title>
+	<th:block th:replace="~{top}"></th:block>
+    <!-- ==================== CSS ===================== -->
+    <style>
+        :root {
+            --primary: #002c5f;
+            --primary-light: #edf3fb;
+            --border: #d9e1ec;
+            --text: #1a1a1a;
+            --text-muted: #6b7280;
+            --bg: #f3f6fa;
+            --white: #ffffff;
+        }
+
+        /* Header */
+        .searchMap-top {
+			margin-top: 20px;
+			padding: 20px;
+			text-align: center;
+			background-color: #f8f8f8;        
+		}
+
+        .searchMap-top h1 {
+			font-size: 40px;
+			font-weight: bold;
+        }
+
+        .searchMap-top p {
+			margin: 50px 0 50px 0;
+			font-size: 0.9em;        
+		}
+        /* Layout */
+        .content-wrapper {
+            max-width: 1800px;
+            height: 900px;
+            margin: 40px auto 80px;
+            display: flex;
+            gap: 32px;
+            /*padding: 0 20px;*/
+        }
+
+        /* Sidebar */
+        .search-sidebar {
+            flex: 0.5;
+            min-width: 260px;
+            max-width: 330px;
+            background-color: var(--primary-light);
+            border-radius: 16px;
+            padding: 24px 24px 32px;
+            border: 1px solid var(--border);
+            box-shadow: inset 0 0 6px rgba(0,0,0,0.03);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar-title {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 22px;
+        }
+
+        .sidebar-title h2 {
+            font-size: 20px;
+            font-weight: 700;
+            margin: 0;
+            color: var(--primary);
+        }
+
+        .map-icon {
+            width: 26px;
+            height: 26px;
+            object-fit: contain;
+        }
+
+        .form-group { margin-bottom: 20px; }
+
+		.form-select {
+		    width: 100%;
+		    padding: 12px 14px;
+		    border-radius: 8px;
+		    border: 1px solid var(--border);
+		    font-size: 15px;
+		    background: var(--white);
+		}
+
+		.form-btn {
+		    width: 100%;
+		    padding: 14px;
+		    font-size: 15px;
+		    border-radius: 999px;
+		    border: none;
+		    cursor: pointer;
+		    background-color: var(--primary);
+		    color: var(--white);
+		    font-weight: 600;
+		}
+
+		.form-btn:hover {
+		    background-color: #0a326d;
+		}
+
+		.form-add {
+		    width: 90%;
+			margin-top: 10px;
+		    padding: 12px;
+		    border-radius: 8px;
+		    border: 1px solid var(--border);
+		    font-size: 15px;
+		    background: var(--white);
+		}
+        /* Map area */
+        .map-area {
+            flex: 5;
+            min-width: 500px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .map-loader {
+            flex: 1;
+            width: 100%;
+            border-radius: 18px;
+            border: 1px solid var(--border);
+            background-color: var(--primary-light);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: var(--text-muted);
+            font-size: 16px;
+            box-shadow: inset 0 0 10px rgba(0,0,0,.08);
+        }
+
+        .spinner {
+            width: 56px;
+            height: 56px;
+            border: 6px solid #dce4f0;
+            border-top: 6px solid var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        #map {
+            flex: 1;
+            width: 100%;
+            border-radius: 18px;
+            border: 1px solid var(--border);
+            overflow: hidden;
+            display: none;
+        }
+		.gm-style .gm-style-iw-d {
+		    padding-bottom: 2px !important;
+		}
+		
+    </style>
+</head>
+<body>
+
+<!-- ================= Header ================= -->
+<div class="searchMap-top">
+    <h1>전기차 충전소 검색</h1>
+    <p>전국의 충전소 지점을 검색하고, 지도에서 위치를 확인하세요.</p>
+</div>
+
+<!-- ================= Main Layout ================= -->
+<div class="content-wrapper">
+    <!-- LEFT: Search Sidebar -->
+    <section class="search-sidebar">
+        <div class="sidebar-title">
+            <img th:src="@{/icons/map2.png}" class="map-icon">
+            <h2>충전소 지점 검색</h2>
+        </div>
+        <form name="chargerSchForm" onsubmit="return false;">
+			<div class="form-group">
+			    <select id="chargingStation" name="station" class="form-select" >
+			        <option value="">-- 충전소 지점을 선택하세요 --</option>
+			        <option 
+			            th:each="charger : ${chargersList}"                        
+			            th:value="${charger.statId}"
+			            th:text="${charger.statNm}"
+			            th:data-lat="${charger.lat}"
+			            th:data-lng="${charger.lng}"
+			            th:data-addr="${charger.addr}"> </option>
+			    </select>			    
+			    <input type="text" id="chargerAddress" readonly="readonly" placeholder="선택한 충전소 주소" class="form-add">
+			</div>
+
+            <div class="form-group">
+               <button type="submit" class="form-btn">선택 지점 검색 & 지도 이동</button>
+            </div>
+        </form>
+    </section>
+
+    <!-- RIGHT: Map -->
+    <section class="map-area">
+        <div id="map-loader" class="map-loader">
+            <div class="spinner"></div>
+        </div>
+        <div id="map"></div>
+
+        <!-- google js -->
+        <script async defer
+                th:src="@{'https://maps.googleapis.com/maps/api/js?key=' + ${apiKey} + '&callback=initMap'}">
+        </script>
+
+    </section>
+</div>
+
+<th:block th:replace="~{bottom}"></th:block>
+<!-- ================= JS ================= -->
+<script type="text/javascript">
+
+    let map;
+    let currentMarker;
+    let infoWindow;
+
+    // API 로드 완료 후 실행
+    function initMap() {
+        let mapContainer = document.getElementById('map');
+        let initialPos = { lat: 37.5665, lng: 126.9780 };
+        let stationSelect = document.getElementById('chargingStation');
+
+        map = new google.maps.Map(mapContainer, {
+            center: initialPos,
+            zoom: 12,
+        });
+
+        infoWindow = new google.maps.InfoWindow();
+
+        // 초기 로딩 시 첫 지점 자동 표시
+        if (stationSelect.options.length > 1) {
+            let firstChargerOption = stationSelect.options[1];
+
+            let firstLat = parseFloat(firstChargerOption.dataset.lat);
+            let firstLng = parseFloat(firstChargerOption.dataset.lng);
+            let firstStatNm = firstChargerOption.textContent;
+
+            if (!isNaN(firstLat) && !isNaN(firstLng)) {
+                moveAndMarkMap(firstLat, firstLng, firstStatNm);
+            }
+        }
+        // 로딩 제거 + 지도 표시
+        document.getElementById("map-loader").style.display = "none";
+        document.getElementById("map").style.display = "block";
+    }
+
+    // 지도 이동 + 마커 표시
+    function moveAndMarkMap(lat, lng, stationName) {
+        if (!map) return;
+
+        let position = { lat: lat, lng: lng };
+        map.setCenter(position);
+        if (currentMarker) {
+            currentMarker.setMap(null);
+        }
+
+        currentMarker = new google.maps.Marker({
+            map: map,
+            position: position,
+            title: stationName
+        });
+
+        let content = `<div style="font-weight:bold;padding:4px;margin:6;">${stationName}</div>`;
+        infoWindow.setContent(content);
+        infoWindow.open(map, currentMarker);
+
+        map.setZoom(15);
+    }
+
+    // 버튼 클릭 이벤트
+    document.addEventListener('DOMContentLoaded', function() {
+        let stationSelect = document.getElementById('chargingStation');
+        let searchForm = document.querySelector('form[name="chargerSchForm"]');
+
+        searchForm.addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            let selectedOption = stationSelect.options[stationSelect.selectedIndex];
+            if (!selectedOption.value) {
+                alert('충전소 지점을 선택해 주세요.');
+                return;
+            }
+
+            let lat = parseFloat(selectedOption.dataset.lat);
+            let lng = parseFloat(selectedOption.dataset.lng);
+            let stationName = selectedOption.textContent;
+
+            if (isNaN(lat) || isNaN(lng)) {
+                alert("위치 정보가 올바르지 않습니다.");
+                return;
+            }
+
+            moveAndMarkMap(lat, lng, stationName);
+        });
+    });
+
+    document.addEventListener('DOMContentLoaded', function() {
+        let selectBox = document.getElementById('chargingStation');
+        let addressInput = document.getElementById('chargerAddress');
+
+        selectBox.addEventListener('change', function() {
+            let selectedOption = this.options[this.selectedIndex];
+            let address = selectedOption.getAttribute('data-addr');
+            addressInput.value = address || ''; 
+        });
+    });
+</script>
+
+
+</body>
+</html>

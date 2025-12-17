@@ -1,0 +1,36 @@
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>충전소 목록</title>
+		<style>
+			table { border-collapse: collapse; width: 100%; }
+			th, td { border: 1px solid #ccc; padding: 8px; }
+		</style>
+	</head>
+	<body>
+		<h1>충전소 목록</h1>
+		<p><a th:href="@{/chargers/index}">홈</a> </p>
+		<div th:if="${chargers == null or #lists.isEmpty(chargers)}">
+			<p>조회 결과가 없습니다.</p>
+		</div>
+		<table>
+			<thead>
+				<tr>
+					<th>충전소명</th>
+					<th>주소</th>
+					<th>위도</th>
+					<th>경도</th>
+				</tr>
+			</thead>
+			<tbody th:if="${chargers != null}">
+				<tr th:each="c, loop : ${chargers}" >
+					<td th:text="${c.statNm}"></td>
+					<td th:text="${c.addr}"></td>
+					<td th:text="${c.lat}"></td>
+					<td th:text="${c.lng}"></td>
+				</tr>
+			</tbody>
+		</table>	
+	</body>	
+</html>
+

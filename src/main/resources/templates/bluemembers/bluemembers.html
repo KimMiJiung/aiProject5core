@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+	<meta charset="utf-8">
+	<title>블루멤버스</title>
+	<th:block th:replace="~{top}"></th:block>
+	<style>
+		
+		#container {
+		   width: 100%;
+		   margin: 0 auto; 
+		}
+
+		/* 상단 */
+		.bluemembers-top {
+			margin-top: 20px;
+			padding: 20px;
+			text-align: center;
+			background-color: #f8f8f8;
+		}
+		.bluemembers-top > h1 {
+			font-size: 40px;
+			font-weight: bold;
+		}
+		.bluemembers-top > p {
+			margin: 50px 0 50px 0;
+			font-size: 0.9em;
+		}
+
+		/* 중단 */
+		.bluemembers-contents {
+			max-width: 1200px;
+			margin: 0 auto;
+		}
+		
+		#bluemembers-title {
+			margin: 20px 0 0 0;
+			padding: 10px;
+			font-weight: bold;
+			color: #333;
+		}
+		
+		#bluemembers-title > p {
+			margin-top: -10px;
+			font-size: 0.9em;
+		}
+		
+		/* 중단 - 표 */
+		#bluemembers-chart {
+			font-size: 0.9em;
+			font-weight: bold;
+		}
+		
+		#bluemembers-chart-bottom {
+			color: #666;
+		}
+		
+		#bluemembers-chart-bottom > h4 {
+			margin: 40px 0 -10px 0;
+		}
+
+		.chart-bottom-model {
+			margin-left: 10px;
+			font-size: 0.95em;	
+		}
+		
+		.chart-bottom-description {
+			margin-top: -10px;
+			margin-left: 20px;
+			font-size: 0.9em;
+		}
+				
+		/* 하단 */
+		.bluemembers-bottom1 {
+		    display: flex;
+		    align-items: center;
+		    gap: 40px;
+		    max-width: 1200px;
+		    margin: 40px auto;
+		    padding: 30px 20px;
+		    background: #f8f8f8;
+			border: 1px lightgray solid;
+			border-radius: 4px;
+		}
+
+		.left-img {
+		    width: 180px;
+		    height: 180px;
+		    overflow: hidden;
+		    display: flex;
+		    justify-content: center;
+		    align-items: center;
+		}
+		.left-img img {
+		    width: 80%;
+			border-radius: 20%;
+		}
+
+		.right-content {
+		    flex: 1;
+		    font-size: 16px;
+		    line-height: 1.6;
+		}
+
+		.right-content h2 span.highlight {
+		    color: navy;
+		    font-weight: bold;
+		}
+
+		.right-content ul {
+		    margin-top: 16px;
+		    padding-left: 20px;
+		}
+
+		.btn {
+		    display: inline-block;
+		    margin-top: 20px;
+		    padding: 12px 20px;
+		    background: navy;
+		    color: white;
+		    font-size: 15px;
+		    border-radius: 4px;
+		    text-decoration: none;
+		    font-weight: 600;
+		}
+		
+		/* 하단 3가지 이미지 */
+		.bluemembers-bottom2 {
+			max-width: 1200px;
+			margin: 100px 0;
+			display: flex;
+		}		
+		
+		.bluemembers-bottom2-item {
+		    text-align: center;
+		    flex: 1;
+		}
+			
+		.bluemembers-bottom2-item img {
+			width: 380px; height: 180px;
+			border: 1px lightgray solid;
+			border-radius: 4px;
+		}
+
+		.caption {
+			text-align: center;
+		}
+		
+		.caption > a {
+			position: relative;
+			font-size: 0.85em;
+			font-weight: bold;
+			text-decoration: none;
+			color: #333;
+		}
+		
+		.caption > a::after {
+		    content: ''; 
+		    position: absolute;
+		    bottom: -2px;
+		    left: 0; 
+		    width: 0;
+		    height: 2px;
+		    background-color: navy;
+		    transition: width 0.25s ease;
+		}
+
+		.caption > a:hover {
+		    color: navy;
+		}
+
+		.caption > a:hover::after {
+		    width: 100%; 
+		}
+	</style>
+	<script>
+
+		function addCustomer() { 
+			location.href = "/5core/member/add/" + "01";
+		}
+	</script>
+
+</head>
+<body>
+	<div id="container">
+		<!-- 상단 -->
+		<div class="bluemembers-top">
+			<h1>블루멤버스 회원안내</h1>	
+			<p>블루멤버스 회원가입 대상 및 카드에 대해 안내해 드립니다.</p>
+		</div>
+		
+		<!-- 중단 -->
+		<div class="bluemembers-contents">
+			<div id="bluemembers-title">
+			<h2>회원구분</h2>	
+				<p>	블루멤버스 회원이 되어 다양한 멤버십 서비스와 혜택을 만나보세요.</p>		
+				<p>현대 브랜드 차량 구매에 따라 회원 유형이 결정되며, 가입 조건은 아래와 같습니다.</p>	
+				<p>※ 차량을 구매하지 않아도 블루멤버스 회원 가입이 가능합니다.</p>		
+			</div>
+			<!-- 표 -->
+			<div id="bluemembers-chart">
+				<table border="1" cellspacing="0" cellpadding="8" style="border-collapse: collapse; width: 100%;">
+				    <thead>
+				        <tr style="background-color: navy; color: white; text-align: center;">
+				            <th>구분</th>
+				            <th>대상유형</th>
+				            <th>가입조건</th>
+				        </tr>
+				    </thead>
+				    <tbody>
+				        <!-- 개인회원 -->
+				        <tr>
+				            <td rowspan="5" style="text-align:center; background-color: #f1f1f1;">개인회원</td>
+				            <td style="color: #666;">일반 개인 (개인사업자 포함)</td>
+				            <td style="color: #666;">현대차를 구매 및 보유하고 블루멤버스에 가입한 개인 및 개인사업자</td>
+				        </tr>
+				        <tr>
+				            <td style="color: #666;">렌트/리스 이용개인</td>
+				            <td style="color: #666;">렌트/리스사에서 현대차를 12개월 이상 임대하고 블루멤버스에 가입한 개인 고객<br>(단, 최초 임대 고객에 한함)</td>
+				        </tr>
+				        <tr>
+				            <td style="color: #666;">법인임직원</td>
+				            <td style="color: #666;">렌트/리스사에서 12개월 이상 임대한 블루멤버스에 가입한 법인의 실운행자(실운행개인) 및 직구매한 법인의 실운행자(최초 계약 고객에 한함)</td>
+				        </tr>
+				        <tr>
+				            <td style="color: #666;">개인 (실차주)</td>
+				            <td style="color: #666;">출고 주체 이외 실제 차량 소유권자 표기 가능한 개인/개인사업자<br>예) 부모명의, 지인양수로부터 구매한 차량 등</td>
+				        </tr>
+				        <tr>
+				            <td style="color: #666;">개인 (개인 실차주)</td>
+				            <td style="color: #666;">매매계약서 주체와 무관하게 실제 차량 소유권 표기 가능한 자의 실차주 (최초 구매자에 한함)<br>※ 지입 실차주: 실차주 본인차량이거나 본인이 아닌 지입업체로 되어있는 경우</td>
+				        </tr>
+				        <!-- 법인회원 -->
+				        <tr>
+				            <td rowspan="4" style="text-align:center; background-color: #f1f1f1;">법인회원</td>
+				            <td style="color: #666;">일반 법인</td>
+				            <td style="color: #666;">현대차를 구매 및 보유하고 블루멤버스에 가입한 법인</td>
+				        </tr>
+				        <tr>
+				            <td style="color: #666;">렌트/리스사</td>
+				            <td style="color: #666;">현대차를 구매 및 보유하고 블루멤버스에 가입한 렌트/리스사<br>(단, 중대형트럭 및 버스블루멤버스 지정 제외)</td>
+				        </tr>
+				        <tr>
+				            <td style="color: #666;">렌트/리스 이용법인</td>
+				            <td style="color: #666;">렌트/리스사에서 현대차를 법인 명의로 12개월 이상 임대하고 블루멤버스에 가입한 법인 고객(최초 계약 고객에 한함)</td>
+				        </tr>
+				        <tr>
+				            <td style="color: #666;">법인 (실차주)</td>
+				            <td style="color: #666;">출고 주체 이외 실제 차량 소유권자 표기 가능한 법인<br>예) 특장업체로부터 구매한 차량 등</td>
+				        </tr>
+				    </tbody>
+				</table>
+				<!-- 대상 차종-->
+				<div id="bluemembers-chart-bottom">
+					<h4>· 대상 차종</h4>
+					<p class="chart-bottom-model">- 현대 브랜드 승용, SUV, 포터, 스타리아, 스타리아라운지, ST1</p>
+					<p class="chart-bottom-description">※ 2013년 12월 1일 이후 제작증 발급된 차량부터 신차 구매 포인트 적립 가능</p>
+					<p class="chart-bottom-model">- 중대형트럭(마이티, 파비스, 뉴파워트럭, 엑시언트), 중형버스(쏠라티, 카운티)</p>
+					<p class="chart-bottom-description">※ 2021년 10월 5일 이후 제작증 발급된 차량부터 신차 구매 포인트 적립 가능</p>
+					<p class="chart-bottom-description">※ 상용 차종의 경우 특장사/지입사는 포인트 미적립됩니다(실 운행자에 포인트 적립)</p>
+					<p class="chart-bottom-description">※ 중대형 트럭 법인회원의 경우, 직구매 출고 증명서류와 함께 가입해주시면 포인트가 적립됩니다. (증명서류 : 자동차등록원부, 사업자등록증)</p>
+					<p class="chart-bottom-model">- 대형버스(에어로타운/그린시티/에어로시티/유니시티/ 유니버스/일렉시티 전기버스/일렉시티 수소버스)</p>
+					<p class="chart-bottom-description">※ 2022년 1월 3일 이후 제작증 발급된 차량부터 신차 구매 포인트 적립 가능</p>
+				</div>
+			</div>
+		
+			<!-- 하단 -->
+			<div class="bluemembers-bottom1">
+			    <!-- 왼쪽 원형 이미지 -->
+			    <div class="left-img">
+			        <img th:src="@{/icons/bluemembers00.png}">
+			    </div>
+			    <!-- 오른쪽 텍스트 -->
+			    <div class="right-content">
+			        <h2>
+			            현대닷컴 회원으로 가입하시면 더 많은 
+			            <span class="highlight">블루멤버스 혜택</span>을 이용하실 수 있습니다.
+			        </h2>
+			        <ul>
+			            <li>블루멤버스 전용 이벤트 제공</li>
+			            <li>블루멤버스에게 제공되는 다양한 혜택 안내</li>
+			            <li>기타 특화 서비스 제공</li>
+			        </ul>
+			        <a th:href="|javascript:addCustomer()|" class="btn">Hyundai 회원가입 바로가기 ▶</a>
+			    </div>
+			</div>
+
+			<div class="bluemembers-bottom2">
+				<div class="bluemembers-bottom2-item">
+					<img th:src="@{/icons/bluemembers01.png}">
+					<div class="caption">
+						<a href="#">블루멤버스 스토리</a>
+					</div>
+				</div>
+				<div class="bluemembers-bottom2-item">
+					<img th:src="@{/icons/bluemembers02.png}">
+					<div class="caption">
+						<a href="#">Hyundai Mobility 카드 안내</a>
+					</div>
+				</div>
+				<div class="bluemembers-bottom2-item">
+					<img th:src="@{/icons/bluemembers03.png}">
+					<div class="caption">
+						<a href="#">블루멤버스 카드 재발급</a>
+					</div>
+				</div>
+			</div>
+		</div>
+		
+	</div>
+
+	<th:block th:replace="~{bottom}"></th:block>
+</body>
+</html>

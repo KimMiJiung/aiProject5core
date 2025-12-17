@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>관리자 - 멤버 관리</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"/>
+    <style>
+        body { background-color: #f3f5f9; }
+        .container { max-width: 1600px; }
+        .content { padding: 30px;}
+		.search-btns { margin-right: 40px;}
+		#searchBtn { width: 80px; height: 30px; font-weight: bold;}
+        .table thead th { background-color: #e9ecef; font-size: 0.95rem; text-align: center; }
+        .table tbody td { font-size: 0.88rem; vertical-align: middle; }
+		.member-role { width: 200px; padding-left: 10px; margin-left: 20px; cursor: pointer;}
+		.btn-update { width: 60px; height: 30px; font-weight: bold; background-color: seagreen; color: #fff; border: 1px solid #777;}
+		.btn-update:hover { color: seagreen; background-color: #fff; border: 1px solid #777;}
+        .form-select-sm, .form-control-sm { height: calc(1.8rem + 2px); }
+		/* 페이지 버튼 */
+		.page-link { font-weight: bold; background-color: #f0f0f0; border-color: #777; color: #333;}
+		/* 활성화된 페이지 링크의 배경색 변경 */
+		.pagination .page-item.active .page-link { background-color: navy; border-color: navy; color: white;}
+		/* 마우스 오버 시 배경색 변경 */
+		.pagination .page-item .page-link:hover { background-color: lightsteelblue; border-color: #111;}
+
+        /* ===== HYUNDAI CRM 스타일 사이드바 추가 ===== */
+        :root {
+            --primary: #0d47a1;
+            --primary-soft: #e3eefc;
+            --bg-elevated: #ffffff;
+            --border-subtle: #e2e8f0;
+            --text-muted: #6b7280;
+        }
+
+		/* 레이아웃 */
+		    .sidebar {
+		      width: 248px;
+		      background: linear-gradient(180deg, #0d47a1 0%, #093272 100%);
+		      color: #ffffff;
+		      display: flex;
+		      flex-direction: column;
+		      padding: 20px 0;
+		    }
+
+		    .sidebar__logo {
+		      padding: 0 24px 20px;
+		      border-bottom: 1px solid rgba(255, 255, 255, 0.14);
+		      margin-bottom: 16px;
+		    }
+
+		    .sidebar__logo-title {
+		      font-size: 19px;
+		      font-weight: 700;
+		    }
+
+		    .sidebar__section-title {
+		      font-size: 12px;
+		      text-transform: uppercase;
+		      opacity: 0.75;
+		      padding: 0 24px;
+		      margin-bottom: 6px;
+		    }
+
+		    .menu-list {
+		      list-style: none;
+		      padding: 0 8px;
+		    }
+
+		    .menu-item {
+		      display: flex;
+		      align-items: center;
+		      gap: 10px;
+		      padding: 10px 16px;
+		      margin: 2px 8px;
+		      border-radius: 8px;
+		      font-size: 13px;
+		      cursor: pointer;
+		      transition: background 0.18s ease, transform 0.12s ease;
+		      color: #eef3ff;
+		      opacity: 0.9;
+			  text-decoration: none;
+		    }
+
+		    .menu-item:hover {
+		      background: rgba(255, 255, 255, 0.15);
+		      transform: translateY(-1px);
+		      opacity: 1;
+		    }
+
+		    .menu-item--active {
+		      background: #ffffff;
+		      color: #0d47a1;
+		      opacity: 1;
+		      font-weight: 600;
+		    }
+
+		    .menu-item__bullet {
+		      width: 6px;
+		      height: 6px;
+		      border-radius: 999px;
+		      background: rgba(255, 255, 255, 0.6);
+		    }
+
+		    .menu-item--active .menu-item__bullet {
+		      background: #0d47a1;
+		    }
+
+		    .sidebar__bottom {
+		      margin-top: auto;
+		      padding: 12px 24px 8px;
+		      font-size: 12px;
+		      opacity: 0.7;
+		    }
+
+		.main {
+		  flex: 1;
+		  display: flex;
+		  flex-direction: column;
+		  min-width: 0;
+		}
+
+		.header {
+		  height: 64px;
+		  background: #ffffff;
+		  display: flex;
+		  align-items: center;
+		  justify-content: space-between;
+		  padding: 0 24px;
+		  border-bottom: 1px solid #e5e7eb;
+		}
+
+		.header__left {
+		  display: flex;
+		  align-items: center;
+		  gap: 12px;
+		}
+
+		.logo {
+		  font-size: 18px;
+		  font-weight: 800;
+		  color: #0d47a1;
+		}
+
+		.header__chip {
+		  padding: 4px 10px;
+		  border-radius: 999px;
+		  background: #e3eefc;
+		  font-size: 11px;
+		  color: #1f3e7a;
+		}
+
+		.user-info {
+		  font-size: 14px;
+		  color: #374151;
+		  display: flex;
+		  align-items: center;
+		  gap: 10px;
+		}
+
+		.user-info__role {
+		  font-size: 11px;
+		  padding: 3px 8px;
+		  border-radius: 999px;
+		  background: #f3f4f6;
+		  color: #6b7280;
+		}
+
+		.user-info span.logout {
+		  color: #0d47a1;
+		  cursor: pointer;
+		  font-weight: 600;
+		}
+		
+    </style>
+</head>
+<body>
+    <div class="d-flex">
+		<div class="sidebar">
+		     <div class="sidebar__logo">
+		         <div class="sidebar__logo-title">관리 메뉴</div>
+		     </div>
+
+		     <div class="sidebar__section-title">Navigation</div>
+		     <ul class="menu-list">
+		         <li>
+		             <a th:href="@{/main}" class="menu-item">
+		                 <span class="menu-item__bullet"></span>
+		                 <span>메인 대시보드</span>
+		             </a>
+		         </li>
+				 <li>
+				     <a th:href="@{/admin/profile}" class="menu-item">
+				         <span class="menu-item__bullet"></span>
+				         <span>프로필</span>
+				     </a>
+				 </li>				 
+		         <li>
+		             <a th:href="@{/admin/list}" class="menu-item menu-item--active">
+		                 <span class="menu-item__bullet"></span>
+		                 <span>멤버 관리</span>
+		             </a>
+		         </li>
+				 <li>
+				   <a th:href="@{/admin/globalSales}" class="menu-item">
+				     <span class="menu-item__bullet"></span>
+				     <span>글로벌 판매 실적</span>
+				   </a>
+				 </li>
+				 <li>
+				   <a th:href="@{/admin/aiForecast}" class="menu-item">
+				     <span class="menu-item__bullet"></span>
+				     <span>AI수요예측</span>
+				   </a>
+				 </li>					 
+				 <li>
+				   <a th:href="@{/admin/modelSales}" class="menu-item">
+				     <span class="menu-item__bullet"></span>
+				     <span>차량별 판매 실적</span>
+				   </a>
+				 </li>
+		     </ul>
+
+		     <div class="sidebar__bottom">
+		         HYUNDAI CRM · Admin Console
+		     </div>
+		 </div>
+
+      <div class="main">
+		<div class="header">
+		  <div class="header__left">
+		    <div class="logo">HYUNDAI CRM</div>
+		    <div class="header__chip">Admin Dashboard</div>
+		  </div>
+		  <div class="user-info">
+		    <span class="user-info__role">관리자</span>
+		    <span>[[${#authentication.getPrincipal().getUsername()}]] 님</span>
+		    <span class="logout"><a sec:authorize="isAuthenticated()" th:href="@{/logout}" class="nav-link">로그아웃</a></span>
+		  </div>
+		</div>		
+		
+        <div class="content flex-grow-1">
+			<h2 class="mb-4 fw-bold" style="color: navy;">멤버 관리</h2>
+            <p class="text-muted">시스템에 등록된 ADMIN, DEALER 및 CUSTOMER의 정보를 검색하고 **권한**을 수정합니다.</p>
+
+            <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show" role="alert">
+                <span th:text="${successMessage}">성공 메시지</span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show" role="alert">
+                <span th:text="${errorMessage}">에러 메시지</span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            <form id="searchForm" th:action="@{/admin/list}" method="get">
+                <input type="hidden" name="page" id="currentPage" th:value="${memberPage.number}"/>
+                <section class="d-flex flex-wrap justify-content-between align-items-center mb-4 p-3 bg-white border rounded shadow-sm">
+                    <div class="d-flex gap-2 align-items-center">
+                        <select class="form-select form-select-sm" id="roleFilter" style="width: 150px" name="role">
+                            <option value="ALL" th:selected="${currentRole == 'ALL'}">전체 역할</option>
+                            <option th:each="role : ${roles}" 
+                                    th:value="${role}" 
+                                    th:text="${role.toString()}" 
+                                    th:selected="${currentRole == role.toString()}">ROLE</option>
+                        </select>
+                        
+						<select class="form-select form-select-sm" id="sortFilter" style="width: 150px" name="sort">
+						    <option value="id,asc" th:selected="${currentSort == 'id,asc'}">PK ID 오름차순</option>
+						    <option value="memberId,asc" th:selected="${currentSort == 'memberId,asc'}">로그인 ID 오름차순</option>
+						    <option value="joinDate,desc" th:selected="${currentSort == 'joinDate,desc'}">가입일 최신순</option>
+						    <option value="name,asc" th:selected="${currentSort == 'name,asc'}">이름 오름차순</option>
+						</select>
+                    </div>
+
+                    <div class="d-flex gap-2 mt-2 mt-sm-0 search-btns">
+                        <input type="search" id="searchInput" class="form-control form-control-sm" placeholder="로그인 ID, 이름, 이메일 검색" name="keyword" th:value="${currentKeyword}"/>
+                        <button type="button" id="searchBtn" class="btn btn-sm" style="background-color: navy; color: #fff;">검색</button>
+                    </div>
+                </section>
+            </form>
+
+            <section class="table-responsive shadow bg-white rounded-3">
+                <table class="table table-striped table-hover align-middle mb-0">
+					<thead class="table-light">
+					    <tr>
+							<th style="width: 5%">ID</th>
+							<th style="width: 9%">로그인 ID</th>
+							<th style="width: 10%">이름</th>
+							<th style="width: 10%">연락처</th>
+							<th style="width: 15%">이메일</th>
+							<th style="width: 10%">가입일</th>
+							<th style="width: 10%">역할 (권한)</th>
+							<th style="width: 15%">상태</th> 
+							<th style="width: 10%">관리</th> 
+						</tr>
+					</thead>
+					<tbody id="tableBody">
+						<tr th:each="member : ${memberPage.content}"> 
+						    <td class="text-center" th:text="${member.id}"></td>
+						    <td class="text-center fw-bold" th:text="${member.memberId}"></td>
+						    <td class="text-center" th:text="${member.name}"></td>
+						    <td class="text-center" th:text="${member.phone}"></td>
+						    <td class="text-center" th:text="${member.email}"></td>
+						    <td class="text-center" th:text="${#temporals.format(member.joinDate, 'yyyy-MM-dd')}"></td>                            
+						    
+						    <td class="text-center">
+								<select class="form-select form-select-sm member-role" disabled style="width: 200px; margin-right: 10px;">
+						            <option th:each="role : ${roles}" 
+						                    th:value="${role}" 
+						                    th:text="${role.toString()}" 
+						                    th:selected="${member.role.toString() == role.toString()}"></option>
+						        </select>
+							</td>
+						    
+						    <form th:action="@{/admin/update-status}" method="post">
+						        <input type="hidden" name="id" th:value="${member.id}" /> <td class="text-center">
+									<select class="form-select form-select-sm" name="status" style="width: 200px; margin: auto;">
+										<option value="ACTIVE" th:selected="${member.status == 'ACTIVE'}">활동 중</option>
+										<option value="INACTIVE" th:selected="${member.status == 'INACTIVE'}">비활동</option>
+										<option value="PENDING" th:selected="${member.status == 'PENDING'}">승인 대기</option>
+										<option value="BLOCKED" th:selected="${member.status == 'BLOCKED'}">차단됨</option>
+									</select>
+						    	</td>								
+								<td class="text-center">
+									<button type="submit" class="btn btn-sm btn-update" 
+										onclick="return confirm('PK ID [' + this.form.id.value + ']의 상태를 ' + this.form.status.value + '로 수정하시겠습니까?');">수정</button>
+								</td>
+							</form>
+						</tr>
+					</tbody>
+                </table>
+                 <div th:if="${memberPage.empty}" class="p-4 text-center text-muted">
+                    검색 조건에 맞는 멤버가 없습니다.
+                </div>
+            </section>
+            
+            <section class="d-flex justify-content-center mt-4">
+                <nav aria-label="멤버 페이지" th:if="${memberPage.totalPages > 1}">
+                    <ul class="pagination pagination-sm mb-0 shadow-sm">
+                        <li class="page-item" th:classappend="${!memberPage.hasPrevious} ? 'disabled'">
+                            <a class="page-link" 
+                               th:href="@{/admin/list(page=${memberPage.number - 1}, role=${currentRole}, sort=${currentSort}, keyword=${currentKeyword})}"
+                               aria-label="Previous">«</a>
+                        </li>
+
+						<li class="page-item"
+						    th:each="i : ${#numbers.sequence(0, memberPage.totalPages - 1)}"
+						    th:classappend="${i == memberPage.number} ? 'active'">
+						    <a class="page-link"
+						       th:href="@{/admin/list(page=${i}, role=${currentRole}, sort=${currentSort}, keyword=${currentKeyword})}"
+						       th:text="${i + 1}"></a>
+						</li>
+
+                        <li class="page-item" th:classappend="${!memberPage.hasNext} ? 'disabled'">
+                            <a class="page-link" 
+                               th:href="@{/admin/list(page=${memberPage.number + 1}, role=${currentRole}, sort=${currentSort}, keyword=${currentKeyword})}"
+                               aria-label="Next">»</a>
+                        </li>
+                    </ul>
+                </nav>
+            </section>
+        </div>
+    </div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            
+            // 검색, 필터, 정렬 변경 시 폼 제출
+            $('#roleFilter, #sortFilter').on('change', function() {
+                $('#currentPage').val(0); // 페이지 리셋
+                $('#searchForm').submit();
+            });
+
+            $('#searchBtn').on('click', function() {
+                $('#currentPage').val(0); // 페이지 리셋
+                $('#searchForm').submit();
+            });
+
+            $('#searchInput').on('keyup', function(e) {
+                if (e.key === 'Enter') {
+                    $('#searchBtn').click();
+                }
+            });
+        });
+    </script>
+</body>
+</html>

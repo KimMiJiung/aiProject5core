@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+	<meta charset="utf-8">
+	<title>이벤트 상세보기</title>
+	<th:block th:replace="~{top}"></th:block>
+	<style>
+		
+		#container {
+		   width: 100%;
+		   margin: 0 auto; 
+		}
+		
+		/* 상단 */
+		.event-top {
+			margin-top: 20px;
+			padding: 20px;
+			text-align: center;
+			background-color: #f8f8f8;
+		}
+		.event-top > h1 {
+			font-size: 40px;
+			font-weight: bold;
+		}
+		.event-top > p {
+			margin: 50px 0 50px 0;
+			font-size: 0.9em;
+		}
+
+		.event-top2 {
+			margin: 30px 0 10px;
+			padding: 20px;
+			text-align: center;
+		}
+		.event-title {
+			font-size: 25px;
+			font-weight: bold;
+		}
+		.event-period {
+			color: #333;
+			margin-left: 250px;
+			padding: 10px 0 20px 0;
+			font-size: 0.95em;
+		}
+								
+		/* 중단 */
+		.event-contents {
+			text-align: center;
+		}
+		
+		.event-content01 > h1 {
+			margin-left: -350px;
+			font-size: 40px;
+		}
+		.event-content01 > p {
+			text-align: left;
+			margin-left: 500px;
+			color: #777;
+			font-size: 1.2em;
+			margin-top: -8px;
+		}
+
+		.event-content02-table {
+			margin: 10px 0 10px 485px;
+			font-size: 1.2em;
+		}
+		.event-content02-table tr {
+			height: 40px;
+		}
+		.event-content02-table td {
+			color: #222;
+		}	
+		
+		.event-content03 {
+			margin-top: 50px;
+		}
+		.event-content03 h1 {
+			font-size: 40px;
+			margin-left: -800px;
+		}
+		
+		.event-content-title {
+			font-size: 30px;
+			margin-left: -600px;
+		}
+		.event-content-description {
+			font-size: 20px;
+			margin-left: -700px;
+			margin-top: -10px;
+			color: #222;
+			font-weight: 500;
+		}
+		
+		.event-content04 {
+			max-width: 1200px;
+			margin-left: 490px;
+			margin-bottom: 50px;
+		}
+		.event-content04-1 {
+			float: left;
+			margin: 2px;
+		}
+		.event-content04-1 img {
+			width: 280px; height: 230px;
+			margin: 10px;
+		}
+
+		.caption {
+			text-align: center;
+			margin-top: -5px;
+		}
+		
+		.event-content05 {
+			clear: both;
+		}
+		.event-content-title2 {
+			font-size: 30px;
+			margin-left: -530px;
+		}
+		.event-content-description2 {
+			font-size: 20px;
+			margin-left: -480px;
+			margin-top: -10px;
+			color: #222;
+			font-weight: 500;
+		}
+		
+		.event-content05-1-table {
+			margin: 10px 0 10px 485px;
+			font-size: 1.2em;			
+		}
+		.event-content05-1-table tr {
+			height: 40px;
+		}
+		.event-content05-1-table td {
+			color: #222;
+			text-align: left;
+		}	
+
+		/* 개인정보 및 기타 안내 */
+		.eventDetail-bottom {
+			width: 900px;
+			margin-left: 480px;
+			padding: 10px;
+			background-color: #f8f8f8;	
+		}
+		
+		.personal-information > h2, .etc-information > h2 {
+			text-align: left;
+			margin-left: 20px;
+		}
+				
+		.personal-information > ul > li, .etc-information > ul > li {
+			text-align: left;
+			margin-bottom: 10px;
+		}
+		
+		.list {
+			font-size: 1.02em;
+			padding: 10px;
+			border-radius: 5px;	
+			border: 1px solid #333;
+			background-color: navy;
+			margin-top: 30px;
+			margin-bottom: 30px;
+		}
+		.list-text {
+			text-decoration: none;
+			color: #fff;
+		}
+
+		.footer-section {
+			clear: both;
+		}
+	</style>
+</head>
+<body>
+	<div id="container">
+		<!-- 상단 -->
+		<div class="event-top">
+			<h1>이벤트 상세 보기</h1>	
+			<p>고객님을 위한 스페셜 이벤트는 계속됩니다. 즐거운 행운과 경품을 만나보세요!</p>
+		</div>
+		<div class="event-top2">
+			<span class="event-title">송파대로 전시장 크리스마스 홈파티</span>	
+			<span class="event-period">모든회원 | 2025년 11월 27일 ~ 2026년 1월 18일</span>
+		</div>
+		
+		<!-- 중단 -->
+		<div class="event-contents">
+			<img th:src="@{/icons/event01-1.png}" style="width: 900px;">
+			<div class="event-content01">
+				<h1>송파대로 전시장 크리스마스 홈파티</h1>
+				<p>따뜻한 겨울 홈파티로 여러분을 초대합니다!</p>
+				<p>송파대로 전시장을 겨울 홈파티 무드로 꾸며,</p>
+				<p>누구나 편하게 들를 수 있는 따뜻한 연말 공간으로 준비했습니다.</p>
+				<p>예쁜 홈파티 포토존부터 다양한 선물과 이벤트까지!</p>
+				<p>송파대로 전시장 크리스마스 홈파티에서 따뜻한 연말을 즐겨보세요!</p>
+			</div>
+			<img th:src="@{/icons/event01-2.png}">
+			<div class="event-content02">
+				<table class="event-content02-table">
+					<tr>
+						<th>장소 | </th>
+						<td style="text-align: left;">현대자동차 송파대로지점</td>
+					</tr>
+					<tr>
+						<th>일정 | </th>
+						<td>전시 : 11/22(토) ~ 1/18(일), 이벤트: 11/27(목) ~ 12/31(수)</td>
+					</tr>
+				</table>
+			</div>
+			<div class="event-content03">
+				<h1>이벤트</h1>
+				<h2 class="event-content-title">1. 홈파티 서프라이즈 선물</h2>
+				<h4 class="event-content-description">방문만해도 선물이 팡팡!</h4>
+			</div>
+			
+			<div class="event-content04">
+				<!-- 1번줄 -->
+				<div class="event-content04-1">                
+				    <a th:href="@{/event/eventDetail}"><img th:src="@{/icons/gift01.png}"></a>
+					<p class="caption">현대 브랜딩 핫팩</p>
+				</div>
+				<div class="event-content04-1">                
+				    <a href="#"><img th:src="@{/icons/gift02.png}"></a>
+					<p class="caption">모루인형</p>
+				</div>
+				<div class="event-content04-1">                
+				    <a href="#"><img th:src="@{/icons/gift03.png}"></a>
+					<p class="caption">컵케이크 핸드타올</p>
+				</div>
+				<!-- 2번줄 -->
+				<div class="event-content04-1">                
+				    <a href="#"><img th:src="@{/icons/gift04.png}"></a>
+					<p class="caption">스타벅스 기프트 카드</p>
+				</div>
+				<div class="event-content04-1">                
+				    <a href="#"><img th:src="@{/icons/gift05.png}"></a>			    
+					<p class="caption">멀티충전기</p>
+				</div>
+				<div class="event-content04-1">                
+				    <a href="#"><img th:src="@{/icons/gift06.png}"></a>   
+					<p class="caption">여행용 폴딩백</p>
+				</div>
+			</div>
+			
+			<div class="event-content05">
+				<h2 class="event-content-title2">2. 크리스마스 핸드메이드 클래스</h2>
+				<h4 class="event-content-description2">송파대로 전시장에서 크리스마스 리스 장식 만들어보자!</h4>
+			</div>
+			<div class="event-content05-1">
+				<img th:src="@{/icons/gift07.png}">
+				<table class="event-content05-1-table">
+				
+					<tr>
+						<th>참여 방법 | </th>
+						<td>전시장 방문 후 비치된 QR로 신청</td>
+					</tr>
+					<tr>
+						<th>신청 일정 | </th>
+						<td>11/27(목) ~ 12/31(수)</td>
+					</tr>
+					<tr>
+						<th>발표 방법 | </th>
+						<td>당첨자 개별 안내</td>
+					</tr>
+					
+				</table>
+			</div>		
+			
+			<div class="eventDetail-bottom">
+				<!-- 개인정보 -->
+				<div class="personal-information">
+					<h2>개인정보 수집 및 이용동의</h2>
+					<ul>
+						<li>본 행사에 참가자는 개인정보의 수집, 이용 등과 관련한 아래 사항에 대하여 동의한 것으로 간주됩니다.</li>
+						<li>개인정보의 수집 및 이용 목적: 당첨자 경품 지급 및 안내</li>
+						<li>개인정보의 보유 및 이용 기간: 수집일로부터 180일 이내</li>
+					</ul>
+				</div>
+				<!-- 기타 안내 사항 -->
+				<div class="etc-information">
+					<h2>기타 안내 사항</h2>
+					<ul>
+						<li>현장 이벤트는 현장 상황에 따라 경품 조기 소진되거나, 종료될 수 있습니다.</li>
+						<li>본 이벤트는 각 이벤트 당 1 인 회 참여 가능하며, 비정상적이거나 불법적인 방법으로 본 행사 내 이벤트에 참여하실 경우 당첨이 취소되거나 경품이 횐수 조치될 수 있습니다.</li>
+						<li>이벤트 내용 및 경품은 현대자동차 사정에 의해 사전 고지 없이 변경될 수 있습니다. </li>
+						<li>본 행사 및 관련 이벤트는 현대자동차의 사정에 의해 사전 고지 없이 변경 및 취소될 수 있습니다.</li>
+					</ul>
+				</div>
+			</div>
+			
+			<button class="list"><a th:href="@{/event}" class="list-text">이벤트 목록보기</a></button>
+		</div>
+		
+		
+	</div>
+	<div class="footer-section">
+	<th:block th:replace="~{bottom}"></th:block>
+	</div>
+</body>
+</html>

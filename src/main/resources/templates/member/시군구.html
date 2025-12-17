@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <title>SGIS 3단 행정구역 선택</title>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+    }
+    select {
+      width: 200px;
+      height: 35px;
+      font-size: 16px;
+      margin-right: 10px;
+    }
+  </style>
+</head>
+
+<body>
+  <h2>SGIS 시/도 → 시군구 → 읍면동 SelectBox</h2>
+
+  <select id="sido">
+    <option value="">시/도 선택</option>
+  </select>
+
+  <select id="sigungu">
+    <option value="">시/군/구 선택</option>
+  </select>
+
+  <select id="emd">
+    <option value="">읍/면/동 선택</option>
+  </select>
+
+  <script>
+document.addEventListener("DOMContentLoaded", () => {
+	
+	/*
+		도메인 변경 (25-11-13)
+		sgis.lostat.go.kr -> sgis.mods.go.kr
+	*/
+	
+	// 토큰기간: ~ 2025-12-30일
+    const CONSUMER_KEY = "51d6b465af6e457f8f55";        // 🔹 SGIS 발급
+    const CONSUMER_SECRET = "ad81dbbb3fea4f0eaeb5";  // 🔹 SGIS 발급
+
+    // 1) AccessToken 발급
+    async function getToken() {
+    	const url = `https://sgisapi.mods.go.kr/OpenAPI3/auth/authentication.json?consumer_key=${CONSUMER_KEY}&consumer_secret=${CONSUMER_SECRET}`;
+    	const res = await fetch(url);
+    	const json = await res.json();
+    	return json.result.accessToken;
+    }
+
+    // 2) 시/도 조회 (상위 단계)
+    async function loadSido(token) {
+		const url = `https://sgisapi.mods.go.kr/OpenAPI3/addr/stage.json?accessToken=${token}`;
+		const res = await fetch(url);
+		const json = await res.json();
+
+		const sidoSel = document.getElementById("sido");
+
+		json.result.forEach(item => {
+			const op = document.createElement("option");
+			op.value = item.cd;
+			op.textContent = item.addr_name;
+	        sidoSel.appendChild(op);
+		});
+
+		// 시도 변경 시 시군구 로드
+		sidoSel.addEventListener("change", (e) => {
+			let options = e.currentTarget.options;
+			let idx = e.currentTarget.options.selectedIndex;
+			console.log("시도값: "+ options[idx].textContent);
+			
+	        loadSigungu(token, sidoSel.value);
+		});
+    }
+	
+    // 3) 시군구 조회
+	async function loadSigungu(token, sidoCode) {
+		const url = `https://sgisapi.mods.go.kr/OpenAPI3/addr/stage.json?accessToken=${token}&cd=${sidoCode}`;
+		const res = await fetch(url);
+		const json = await res.json();
+
+		const sgSel = document.getElementById("sigungu");
+		sgSel.innerHTML = `<option value="">시/군/구 선택</option>`;
+
+		const emdSel = document.getElementById("emd");
+		emdSel.innerHTML = `<option value="">읍/면/동 선택</option>`;
+
+		json.result.forEach(item => {
+			const op = document.createElement("option");
+			op.value = item.cd;
+			op.textContent = item.addr_name;
+			sgSel.appendChild(op);
+		});
+
+      // 시군구 선택 시 읍면동 로드
+		sgSel.addEventListener("change", (e) => {
+			let options = e.currentTarget.options;
+			let idx = e.currentTarget.options.selectedIndex;
+			console.log("시군구값: "+ options[idx].textContent);
+			
+      		loadEmd(token, sgSel.value);
+     	 });
+    }
+	
+    // 4) 읍면동 조회
+	async function loadEmd(token, sigunguCode) {
+		const url = `https://sgisapi.mods.go.kr/OpenAPI3/addr/stage.json?accessToken=${token}&cd=${sigunguCode}`;
+		const res = await fetch(url);
+		const json = await res.json();
+
+		const emdSel = document.getElementById("emd");
+		emdSel.innerHTML = `<option value="">읍/면/동 선택</option>`;
+
+		json.result.forEach(item => {
+			const op = document.createElement("option");
+			op.value = item.cd;
+			op.textContent = item.addr_name;
+			emdSel.appendChild(op);
+		});
+	  
+		// 읍면동 선택 시 값 출력
+		emdSel.addEventListener("change", (e) => {
+			let options = e.currentTarget.options;
+			let idx = e.currentTarget.options.selectedIndex;
+			console.log("읍면동값: "+ options[idx].textContent);
+		});
+	  
+	  
+    }
+	
+    // 초기 실행
+	(async function() {
+		const token = await getToken();   // 1) 토큰 발급
+		loadSido(token);                  // 2) 시도 로드
+	})();
+	
+});
+
+	
+  </script>
+</body>
+</html>

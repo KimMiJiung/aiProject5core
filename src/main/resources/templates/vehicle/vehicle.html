@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+	<meta charset="utf-8">
+	<title>차량 상세보기</title>
+	<th:block th:replace="~{top}"></th:block>
+	<style>
+
+
+		/* 전체 레이아웃 컨테이너 */
+		.v-container {
+			max-width: 2000px;
+			margin: 40px auto;
+		    gap: 44px;
+			text-align: justify;
+		}
+		
+		.vehicleDetail {
+			max-width: 1520px;
+			height: 1000px;
+			position: relative;
+			left: 240px;
+		}
+
+		.vehicleHeader {
+		    display: flex;
+		    justify-content: space-between;
+		    align-items: flex-end;
+		    border-bottom: 1px solid #eee;
+		    padding-bottom: 20px;
+		    margin-bottom: 40px;
+		}
+
+		.vehicleTitle h1 {
+		    font-size: 30px;
+		    font-weight: 700;
+		}
+
+		.vehicleTitle p {
+		    margin-top: 6px;
+		    color: #777;
+		}
+
+		.price {
+		    font-size: 26px;
+		    font-weight: bold;
+		}
+
+		.detailSection {
+		    display: flex;
+		    gap: 40px;
+		}
+
+		.imageSection {
+			width: 500px;
+		    flex: 1;
+		}
+
+		.imageSection img {
+		    width: 100%;
+		    border-radius: 14px;
+		}
+
+		.colorPicker {
+		    display: flex;
+		    gap: 10px;
+		    margin-top: 50px;
+		}
+
+		.colorCircle {
+		    width: 26px;
+		    height: 26px;
+		    border-radius: 50%;
+		    border: 2px solid #ddd;
+		    cursor: pointer;
+		    transition: 0.3s;
+		}
+
+		.colorCircle:hover {
+		    transform: scale(1.05);
+		    border: 2px solid #00387a;
+		}
+
+		.colorCircle.active {
+		    border: 2px solid #00387a;
+		    box-shadow: 0 0 0 2px rgba(0,56,122,0.2);
+		}
+
+		.infoSection {
+			width: 500px;
+		    flex: 1;
+		}
+
+		.specTable {
+		    width: 100%;
+		    border-collapse: collapse;
+		    margin-bottom: 30px;
+		}
+
+		.specTable td {
+		    padding: 12px 0;
+		    border-bottom: 1px solid #f0f0f0;
+		}
+
+		.specTable td:first-child {
+		    width: 140px;
+		    color: #666;
+		}
+		
+		/* 트림 선택 섹션 */
+		.trimSection {
+		    margin-top: 40px;
+		}
+
+		.trimSection h3 {
+		    font-size: 20px;
+		    font-weight: 600;
+		    margin-bottom: 14px;
+		}
+
+		.t-btn input {
+		    display: none;
+		}
+
+		.trimBtns {
+		    display: flex;
+		    gap: 12px;
+		}
+
+		.t-btn {
+		    padding: 10px 22px;
+		    border-radius: 30px;
+		    border: 2px solid #ccc;
+		    background: #fff;
+		    cursor: pointer;
+		    transition: all 0.2s ease;
+			min-width: 80px;
+			text-align: center;
+		    font-size: 15px;
+		}
+
+		.t-btn:hover {
+		    border-color: #002c5f;
+		    color: #002c5f;
+		}
+		
+		/* t-btn의 태그 중 checked 상태의 input 태그 */
+		.t-btn:has(input:checked) {
+			background: #002c5f;
+			color: #fff;
+			border-color: #002c5f;
+			box-shadow: 0 3px 8px rgba(0,44,95,0.25);
+		}
+
+		/* 적용 버튼 영역 */
+		.trimAction {
+		    text-align: right;
+		    margin-top: 18px;
+		}
+
+		.trimAction button {
+		    background: #e7ebf0;
+		    color: #000;
+		    border: none;
+		    padding: 8px 16px;
+		    border-radius: 20px;
+		    font-size: 13px;
+		    cursor: pointer;
+		    transition: 0.2s;
+		}
+
+		.trimAction button:hover {
+		    background: #002c5f;
+			color: #fff;
+		}
+		
+		
+		/* 트림에 따른 가격 표시 + 상담 신청 버튼 */
+		.price-consult {
+			display: flex;
+			align-items: center;
+			margin-top: 70px;
+			justify-content: space-between;
+		}
+		
+		
+		/* 선택된 트림에 해당하는 가격 */
+		.priceArea {
+		    font-size: 28px;
+		    font-weight: bold;
+		    color: #000;
+		    letter-spacing: 1px;
+		}
+		
+		/* 상담 신청 버튼 */
+		.consultBtn {
+		    background: #e7ebf0;
+		    border: none;
+		    padding: 8px 16px;      /* ← 버튼 크기 조절 */
+		    border-radius: 30px;
+		    font-size: 14px;
+		    cursor: pointer;
+		    transition: 0.3s;
+		    font-weight: 500;
+		    color: #444;
+		}
+
+		/* hover */
+		.consultBtn:hover {
+		    background: #d4d8dd;
+		}
+		
+		/* 옵션 목록 */
+		.optionSection {
+			width: 80%;
+		    margin-top: 80px;
+		}
+
+		.optionSection h3 {
+		    font-size: 22px;
+		    font-weight: 700;
+		    margin-bottom: 20px;
+		}
+
+		/* 옵션 목록 2열 그리드 */
+		.optionGrid {
+		    display: grid;
+		    grid-template-columns: repeat(5, 1fr);
+		    gap: 18px 20px;
+		}
+
+		.optionItem {
+		    padding: 8px 10px;
+		    border-radius: 10px;
+		    border: 1px solid #ddd;
+		    background: #fafafa;
+		    text-align: center;
+		    transition: 0.2s;
+		}
+
+		.optionItem.on {
+		    border-color: #002c5f;
+		    background: #eaf2fb;
+		}
+
+		.optionItem.off {
+		    opacity: 0.6;
+		}
+
+		.optionName {
+		    font-size: 15px;
+		    font-weight: 500;
+		}
+		
+		
+		
+	</style>
+</head>
+
+<body>
+<div class="v-container">
+	<div class="vehicleDetail">
+		<div class="vehicleHeader">
+		    <div class="vehicleTitle">
+		        <h1>[[${vehicle.name}]]</h1>
+		        <p>[[${vehicle.brand}]] · [[${vehicle.vehicleType}]] · [[${vehicle.year}]]</p>
+		    </div>
+		    <div class="price">KRW [[${#numbers.formatInteger(vehicle.basePrice, 3, 'COMMA')}]] ~</div>
+		</div>
+		
+		<div class="detailSection">
+		
+		    <div class="imageSection">
+		        <img id="mainImage" th:src="@{/images/{img}(img=${vehicle.colors[0].imageColorUrl})}"/>
+		        <div class="colorPicker">
+					<div th:each="c : ${vehicle.colors}" 
+					     class="colorCircle"
+					     th:style="'background:' + ${c.color}"
+					     th:attr="data-img=${c.imageColorUrl}">
+					</div>
+		        </div>
+		    </div>
+		
+		    <div class="infoSection">
+		        <table class="specTable">
+					<tr><td>차종</td><td>[[${vehicle.vehicleType}]]</td></tr>
+		            <tr><td>연료</td><td>[[${vehicle.fuelType}]]</td></tr>
+					<tr>
+						<td>배기량</td>
+						<td>
+							<span th:if="${vehicle.fuelType != '전기'}">[[${vehicle.displacement}]] cc</span>
+							<span th:if="${vehicle.fuelType == '전기'}">[[${vehicle.displacement}]] PS</span>
+						</td>
+					</tr>
+		            
+		            <tr>
+						<td>연비</td>
+						<td>
+							<span th:if="${vehicle.fuelType != '전기'}">[[${vehicle.fuelEfficiency}]] km/L</span>
+							<span th:if="${vehicle.fuelType == '전기'}">[[${vehicle.fuelEfficiency}]] km/kWh</span>
+						</td>
+					</tr>
+		        </table>
+				<form id="trimForm" th:action="@{/vehicles/vehicle/{modelCode}/update-trim(modelCode=${vehicle.modelCode})}"
+				      method="post">
+
+				    <input type="hidden" name="id" th:value="${vehicle.id}">
+
+				    <div class="trimSection">
+				        <h4>트림 선택</h4>
+
+				        <div class="trimBtns">
+				            <label class="t-btn">
+				                <input type="radio" name="trim" value="Standard"
+				                       th:checked="${trim == 'Standard'}">
+				                Standard
+				            </label>
+
+				            <label class="t-btn">
+				                <input type="radio" name="trim" value="Exclusive"
+				                       th:checked="${trim == 'Exclusive'}">
+				                Exclusive
+				            </label>
+
+				            <label class="t-btn">
+				                <input type="radio" name="trim" value="Prestige"
+				                       th:checked="${trim == 'Prestige'}">
+				                Prestige
+				            </label>
+				        </div>
+
+				        <!-- 적용 버튼 오른쪽 정렬 -->
+				        <div class="trimAction">
+				            <button type="submit">트림 적용</button>
+				        </div>
+				    </div>
+				</form>
+				<div class="price-consult">
+					<div class="priceArea">
+					    KRW 
+						<span id="priceText" th:data-base="${vehicle.basePrice}">
+							[[${#numbers.formatInteger(vehicle.finalPrice, 3, 'COMMA')}]]
+						</span>
+					</div>				
+					<a th:href="@{/counseling/addApply}"> <button type="button" class="consultBtn">상담 신청</button></a>
+				</div>
+		</div>
+	</div>
+	<div class="optionSection">
+	    <h3>옵션</h3>
+
+	    <div class="optionGrid">
+			<!-- included 참/거짓에 따라 class에 on/off를 추가 -->
+	        <div class="optionItem" 
+	             th:each="o : ${optionList}"
+	             th:classappend="${o.included} ? 'on' : 'off'">
+
+	            <!-- 옵션명 -->
+	            <span class="optionName">[[${o.optionName}]]</span>
+	        </div>
+	    </div>
+	</div>
+</div>
+	<th:block th:replace="~{bottom}"></th:block>
+	<!-- js -->
+	<script th:src="@{/js/vehicle.js}"></script>
+</body>
+
+</html>

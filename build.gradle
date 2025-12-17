@@ -1,0 +1,68 @@
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version '3.5.7'
+	id 'io.spring.dependency-management' version '1.1.7'
+}
+
+group = 'com.core'
+version = '0.0.1-SNAPSHOT'
+description = 'Demo project for Spring Boot'
+
+java {
+	toolchain {
+		languageVersion = JavaLanguageVersion.of(21)
+	}
+}
+
+repositories {
+	mavenCentral()
+}
+
+
+dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+	
+	// devtools 설정
+	// - 코드를 변경하면 자동으로 서버가 재기동되도록 하는 설정
+	developmentOnly 'org.springframework.boot:spring-boot-devtools'
+	
+	// thymeleaf 설정
+	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+	implementation 'nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect'
+	
+	// JPA 설정
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	
+	// lombok 설정
+	compileOnly 'org.projectlombok:lombok'
+	annotationProcessor 'org.projectlombok:lombok'
+	
+	// MySQL 설정
+	implementation 'com.mysql:mysql-connector-j'
+	
+	// Mybatis 설정
+	// https://mvnrepository.com/artifact/org.mybatis.spring.boot/mybatis-spring-boot-starter
+	implementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter:3.0.4'
+	
+	// QueryDSL 설정
+	implementation 'com.querydsl:querydsl-jpa:5.1.0:jakarta'
+	annotationProcessor 'com.querydsl:querydsl-apt:5.1.0:jakarta'
+	annotationProcessor 'jakarta.annotation:jakarta.annotation-api'
+	annotationProcessor 'jakarta.persistence:jakarta.persistence-api'
+	
+	// Spring Validation 설정 (폼의 입력값에 대한 유효성 검사)
+	implementation 'org.springframework.boot:spring-boot-starter-validation'
+	
+	// Spring Secutiry 설정
+	implementation 'org.springframework.boot:spring-boot-starter-security'
+	implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6'
+
+	implementation 'com.fasterxml.jackson.core:jackson-databind:2.20.0'
+	implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.15.2'
+}
+
+tasks.named('test') {
+	useJUnitPlatform()
+}

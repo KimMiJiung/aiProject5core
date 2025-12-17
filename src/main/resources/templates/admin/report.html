@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <title>보고서 / 분석</title>
+    <style>
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        background: #f5f7fb;
+        color: #222;
+      }
+	  
+	  /* 메인 콘텐츠 래퍼 (좌측 사이드바 오른쪽 영역) */
+      .report-wrapper {
+        padding: 24px 32px;
+      }
+
+      .report-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 24px;
+      }
+
+      .report-title {
+        font-size: 20px;
+        font-weight: 600;
+      }
+
+      .filter-group {
+        display: flex;
+        gap: 8px;
+      }
+
+      .select {
+        padding: 6px 10px;
+        border-radius: 6px;
+        border: 1px solid #d0d7e2;
+        font-size: 13px;
+        background: #fff;
+      }
+
+      /* KPI 카드 */
+      .cards-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 16px;
+        margin-bottom: 24px;
+      }
+
+      .card {
+        background: #ffffff;
+        border-radius: 12px;
+        padding: 16px 18px;
+        box-shadow: 0 6px 16px rgba(15, 23, 42, 0.08);
+      }
+
+      .card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 8px;
+        font-size: 13px;
+        color: #6b7280;
+      }
+
+      .card-title {
+        font-weight: 600;
+        color: #111827;
+      }
+
+      .card-badge {
+        font-size: 11px;
+        padding: 3px 8px;
+        border-radius: 999px;
+        background: #eff6ff;
+        color: #2563eb;
+      }
+
+      .kpi-value {
+        font-size: 24px;
+        font-weight: 700;
+        margin-top: 4px;
+        margin-bottom: 4px;
+      }
+
+      .kpi-sub {
+        font-size: 12px;
+        color: #6b7280;
+      }
+
+      .kpi-sub span.up {
+        color: #16a34a;
+        font-weight: 600;
+      }
+      .kpi-sub span.down {
+        color: #dc2626;
+        font-weight: 600;
+      }
+
+      /* 2행: 퍼널 + 매출 추이 */
+      .row-2 {
+        display: grid;
+        grid-template-columns: 2fr 2fr;
+        gap: 16px;
+        margin-bottom: 24px;
+      }
+
+      .chart-placeholder {
+        margin-top: 12px;
+        height: 220px;
+        border-radius: 10px;
+        background: linear-gradient(135deg, #eef2ff, #e0f2fe);
+        border: 1px dashed #c7d2fe;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #4b5563;
+        font-size: 13px;
+      }
+
+      /* 3행: 담당자 테이블 + 도넛 */
+      .row-3 {
+        display: grid;
+        grid-template-columns: 2fr 1.4fr;
+        gap: 16px;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 12px;
+        font-size: 13px;
+      }
+
+      table thead {
+        background: #f3f4f6;
+      }
+
+      table th,
+      table td {
+        padding: 8px 10px;
+        text-align: left;
+      }
+
+      table th {
+        font-weight: 600;
+        color: #4b5563;
+        border-bottom: 1px solid #e5e7eb;
+      }
+
+      table tbody tr:nth-child(even) {
+        background: #f9fafb;
+      }
+
+      .pill {
+        display: inline-flex;
+        align-items: center;
+        padding: 3px 8px;
+        border-radius: 999px;
+        font-size: 11px;
+        font-weight: 500;
+      }
+
+      .pill-good {
+        background: #dcfce7;
+        color: #15803d;
+      }
+
+      .pill-normal {
+        background: #eff6ff;
+        color: #1d4ed8;
+      }
+
+      .pill-bad {
+        background: #fee2e2;
+        color: #b91c1c;
+      }
+
+      /* 도넛 차트 모양 */
+      .donut-wrapper {
+        display: flex;
+        gap: 16px;
+        margin-top: 12px;
+        align-items: center;
+      }
+
+      .donut-circle {
+        width: 140px;
+        height: 140px;
+        border-radius: 50%;
+        background:
+          radial-gradient(circle at center, #ffffff 55%, transparent 56%),
+          conic-gradient(
+            #2563eb 0 35%,
+            #16a34a 35% 60%,
+            #f97316 60% 80%,
+            #6b7280 80% 100%
+          );
+        box-shadow: 0 4px 12px rgba(15, 23, 42, 0.12);
+      }
+
+      .donut-legend {
+        flex: 1;
+        font-size: 12px;
+      }
+
+      .legend-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 6px;
+      }
+
+      .legend-color {
+        width: 10px;
+        height: 10px;
+        border-radius: 2px;
+      }
+
+      .c-blue { background: #2563eb; }
+      .c-green { background: #16a34a; }
+      .c-orange { background: #f97316; }
+      .c-gray { background: #6b7280; }
+
+          /* 반응형 */
+      @media (max-width: 1024px) {
+        .cards-grid {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+        .row-2 {
+          grid-template-columns: 1fr;
+        }
+        .row-3 {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      @media (max-width: 640px) {
+        .report-wrapper {
+          padding: 16px;
+        }
+        .cards-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+	  
+	  /* 달력 카드 스타일 */
+	  .calendar-card {
+	      background: #ffffff;
+	      border-radius: 12px;
+	      padding: 20px;
+	      box-shadow: 0 6px 16px rgba(15, 23, 42, 0.08);
+	  }
+
+	  .fc-daygrid-event {
+	      border-radius: 4px !important;
+	      font-size: 11px !important;
+	      padding: 2px 4px !important;
+	  }
+
+	  .fc-event-title {
+	      white-space: nowrap;
+	      overflow: hidden;
+	      text-overflow: ellipsis;
+	  }
+	  
+    </style>
+</head>
+<body>
+  <div class="report-wrapper">
+    <!-- 헤더 -->
+    <div class="report-header">
+      <div class="report-title">보고서 / 분석</div>
+      <div class="filter-group">
+        <select class="select">
+          <option>이번 달</option>
+          <option>지난 달</option>
+          <option>올해</option>
+        </select>
+        <select class="select">
+          <option>전체 채널</option>
+          <option>온라인</option>
+          <option>오프라인</option>
+        </select>
+        <select class="select">
+          <option>전체 담당자</option>
+          <option>영업 A</option>
+          <option>영업 B</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- 1행 KPI 카드 -->
+    <div class="cards-grid">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">총 상담 신청 수</div>
+          <div class="card-badge">전체</div>
+        </div>
+        <div class="kpi-value">125건</div>
+        <div class="kpi-sub">
+          전월 대비 <span class="up">+12%</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">계약 완료 수</div>
+          <div class="card-badge">이번 달</div>
+        </div>
+        <div class="kpi-value">38건</div>
+        <div class="kpi-sub">
+          전월 대비 <span class="up">+8%</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">전환율</div>
+          <div class="card-badge">상담 → 계약</div>
+        </div>
+        <div class="kpi-value">30.4%</div>
+        <div class="kpi-sub">
+          전월 대비 <span class="down">-1.2%</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2행: 퍼널 + 매출 추이 -->
+    <div class="row-2">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">영업 파이프라인 퍼널</div>
+          <div class="card-badge">단계별 전환율</div>
+        </div>
+        <div class="chart-placeholder">
+          퍼널 차트 영역 (상담 신청 → 상담 진행 → 견적 발송 → 계약 완료)
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">월별 계약 매출 추이</div>
+          <div class="card-badge">최근 6개월</div>
+        </div>
+        <div class="chart-placeholder">
+          라인 차트 영역 (목표 vs 실제 매출)
+        </div>
+      </div>
+    </div>
+
+    <!-- 3행: 담당자별 실적 + 채널별 비중 -->
+    <div class="row-3">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">담당자별 계약 현황</div>
+          <div class="card-badge">팀 성과</div>
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>담당자</th>
+              <th>상담 수</th>
+              <th>계약 수</th>
+              <th>전환율</th>
+              <th>매출</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>영업 A</td>
+              <td>52</td>
+              <td>20</td>
+              <td>38.5%</td>
+              <td>₩120,000,000</td>
+            </tr>
+            <tr>
+              <td>영업 B</td>
+              <td>40</td>
+              <td>12</td>
+              <td>30.0%</td>
+              <td>₩80,000,000</td>
+            </tr>
+            <tr>
+              <td>영업 C</td>
+              <td>33</td>
+              <td>6</td>
+              <td>18.2%</td>
+              <td>₩45,000,000</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">채널별 리드 비중</div>
+          <div class="card-badge">마케팅 성과</div>
+        </div>
+        <div class="donut-wrapper">
+          <div class="donut-circle"></div>
+          <div class="donut-legend">
+            <div class="legend-item">
+              <span class="legend-color c-blue"></span>
+              <span>홈페이지 신청 · 35%</span>
+            </div>
+            <div class="legend-item">
+              <span class="legend-color c-green"></span>
+              <span>지점 방문 · 25%</span>
+            </div>
+            <div class="legend-item">
+              <span class="legend-color c-orange"></span>
+              <span>광고/캠페인 · 20%</span>
+            </div>
+            <div class="legend-item">
+              <span class="legend-color c-gray"></span>
+              <span>기타 · 20%</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+	
+	<div class="calendar-section" style="margin-top: 32px;">
+	  <div class="calendar-card">
+	    <div class="calendar-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+	      <h3 style="font-size: 18px; font-weight: 600; color: #111827;">일정/메모</h3>
+	      <div>
+	        <input type="text" id="memoInput" placeholder="오늘의 메모..." 
+	               style="padding: 8px 12px; border: 1px solid #d1d5db; border-radius: 6px; width: 200px; font-size: 13px;">
+	        <button onclick="saveMemo()" style="margin-left: 8px; padding: 8px 16px; background: #3b82f6; color: white; border: none; border-radius: 6px; cursor: pointer;">저장</button>
+	      </div>
+	    </div>
+	    <div id="calendar" style="height: 400px; background: white; border-radius: 12px;"></div>
+	  </div>
+	</div>
+  </div>
+  
+  <!-- FullCalendar CDN -->
+  <link href='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.css' rel='stylesheet' />
+  <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js'></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+  <script>
+  let calendarEvents = [];
+
+  // 페이지 로드 시 서버에서 이벤트 데이터 가져오기
+  document.addEventListener('DOMContentLoaded', function() {
+      // Thymeleaf 데이터
+      const serverEvents = /*[[${calendarEvents}]]*/ [];
+      calendarEvents = serverEvents.map(event => ({
+          title: event.title,
+          start: event.date,
+          backgroundColor: event.color || '#3b82f6',
+          borderColor: event.color || '#3b82f6'
+      }));
+      
+      const calendarEl = document.getElementById('calendar');
+      const calendar = new FullCalendar.Calendar(calendarEl, {
+          initialView: 'dayGridMonth',
+          locale: 'ko',
+          height: 400,
+          events: calendarEvents,
+          eventClick: function(info) {
+              if (confirm('이 메모를 삭제하시겠습니까?')) {
+                  deleteMemo(info.event.id);
+              }
+          },
+          dateClick: function(info) {
+              const memoText = prompt('메모 입력:', info.dateStr);
+              if (memoText) {
+                  saveMemoToDate(info.dateStr, memoText);
+              }
+          }
+      });
+      calendar.render();
+  });
+
+  function saveMemo() {
+      const date = new Date().toISOString().split('T')[0];
+      const memoText = document.getElementById('memoInput').value.trim();
+      if (memoText) {
+          saveMemoToDate(date, memoText);
+          document.getElementById('memoInput').value = '';
+      }
+  }
+
+  function saveMemoToDate(date, title) {
+      fetch('/admin/report/memo/save', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({date: date, title: title})
+      })
+      .then(response => response.json())
+      .then(data => {
+          calendarEvents.push({
+              id: data.id,
+              title: title,
+              date: date,
+              color: '#10b981'
+          });
+          calendar.refetchEvents();
+          alert('메모가 저장되었습니다!');
+      });
+  }
+
+  function deleteMemo(eventId) {
+      fetch('/admin/report/memo/delete/' + eventId, {method: 'DELETE'})
+      .then(() => {
+          calendarEvents = calendarEvents.filter(e => e.id !== eventId);
+          calendar.refetchEvents();
+      });
+  }
+  </script>
+
+</body>
+</html>
+
+
+
+

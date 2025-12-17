@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>상담 신청 명단</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    body {
+      display: flex;
+      height: 100vh;
+      background: #f3f5f9;
+      color: #1f2933;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    :root {
+      --primary: #0d47a1;
+      --primary-soft: #e3eefc;
+      --bg-elevated: #ffffff;
+      --border-subtle: #e2e8f0;
+      --text-muted: #6b7280;
+      --danger: #e53935;
+      --success: #1aa36f;
+      --warning: #f59e0b;
+    }
+
+    .sidebar {
+      width: 248px;
+      background: linear-gradient(180deg, #0d47a1 0%, #093272 100%);
+      color: #ffffff;
+      display: flex;
+      flex-direction: column;
+	  flex-shrink: 0;
+      padding: 20px 0;
+    }
+
+    .sidebar__logo {
+      padding: 0 24px 20px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.14);
+      margin-bottom: 16px;
+    }
+
+    .sidebar__logo-title {
+      font-size: 20px;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+    }
+
+    .sidebar__section-title {
+      font-size: 12px;
+      text-transform: uppercase;
+      opacity: 0.75;
+      padding: 0 24px;
+      margin-bottom: 6px;
+    }
+
+    .menu-list {
+      list-style: none;
+      padding: 0 8px;
+    }
+
+    .menu-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 16px;
+      margin: 2px 8px;
+      border-radius: 8px;
+      font-size: 14px;
+      cursor: pointer;
+      transition: background 0.18s ease, transform 0.12s ease;
+      color: #eef3ff;
+      opacity: 0.9;
+    }
+
+    .menu-item:hover {
+      background: rgba(255, 255, 255, 0.15);
+      transform: translateY(-1px);
+      opacity: 1;
+    }
+
+    .menu-item--active {
+      background: #ffffff;
+      color: #0d47a1;
+      opacity: 1;
+      font-weight: 600;
+    }
+
+    .menu-item__bullet {
+      width: 6px;
+      height: 6px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.6);
+    }
+
+    .menu-item--active .menu-item__bullet {
+      background: #0d47a1;
+    }
+
+    .sidebar__bottom {
+      margin-top: auto;
+      padding: 12px 24px 8px;
+      font-size: 12px;
+      opacity: 0.7;
+    }
+
+	/* 중간 상담부분 - 모니터에 따라 px를 조절해야 함 */
+    .main {
+      flex: 0 0 900px;
+	  min-width: 900px;
+      display: flex;
+      flex-direction: column;
+	  
+    }
+
+    .header {
+      height: 64px;
+      background: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 24px;
+      border-bottom: 1px solid #e5e7eb;
+    }
+
+    .header__left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .logo {
+      font-size: 18px;
+      font-weight: 700;
+      color: #0d47a1;
+    }
+
+    .header__chip {
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: #e3eefc;
+      font-size: 11px;
+      color: #1f3e7a;
+    }
+
+    .user-info {
+      font-size: 14px;
+      color: #374151;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .user-info__role {
+      font-size: 11px;
+      padding: 3px 8px;
+      border-radius: 999px;
+      background: #f3f4f6;
+      color: #6b7280;
+    }
+
+    .user-info span.logout {
+      color: #0d47a1;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    .content {
+      padding: 20px 24px 24px;
+      overflow-y: auto;
+	  max-width: 1400px;
+    }
+
+    .page-header-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .page-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: #111827;
+    }
+
+    .page-subtitle {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    .filter-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .filter-pill {
+      padding: 5px 10px;
+      border-radius: 999px;
+      border: 1px solid #d1d5db;
+      background: #ffffff;
+      cursor: pointer;
+      transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+    }
+
+    .filter-pill--active {
+      background: #0d47a1;
+      color: #ffffff;
+      border-color: #0d47a1;
+      font-weight: 500;
+    }
+
+    .card {
+      background: var(--bg-elevated);
+      padding: 18px 18px 16px;
+      border-radius: 14px;
+      box-shadow: 0 4px 10px rgba(15, 23, 42, 0.06);
+      border: 1px solid var(--border-subtle);
+    }
+	
+	/* AI 추천 사이드바 */
+	.ai-sidebar {
+	  flex: 1;                 /* 남는 가로 공간 전부 가져가기 */
+	  background: var(--bg-elevated);
+	  padding: 18px 18px 16px;
+	  border-radius: 14px;
+	  box-shadow: 0 4px 10px rgba(15, 23, 42, 0.06);
+	  border: 1px solid var(--border-subtle);
+	  min-width: 360px;        /* 너무 좁아지지 않게 최소폭만 설정 */
+	  display: flex;
+	  flex-direction: column;
+	}
+
+	/* iframe이 카드 높이를 꽉 채우도록 */
+	.ai-sidebar .card-body {
+	  flex: 1;
+	}
+
+	.ai-sidebar iframe {
+	  width: 100%;
+	  height: 100%;
+	}
+
+    .card__header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .card__title {
+      font-size: 15px;
+      font-weight: 600;
+      color: #1f2937;
+    }
+
+    .card__subtitle {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .card__chip {
+      font-size: 11px;
+      padding: 3px 8px;
+      border-radius: 999px;
+      background: #f3f4f6;
+      color: #6b7280;
+    }
+
+    .care-table-wrapper {
+      margin-top: 4px;
+      max-height: 460px;
+      overflow-y: auto;
+      padding-right: 4px;
+    }
+
+    .care-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+
+    .care-table thead {
+      position: sticky;
+      top: 0;
+      background: #f9fafb;
+      z-index: 1;
+    }
+
+    .care-table th,
+    .care-table td {
+      padding: 8px 10px;
+      text-align: left;
+      border-bottom: 1px solid #edf2f7;
+      white-space: nowrap;
+    }
+
+    .care-table th {
+      font-size: 12px;
+      color: #6b7280;
+      font-weight: 600;
+    }
+
+    .care-row {
+      transition: background 0.12s ease;
+    }
+
+    .care-row:hover {
+      background: #f3f4ff;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 500;
+    }
+
+    .badge--care {
+      background: #eff6ff;
+      color: #1d4ed8;
+    }
+
+    .badge--progress {
+      background: #ecfdf3;
+      color: #166534;
+    }
+
+    .badge--done {
+      background: #fef3c7;
+      color: #92400e;
+    }
+
+    .status-select {
+      padding: 4px 8px;
+      border-radius: 8px;
+      border: 1px solid #d1d5db;
+      background: #ffffff;
+      font-size: 12px;
+      color: #374151;
+      outline: none;
+      cursor: pointer;
+    }
+
+    .status-select:focus {
+      border-color: #0d47a1;
+      box-shadow: 0 0 0 1px rgba(37, 99, 235, 0.15);
+    }
+
+    .btn {
+      border: none;
+      border-radius: 8px;
+      padding: 5px 10px;
+      font-size: 12px;
+      cursor: pointer;
+      transition: background 0.15s ease, transform 0.08s ease, box-shadow 0.12s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .btn:hover {
+      transform: translateY(-0.5px);
+      box-shadow: 0 2px 6px rgba(15, 23, 42, 0.12);
+    }
+
+    .btn--primary {
+      background: #0d47a1;
+      color: #ffffff;
+    }
+	
+	.btn--danger {
+	  background: #f23535;
+	  color: #ffffff;
+	}
+
+    .btn--ghost {
+      background: #ffffff;
+      color: #374151;
+      border: 1px solid #d1d5db;
+    }
+
+    .change-cell {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    @media (max-width: 960px) {
+      body {
+        flex-direction: column;
+      }
+      .sidebar {
+        width: 100%;
+        flex-direction: row;
+        align-items: center;
+        height: 56px;
+      }
+      .sidebar__logo {
+        border-bottom: none;
+        margin-bottom: 0;
+      }
+      .sidebar__section-title,
+      .sidebar__bottom {
+        display: none;
+      }
+      .menu-list {
+        display: flex;
+        flex: 1;
+        justify-content: flex-end;
+        padding-right: 16px;
+      }
+      .menu-item {
+        margin: 0 4px;
+        padding: 6px 10px;
+      }
+      .main {
+        height: calc(100vh - 56px);
+      }
+    }
+	.detail-list {
+	  display: flex;
+	  flex-direction: column;
+	  gap: 20px;
+	}
+
+	.detail-section {
+	  padding: 16px 14px;
+	  border-radius: 12px;
+	  border: 1px solid #e5e7eb;
+	  background: #f9fafb;
+	  margin-bottom: 8px;
+	}
+
+	.detail-section__title {
+	  font-size: 14px;
+	  font-weight: 600;
+	  margin-bottom: 10px;
+	  color: #111827;
+	}
+
+	.detail-grid {
+	  display: grid;
+	  grid-template-columns: repeat(3, minmax(0, 1fr));
+	  gap: 10px 16px;
+	}
+
+	.detail-field {
+	  display: flex;
+	  flex-direction: column;
+	  gap: 4px;
+	}
+
+	.detail-field--full {
+	  grid-column: 1 / -1;
+	}
+
+	.detail-label {
+	  font-size: 12px;
+	  color: #6b7280;
+	}
+
+	.detail-input {
+	  padding: 7px 10px;
+	  border-radius: 8px;
+	  border: 1px solid #d1d5db;
+	  background: #f9fafb;
+	  font-size: 13px;
+	  color: #111827;
+	}
+
+	.detail-input[readonly] {
+	  background: #f3f4f6;
+	  color: #4b5563;
+	}
+
+	.detail-input:focus {
+	  outline: none;
+	  border-color: #0d47a1;
+	  box-shadow: 0 0 0 1px rgba(37, 99, 235, 0.1);
+	}
+
+	.detail-actions {
+	  margin-top: 14px;
+	  display: flex;
+	  justify-content: flex-end;
+	  gap: 8px;
+	}
+
+	@media (max-width: 960px) {
+	  .detail-grid {
+	    grid-template-columns: 1fr;
+	  }
+	}
+	
+  </style>
+</head>
+<script>
+	document.addEventListener("DOMContentLoaded", () => {
+		let price = document.querySelector("#price");
+	});
+	
+	//상담상태 수정
+	function updateStatus(id, status) { 
+		location.href = "/5core/counseling/update/" + id + "/" + status;
+	}
+	
+	// 구매
+	function createSale(id) {
+		if(price.value <= 0 || price.value == null) {
+			alert("가격 입력 오류");
+			return;
+		}
+		location.href = "/5core/sale/create/" + id + "/" + price.value;
+	}
+
+</script>
+<body>
+
+  <div class="sidebar">
+    <div class="sidebar__logo">
+      <div class="sidebar__logo-title">관리 메뉴</div>
+    </div>
+    <div class="sidebar__section-title">Navigation</div>
+    <ul class="menu-list">
+	  <li>
+	    <a th:href="@{/main}" class="menu-item">
+	      <span class="menu-item__bullet"></span>
+	      <span>메인 대시보드</span>
+	    </a>
+	  </li>
+      <li>
+        <a th:href="@{/dealer}" class="menu-item">
+          <span class="menu-item__bullet"></span>
+          <span>딜러 프로필</span>
+        </a>
+      </li>
+      <li>
+        <a th:href="@{/dealer/care}" class="menu-item">
+          <span class="menu-item__bullet"></span>
+          <span>상담 신청 명단</span>
+        </a>
+      </li>
+      <li>
+        <a th:href="@{/dealer/myCustomer}" class="menu-item menu-item--active">
+          <span class="menu-item__bullet"></span>
+          <span>상담 관리</span>
+        </a>
+      </li>
+      <li>
+        <a class="menu-item">
+          <span class="menu-item__bullet"></span>
+          <span>보고서 / 분석</span>
+        </a>
+      </li>
+    </ul>
+    <div class="sidebar__bottom">
+      HYUNDAI CRM · Dealer Console
+    </div>
+  </div>
+
+  <div class="main">
+    <div class="header">
+      <div class="header__left">
+        <div class="logo">HYUNDAI CRM</div>
+        <div class="header__chip">Consult Care</div>
+      </div>
+      <div class="user-info">
+        <span class="user-info__role">담당 딜러</span>
+        <span>[[${#authentication.getPrincipal().getUsername()}]] 님</span>
+        <span class="logout"><a sec:authorize="isAuthenticated()" th:href="@{/logout}" class="nav-link">로그아웃</a></span>
+      </div>
+    </div>
+
+	<div class="content">
+	  <div class="page-header-row">
+	    <div>
+	      <h1 class="page-title">고객 관리</h1>
+	      <p class="page-subtitle">상담 고객 상세 정보</p>
+	    </div>
+	  </div>
+		
+	  
+	  <section class="card">
+	    <div class="card__header">
+	      <div>
+	        <h2 class="card__title">상담 고객 정보</h2>
+	        <p class="card__subtitle">고객 기본 정보와 차량 상담 정보를 확인하세요.</p>
+	      </div>
+	    </div>
+
+	    <!-- 리스트 형식 전체 컨테이너 -->
+	    <div class="care-table-wrapper" style="max-height:none;">
+	      <div class="detail-list">
+	        <!-- 1. 기본 정보 -->
+	        <div class="detail-section">
+	          <h3 class="detail-section__title">1. 기본 정보</h3>
+	          <div class="detail-grid">
+	            <div class="detail-field">
+	              <label class="detail-label">이름</label>
+	              <input class="detail-input" type="text" th:value="${counseling.customer.member.name}" readonly>
+	            </div>
+	            <div class="detail-field">
+	              <label class="detail-label">연락처</label>
+	              <input class="detail-input" type="text" th:value="${counseling.customer.member.phone}" readonly>
+	            </div>
+	            <div class="detail-field">
+	              <label class="detail-label">이메일</label>
+	              <input class="detail-input" type="text" th:value="${counseling.customer.member.email}" readonly>
+	            </div>
+	            <div class="detail-field detail-field--full">
+	              <label class="detail-label">주소</label>
+	              <input class="detail-input" type="text"
+				   th:value="|${counseling.customer.member.address.basicAddress} ${counseling.customer.member.address.detailAddress}|" readonly>
+	            </div>
+	          </div>
+	        </div>
+
+	        <!-- 2. 차량 정보 -->
+	        <div class="detail-section">
+	          <h3 class="detail-section__title">2. 차량 정보</h3>
+	          <div class="detail-grid">
+	            <div class="detail-field">
+	              <label class="detail-label">선택 차량</label>
+	              <input class="detail-input" type="text" th:value="${counseling.vehicleName}"  readonly>
+	            </div>
+	            <div class="detail-field">
+	              <label class="detail-label">차 엔진</label>
+	              <input class="detail-input" type="text" th:value="${counseling.engineType}" readonly>
+	            </div>
+	            <div class="detail-field">
+	              <label class="detail-label">차 유형</label>
+	              <input class="detail-input" type="text" th:value="${counseling.vehicleType}" readonly>
+	            </div>
+	            <div class="detail-field detail-field--full">
+	              <label class="detail-label">구매 희망 지역</label>
+	              <input class="detail-input" type="text"
+				  th:value="|${counseling.hopearea.sido} ${counseling.hopearea.siGunGu} ${counseling.hopearea.eupMyeonDong}|"  readonly>
+	            </div>
+	            <div class="detail-field detail-field--full">
+	              <label class="detail-label">차량 구매 목적</label>
+	              <input class="detail-input" type="text" th:value="${counseling.purchasePurpose}" readonly>
+	            </div>
+	          </div>
+	        </div>
+
+	        <!-- 3. 가격 및 액션 -->
+	        <div class="detail-section">
+	          <h3 class="detail-section__title">3. 상담 정보</h3>
+	          <div class="detail-grid">
+	            <div class="detail-field detail-field--full">
+	              <label class="detail-label">제안 가격 (원)</label>
+	              <input class="detail-input" id="price" type="number" min="0"
+	                     placeholder="제안할 차량 가격을 입력하세요">
+	            </div>
+	          </div>
+
+	          <div class="detail-actions">
+				<a th:href="|javascript:updateStatus('${id}', '상담취소')|" class="btn btn--danger">상담취소</a>
+	            <a th:href="|javascript:updateStatus('${id}', '상담완료')|" class="btn btn--ghost">상담완료</a>
+	            <a th:href="|javascript:createSale('${id}')|" class="btn btn--primary">구매완료</a>
+	          </div>
+	        </div>
+			
+	      </div>
+	    </div>
+	  </section>
+
+	</div>
+ 	
+  </div>
+  <!-- 상담 정보들 쭉 나온 뒤, 맨 아래에 추가 -->
+  <div class="ai-sidebar">
+      <div class="card-header">
+          <h5 class="mb-0">AI 차량 추천 (Gemini)</h5>
+      </div>
+      <div class="card-body">
+          <iframe
+              th:src="@{|http://localhost:8509/5core?counselingId=${counseling.id}|}"
+              style="width: 100%; height: calc(100vh-100px); border: none; border-radius: 8px; overflow: hidden;">
+          </iframe>
+      </div>
+  </div>
+</body>
+</html>

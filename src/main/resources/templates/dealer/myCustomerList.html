@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>상담 신청 명단</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    body {
+      display: flex;
+      height: 100vh;
+      background: #f3f5f9;
+      color: #1f2933;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    :root {
+      --primary: #0d47a1;
+      --primary-soft: #e3eefc;
+      --bg-elevated: #ffffff;
+      --border-subtle: #e2e8f0;
+      --text-muted: #6b7280;
+      --danger: #e53935;
+      --success: #1aa36f;
+      --warning: #f59e0b;
+    }
+
+    .sidebar {
+      width: 248px;
+      background: linear-gradient(180deg, #0d47a1 0%, #093272 100%);
+      color: #ffffff;
+      display: flex;
+      flex-direction: column;
+      padding: 20px 0;
+    }
+
+    .sidebar__logo {
+      padding: 0 24px 20px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.14);
+      margin-bottom: 16px;
+    }
+
+    .sidebar__logo-title {
+      font-size: 20px;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+    }
+
+    .sidebar__section-title {
+      font-size: 12px;
+      text-transform: uppercase;
+      opacity: 0.75;
+      padding: 0 24px;
+      margin-bottom: 6px;
+    }
+
+    .menu-list {
+      list-style: none;
+      padding: 0 8px;
+    }
+
+    .menu-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 16px;
+      margin: 2px 8px;
+      border-radius: 8px;
+      font-size: 14px;
+      cursor: pointer;
+      transition: background 0.18s ease, transform 0.12s ease;
+      color: #eef3ff;
+      opacity: 0.9;
+    }
+
+    .menu-item:hover {
+      background: rgba(255, 255, 255, 0.15);
+      transform: translateY(-1px);
+      opacity: 1;
+    }
+
+    .menu-item--active {
+      background: #ffffff;
+      color: #0d47a1;
+      opacity: 1;
+      font-weight: 600;
+    }
+
+    .menu-item__bullet {
+      width: 6px;
+      height: 6px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.6);
+    }
+
+    .menu-item--active .menu-item__bullet {
+      background: #0d47a1;
+    }
+
+    .sidebar__bottom {
+      margin-top: auto;
+      padding: 12px 24px 8px;
+      font-size: 12px;
+      opacity: 0.7;
+    }
+
+    .main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+    }
+
+    .header {
+      height: 64px;
+      background: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 24px;
+      border-bottom: 1px solid #e5e7eb;
+    }
+
+    .header__left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .logo {
+      font-size: 18px;
+      font-weight: 700;
+      color: #0d47a1;
+    }
+
+    .header__chip {
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: #e3eefc;
+      font-size: 11px;
+      color: #1f3e7a;
+    }
+
+    .user-info {
+      font-size: 14px;
+      color: #374151;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .user-info__role {
+      font-size: 11px;
+      padding: 3px 8px;
+      border-radius: 999px;
+      background: #f3f4f6;
+      color: #6b7280;
+    }
+
+    .user-info span.logout {
+      color: #0d47a1;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    .content {
+      padding: 20px 24px 24px;
+      overflow-y: auto;
+    }
+
+    .page-header-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .page-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: #111827;
+    }
+
+    .page-subtitle {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    .filter-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .filter-pill {
+      padding: 5px 10px;
+      border-radius: 999px;
+      border: 1px solid #d1d5db;
+      background: #ffffff;
+      cursor: pointer;
+      transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+    }
+
+    .filter-pill--active {
+      background: #0d47a1;
+      color: #ffffff;
+      border-color: #0d47a1;
+      font-weight: 500;
+    }
+
+    .card {
+      background: var(--bg-elevated);
+      padding: 18px 18px 16px;
+      border-radius: 14px;
+      box-shadow: 0 4px 10px rgba(15, 23, 42, 0.06);
+      border: 1px solid var(--border-subtle);
+    }
+
+    .card__header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .card__title {
+      font-size: 15px;
+      font-weight: 600;
+      color: #1f2937;
+    }
+
+    .card__subtitle {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .card__chip {
+      font-size: 11px;
+      padding: 3px 8px;
+      border-radius: 999px;
+      background: #f3f4f6;
+      color: #6b7280;
+    }
+
+    .care-table-wrapper {
+      margin-top: 4px;
+      max-height: 460px;
+      overflow-y: auto;
+      padding-right: 4px;
+    }
+
+    .care-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+
+    .care-table thead {
+      position: sticky;
+      top: 0;
+      background: #f9fafb;
+      z-index: 1;
+    }
+
+    .care-table th,
+    .care-table td {
+      padding: 8px 10px;
+      text-align: left;
+      border-bottom: 1px solid #edf2f7;
+      white-space: nowrap;
+    }
+
+    .care-table th {
+      font-size: 12px;
+      color: #6b7280;
+      font-weight: 600;
+    }
+
+    .care-row {
+      transition: background 0.12s ease;
+    }
+
+    .care-row:hover {
+      background: #f3f4ff;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 500;
+    }
+
+	.badge--vip {
+	  background: #fef3c7;
+	  color: #92400e;
+	}
+	
+	.badge--buy {
+		background: #000;
+	  	color: #fff;
+	}
+
+	.badge--lead {
+	  background: #ecfdf3;
+	  color: #166534;
+	}
+
+	.badge--pending {
+	  background: #fef2f2;
+	  color: #b91c1c;
+	}
+
+    .badge--care {
+      background: #eff6ff;
+      color: #1d4ed8;
+    }
+
+    .badge--progress {
+      background: #ecfdf3;
+      color: #166534;
+    }
+
+    .badge--done {
+      background: #fef3c7;
+      color: #92400e;
+    }
+
+    .status-select {
+      padding: 4px 8px;
+      border-radius: 8px;
+      border: 1px solid #d1d5db;
+      background: #ffffff;
+      font-size: 12px;
+      color: #374151;
+      outline: none;
+      cursor: pointer;
+    }
+
+    .status-select:focus {
+      border-color: #0d47a1;
+      box-shadow: 0 0 0 1px rgba(37, 99, 235, 0.15);
+    }
+
+    .btn {
+      border: none;
+      border-radius: 8px;
+      padding: 5px 10px;
+      font-size: 12px;
+      cursor: pointer;
+      transition: background 0.15s ease, transform 0.08s ease, box-shadow 0.12s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .btn:hover {
+      transform: translateY(-0.5px);
+      box-shadow: 0 2px 6px rgba(15, 23, 42, 0.12);
+    }
+
+    .btn--primary {
+      background: #0d47a1;
+      color: #ffffff;
+    }
+
+    .btn--ghost {
+      background: #ffffff;
+      color: #374151;
+      border: 1px solid #d1d5db;
+    }
+
+    .change-cell {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+	
+	/* 페이징 스타일 */
+	.pagination-section {
+	  padding: 20px 0;
+	  border-top: 1px solid var(--border-subtle);
+	  background: var(--bg-elevated);
+	  margin-top: 0;
+	}
+
+	.pagination-info {
+	  text-align: center;
+	  color: var(--text-muted);
+	  font-size: 13px;
+	  margin-bottom: 16px;
+	  padding: 0 18px;
+	}
+
+	.pagination-container {
+	  display: flex;
+	  justify-content: center;
+	  align-items: center;
+	  gap: 8px;
+	  flex-wrap: wrap;
+	}
+
+	.pagination-btn {
+	  width: 40px;
+	  height: 40px;
+	  border: 1px solid var(--border-subtle);
+	  background: #ffffff;
+	  color: #374151;
+	  border-radius: 8px;
+	  font-size: 14px;
+	  font-weight: 500;
+	  cursor: pointer;
+	  transition: all 0.15s ease;
+	  display: flex;
+	  align-items: center;
+	  justify-content: center;
+	}
+
+	.pagination-btn:hover:not(.disabled) {
+	  background: var(--primary-soft);
+	  border-color: var(--primary);
+	  color: var(--primary);
+	  transform: translateY(-1px);
+	  box-shadow: 0 2px 8px rgba(13, 71, 161, 0.15);
+	}
+
+	.pagination-btn.active {
+	  background: var(--primary);
+	  color: #ffffff;
+	  border-color: var(--primary);
+	  box-shadow: 0 2px 8px rgba(13, 71, 161, 0.25);
+	}
+
+	.pagination-btn.disabled {
+	  opacity: 0.4;
+	  cursor: not-allowed;
+	  color: var(--text-muted);
+	}
+
+	.pagination-ellipsis {
+	  padding: 0 12px;
+	  color: var(--text-muted);
+	  font-size: 16px;
+	}
+
+	.page-size-info {
+	  font-size: 12px;
+	  color: var(--text-muted);
+	  margin-left: 16px;
+	}
+
+    @media (max-width: 960px) {
+      body {
+        flex-direction: column;
+      }
+      .sidebar {
+        width: 100%;
+        flex-direction: row;
+        align-items: center;
+        height: 56px;
+      }
+      .sidebar__logo {
+        border-bottom: none;
+        margin-bottom: 0;
+      }
+      .sidebar__section-title,
+      .sidebar__bottom {
+        display: none;
+      }
+      .menu-list {
+        display: flex;
+        flex: 1;
+        justify-content: flex-end;
+        padding-right: 16px;
+      }
+      .menu-item {
+        margin: 0 4px;
+        padding: 6px 10px;
+      }
+      .main {
+        height: calc(100vh - 56px);
+      }
+    }
+	
+  </style>
+</head>
+<script>
+	document.addEventListener("DOMContentLoaded", () => {
+
+		
+		document.querySelectorAll('.changeStatus').forEach(button => {
+		    button.addEventListener('click', function() {
+		        console.log('버튼 클릭됨:', this.getAttribute('data-keyword'));
+		        
+		        const keyword = this.getAttribute('data-keyword');
+		        const urlParams = new URLSearchParams(window.location.search);
+		        urlParams.set('keyword', keyword);
+		        urlParams.set('page', '0');
+		        
+		        window.location.search = urlParams.toString();
+		    });
+		});
+		
+		
+	});
+</script>
+<body>
+
+  <div class="sidebar">
+    <div class="sidebar__logo">
+      <div class="sidebar__logo-title">관리 메뉴</div>
+    </div>
+    <div class="sidebar__section-title">Navigation</div>
+    <ul class="menu-list">
+	  <li>
+	    <a th:href="@{/main}" class="menu-item">
+	      <span class="menu-item__bullet"></span>
+	      <span>메인 대시보드</span>
+	    </a>
+	  </li>
+      <li>
+        <a th:href="@{/dealer}" class="menu-item">
+          <span class="menu-item__bullet"></span>
+          <span>딜러 프로필</span>
+        </a>
+      </li>
+      <li>
+        <a th:href="@{/dealer/care}" class="menu-item">
+          <span class="menu-item__bullet"></span>
+          <span>상담 신청 명단</span>
+        </a>
+      </li>
+      <li>
+        <a th:href="@{/dealer/myCustomer}" class="menu-item menu-item--active">
+          <span class="menu-item__bullet"></span>
+          <span>상담 관리</span>
+        </a>
+      </li>
+      <li>
+        <a th:href="@{/dealer/sale}" class="menu-item">
+          <span class="menu-item__bullet"></span>
+          <span>구매 관리</span>
+        </a>
+      </li>
+    </ul>
+    <div class="sidebar__bottom">
+      HYUNDAI CRM · Dealer Console
+    </div>
+  </div>
+
+  <div class="main">
+    <div class="header">
+      <div class="header__left">
+        <div class="logo">HYUNDAI CRM</div>
+        <div class="header__chip">Consult Care</div>
+      </div>
+      <div class="user-info">
+        <span class="user-info__role">담당 딜러</span>
+        <span>[[${#authentication.getPrincipal().getUsername()}]] 님</span>
+        <span class="logout"><a sec:authorize="isAuthenticated()" th:href="@{/logout}" class="nav-link">로그아웃</a></span>
+      </div>
+    </div>
+
+    <div class="content">
+      <div class="page-header-row">
+        <div>
+          <h1 class="page-title">상담 관리</h1>
+          <p class="page-subtitle">상담 고객 명단</p>
+        </div>
+        <div class="filter-group">
+          <span>보기:</span>
+		  <button type="button" 
+		          th:class="${keyword == 'all'} ? 'changeStatus filter-pill filter-pill--active' : 'changeStatus filter-pill'" 
+		          data-keyword="all">전체</button>
+
+		  <button type="button" 
+		          th:class="${keyword == '상담진행중'} ? 'changeStatus filter-pill filter-pill--active' : 'changeStatus filter-pill'" 
+		          data-keyword="상담진행중">상담진행중</button>
+
+		  <button type="button" 
+		          th:class="${keyword == '상담취소'} ? 'changeStatus filter-pill filter-pill--active' : 'changeStatus filter-pill'" 
+		          data-keyword="상담취소">상담취소</button>
+
+		  <button type="button" 
+		          th:class="${keyword == '상담완료'} ? 'changeStatus filter-pill filter-pill--active' : 'changeStatus filter-pill'" 
+		          data-keyword="상담완료">상담완료</button>
+        </div>
+      </div>
+
+      <section class="card">
+        <div class="card__header">
+          <div>
+            <h2 class="card__title">상담 리스트</h2>
+            <p class="card__subtitle">
+              총: [[${#lists.size(counselingList.content)}]]건
+			<span th:if="${counselingList.totalElements > 10}"> | 총 [[${counselingList.totalElements}]]건</span>
+            </p>
+          </div>
+          <span class="card__chip">실시간 동기화</span>
+        </div>
+
+        <div class="care-table-wrapper">
+          <table class="care-table">
+            <thead>
+              <tr>
+                <th>번호</th>
+                <th>신청일</th>
+                <th>신청자</th>
+                <th>연락처</th>
+                <th>상담 예정일</th>
+                <th>신청 내용</th>
+                <th>상담 현황</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr th:each="counseling, counselingStat : ${counselingList}" class="care-row" th:onclick="|location.href='/5core/dealer/myCustomer/${counseling.id}'|">
+				
+                <td >[[${counselingStat.count}]]</td>
+                <td >[[|${#temporals.format(counseling.createDate, 'yyyy-MM-dd')}|]]</td>
+                <td >[[${counseling.customer.member.name}]]</td>
+                <td >[[${counseling.customer.member.phone}]]</td>
+                <td >[[${counseling.counselingLikeTime}]]</td>
+                <td>
+                  <span class="badge badge--care" >[[${counseling.vehicleName}]]</span>
+                  <span class="badge badge--progress" >[[${counseling.engineType}]]</span>
+                  <span class="badge badge--done" >[[${counseling.purchasePurpose}]]</span>
+                </td>
+				
+                <td>
+                  <div class="change-cell">
+					<span class="badge badge--lead" th:if="${counseling.status == '상담진행중'}">[[${counseling.status}]]</span>
+					<span class="badge badge--pending" th:if="${counseling.status == '상담취소'}">[[${counseling.status}]]</span>
+					<span class="badge badge--vip" th:if="${counseling.status == '상담완료'}">[[${counseling.status}]]</span>
+					<span class="badge badge--buy" th:if="${counseling.status == '구매완료'}">[[${counseling.status}]]</span>
+                  </div>
+                </td>
+				
+              </tr>
+              <tr th:if="${#lists.isEmpty(counselingList.content)}">
+                <td colspan="7" style="text-align:center; color:#6b7280; padding:16px;">
+                  등록된 상담 신청이 없습니다.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+		
+		<!-- 페이징 섹션 추가 -->
+		<div class="pagination-section">
+		  
+		  <div class="pagination-container">
+		    <!-- 첫페이지 -->
+		    <a th:href="@{/dealer/myCustomer(page=0, keyword=${keyword})}" 
+		       th:classappend="${counselingList.first ? 'pagination-btn disabled' : 'pagination-btn'}"
+		       class="pagination-btn">
+		      <span>«</span>
+		    </a>
+		    
+		    <!-- 이전페이지 -->
+		    <a th:if="${counselingList.hasPrevious()}" 
+		       th:href="@{/dealer/myCustomer(page=${counselingList.number - 1}, keyword=${keyword})}"
+		       class="pagination-btn">이전</a>
+		    <span th:unless="${counselingList.hasPrevious()}" class="pagination-btn disabled">이전</span>
+		    
+		    <!-- 페이지 번호들 -->
+		    <span th:each="i : ${#numbers.sequence(counselingList.number - 2, counselingList.number + 2)}" 
+		          th:if="${i >= 0 and i < counselingList.totalPages}">
+		      <a th:href="@{/dealer/myCustomer(page=${i}, keyword=${keyword})}" 
+		         th:classappend="${counselingList.number == i ? 'pagination-btn active' : 'pagination-btn'}"
+		         th:text="${i + 1}">1</a>
+		    </span>
+		    
+		    <!-- 다음페이지 -->
+		    <a th:if="${counselingList.hasNext()}" 
+		       th:href="@{/dealer/myCustomer(page=${counselingList.number + 1}, keyword=${keyword})}"
+		       class="pagination-btn">다음</a>
+		    <span th:unless="${counselingList.hasNext()}" class="pagination-btn disabled">다음</span>
+		    
+		    <!-- 마지막페이지 -->
+		    <a th:href="@{/dealer/myCustomer(page=${counselingList.totalPages - 1}, keyword=${keyword})}" 
+		       th:classappend="${counselingList.last ? 'pagination-btn disabled' : 'pagination-btn'}"
+		       class="pagination-btn">
+		      <span>»</span>
+		    </a>
+		  </div>
+		  
+		  <div class="page-size-info">
+		    페이지당 10건 | 총 [[${counselingList.totalPages}]]페이지
+		  </div>
+		</div>
+		
+      </section>
+    </div>
+  </div>
+</body>
+</html>

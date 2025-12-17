@@ -1,0 +1,1195 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>상담 신청</title>
+  <th:block th:replace="~{top}"></th:block>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+  <style>
+    :root {
+      --primary: navy;
+      --primary-soft: #e3eefc;
+      --border-subtle: #e5e7eb;
+      --text-main: #111827;
+      --text-muted: #6b7280;
+      --danger: #d9001b;
+      --bg-body: #f3f5f9;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: "Pretendard", -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+    }
+
+    body {
+      color: var(--text-main);
+    }
+
+    .apply-container {
+      max-width: 1600px;
+      margin: 40px auto;
+      padding: 32px 32px 40px;
+      background: #ffffff;
+      border-radius: 16px;
+      box-shadow: 0 8px 20px rgba(15, 23, 42, 0.08);
+      border: 1px solid var(--border-subtle);
+    }
+
+    .apply-header {
+      margin-bottom: 24px;
+      border-bottom: 1px solid var(--border-subtle);
+      padding-bottom: 16px;
+    }
+
+    .apply-title {
+      font-size: 24px;
+      font-weight: 700;
+      margin-bottom: 4px;
+      color: var(--primary);
+    }
+
+    .apply-subtitle {
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    .apply-content {
+      margin-top: 16px;
+    }
+
+    /* 아코디언 */
+    .accordion-item {
+      border-radius: 12px;
+      border: 1px solid var(--border-subtle);
+      margin-bottom: 12px;
+      overflow: hidden;
+      background: #ffffff;
+    }
+
+    .accordion-header {
+      font-size: 17px;
+      font-weight: 600;
+      cursor: pointer;
+      padding: 16px 18px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: background 0.2s ease, color 0.2s ease;
+    }
+
+    .accordion-header-left {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .step-badge {
+      font-size: 15px;
+      padding: 3px 8px;
+      border-radius: 9px;
+      background: var(--primary-soft);
+      color: var(--primary);
+      font-weight: 600;
+    }
+
+    .accordion-header-title {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      font-size: 1.05em;
+    }
+
+    .accordion-header-main {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .accordion-header-sub {
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    .accordion-header:hover {
+      background: #f9fafb;
+      color: var(--primary);
+    }
+
+    .step-right-text {
+      color: navy;
+    }
+
+    .accordion-arrow {
+      transition: transform 0.3s ease;
+      font-size: 18px;
+      color: var(--text-muted);
+    }
+
+    .accordion-content {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.35s ease;
+      padding: 0 18px;
+      border-top: 1px solid var(--border-subtle);
+      background: #fcfcff;
+    }
+
+    .accordion-content.open {
+      padding: 18px 18px 20px;
+      max-height: 800px;
+      font-size: 14px;
+    }
+
+    .accordion-description {
+      font-size: 14px;
+      color: var(--text-muted);
+      margin: 12px 20px;
+      line-height: 1.5;
+    }
+
+    /* 폼 공통 */
+    .form-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      margin-bottom: 16px;
+      align-items: center;
+      font-size: 14px;
+    }
+
+    .form-row label {
+      font-weight: 600;
+      color: #374151;
+    }
+
+    .required::after {
+      content: '*';
+      color: var(--danger);
+      margin-left: 4px;
+    }
+
+    .area {
+      width: 200px;
+      padding: 8px 10px;
+      border-radius: 6px;
+      border: 1px solid #d1d5db;
+      background: #ffffff;
+      font-size: 14px;
+      outline: none;
+    }
+
+    .area:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 1px rgba(13, 71, 161, 0.16);
+    }
+
+    .survey-section {
+      margin: 16px 0 16px 20px;
+    }
+
+    .survey-section p {
+      font-size: 1.2em;
+    }
+
+    .question-title {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+
+    .section-divider {
+      border: none;
+      border-top: 1px dashed #e5e7eb;
+      margin: 10px 0 14px;
+    }
+
+    .input-group {
+      display: inline-flex;
+      align-items: center;
+      margin-right: 20px;
+      margin-bottom: 10px;
+      font-size: 17px;
+    }
+
+    .input-group input[type="checkbox"],
+    .input-group input[type="radio"] {
+      margin-right: 8px;
+      transform: scale(1.15);
+      accent-color: navy;
+      cursor: pointer;
+    }
+
+    .input-group label {
+      font-weight: 400;
+      cursor: pointer;
+    }
+
+    .other-input,
+    input[type="text"][placeholder="원하시는 시간을 적어주세요."] {
+      margin-left: 3px;
+      padding: 8px 10px;
+      border: 1px solid #d1d5db;
+      border-radius: 6px;
+      width: 250px;
+      font-size: 14px;
+      outline: none;
+    }
+
+    .other-input:focus,
+    input[type="text"][placeholder="원하시는 시간을 적어주세요."]:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 1px rgba(13, 71, 161, 0.16);
+    }
+
+    .field-error {
+      font-size: 12px;
+      color: var(--danger);
+      margin-top: 4px;
+    }
+
+    /* Step 1 차종 선택 스타일 */
+    .tabs {
+      margin-bottom: 20px;
+    }
+
+    .tabs button {
+      padding: 10px 15px;
+      margin-right: 5px;
+      border: 1px solid #ccc;
+      background-color: #f8f8f8;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .tabs button.active {
+      background-color: navy;
+      color: white;
+      border-color: navy;
+    }
+
+    .car-selection {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 15px;
+    }
+
+    .car-item {
+      border: 1px solid #ccc;
+      padding: 10px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
+      background-color: white;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .car-item.hidden {
+      display: none;
+    }
+
+    .car-item:hover {
+      border-color: navy;
+      box-shadow: 0 0 5px navy;
+    }
+
+    .car-item.selected {
+      background-color: #e6f3ff;
+      border: 2px solid navy;
+    }
+
+    .car-item img {
+      max-width: 80%;
+      height: auto;
+      margin-bottom: 5px;
+      display: block;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .selected-info {
+      margin-top: 20px;
+      padding: 10px;
+      border: 1px solid #ddd;
+      background-color: #f9f9f9;
+    }
+
+    .vehicle-card {
+      width: 200px;
+      padding: 8px;
+      border-radius: 8px;
+      border: 1px solid var(--border-subtle);
+      text-align: center;
+      cursor: pointer;
+      transition: border-color 0.2s, box-shadow 0.2s, background-color 0.2s;
+      background-color: #ffffff;
+    }
+
+    .vehicle-card:hover {
+      border-color: var(--primary-soft);
+      background-color: #f9fafb;
+    }
+
+    .vehicle-card.selected {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 2px var(--primary-soft);
+      background-color: var(--primary-soft);
+    }
+
+    .vehicle-card img {
+      width: 100%;
+      height: 100px;
+      object-fit: contain;
+      margin-bottom: 4px;
+      background-color: #f3f4f6;
+      border-radius: 4px;
+    }
+
+    .vehicle-card p {
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text-main);
+      margin: 0;
+    }
+
+    #selectedVehicleInfo {
+      margin-top: 16px;
+      padding: 10px;
+      background-color: #f5f8ff;
+      border: 1px solid #d4e0ff;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--primary);
+    }
+
+    /* 버튼 영역 */
+    .btns {
+      text-align: center;
+      margin-top: 24px;
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      min-width: 160px;
+      height: 40px;
+      border-radius: 999px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      border: 1px solid transparent;
+      transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease,
+        transform 0.08s ease;
+    }
+
+    .btn:active {
+      transform: translateY(1px);
+    }
+
+    .btn-primary {
+      color: #fff;
+      background-color: navy;
+      border-color: navy;
+    }
+
+    .btn-primary:hover {
+      color: navy;
+      background-color: #fff;
+      border-color: navy;
+    }
+
+    .btn-secondary {
+      background-color: #ffffff;
+      color: #4b5563;
+      border-color: #d1d5db;
+    }
+
+    .btn-secondary:hover {
+      background-color: #f8f8f8;
+      border-color: #555;
+    }
+
+    .btn-outline {
+      background-color: #ffffff;
+      color: #0d47a1;
+      border-color: #cbd5f5;
+    }
+
+    .btn-outline:hover {
+      background-color: #e3eefc;
+      border-color: #0d47a1;
+    }
+
+    /* 결과 출력 */
+    .info-block {
+      margin-top: 18px;
+      padding: 12px 14px;
+      border-radius: 10px;
+      background: #f9fafb;
+      border: 1px solid #d1d5db;
+      font-size: 13px;
+      color: #374151;
+      line-height: 1.5;
+      min-height: 20px;
+    }
+
+    .info-block-title {
+      font-weight: 700;
+      margin: 0 0 4px 10px;
+      color: navy;
+      font-size: 1.3em;
+    }
+
+    .info-block .summary-details {
+      margin-top: 10px;
+      margin-left: 10px;
+      font-size: 1.05em;
+      font-weight: bold;
+      color: #666;
+      padding-left: 10px;
+      line-height: 1.8;
+    }
+
+    hr.page-divider {
+      border: none;
+      border-top: 1px solid #e5e7eb;
+      margin: 24px 0 16px;
+    }
+
+    select {
+      width: 200px;
+      height: 35px;
+      font-size: 16px;
+      margin-right: 10px;
+    }
+
+  </style>
+</head>
+<body>
+  <div class="apply-container">
+    <form th:object="${counseling}" th:action="@{/counseling/add}" method="post" name="applyForm">
+      <input type="hidden" id="memberId" sec:authorize="isAuthenticated()" th:value="${#authentication.getPrincipal().getUsername()}">
+      <header class="apply-header">
+        <h2 class="apply-title">상담 신청</h2>
+        <p class="apply-subtitle">희망 차종과 구매 계획을 알려주시면, 최적의 딜러와 연결해 드립니다.</p>
+      </header>
+	  <div>
+		<p class="field-error text-danger" th:errors="*{vehicleId}"></p>
+		<p class="field-error text-danger" th:errors="*{vehicleName}"></p>
+	    <p class="field-error text-danger" th:errors="*{hopearea.sido}"></p>
+	    <p class="field-error text-danger" th:errors="*{hopearea.siGunGu}"></p>
+	    <p class="field-error text-danger" th:errors="*{hopearea.eupMyeonDong}"></p>
+	    <p class="field-error text-danger" th:errors="*{purchasePurpose}"></p>
+	    <p class="field-error text-danger" th:errors="*{otherInput}"></p>
+	    <p class="field-error text-danger" th:errors="*{purchasePeriod}"></p>
+	  </div>		  
+      <div class="apply-content">
+        <div class="accordion-item">
+          <div class="accordion-header">
+            <div class="accordion-header-left">
+              <span class="step-badge">STEP 1</span>
+              <div class="accordion-header-title">
+                <div class="accordion-header-main">
+                  <span class="required">상담 차종</span>
+                </div>
+                <span class="accordion-header-sub">관심 있는 차량 모델을 선택해 주세요.</span>
+              </div>
+            </div>
+            <div class="step-right">
+              <span class="step-right-text stepText1">선택 안 함</span>
+              <span class="accordion-arrow">▼</span>
+            </div>
+          </div>
+          <div class="accordion-content">
+            <div class="tabs">
+              <button type="button" class="tab-button active" data-vehicletype="세단">세단</button>
+              <button type="button" class="tab-button" data-vehicletype="SUV">SUV</button>
+              <button type="button" class="tab-button" data-vehicletype="경차">경차</button>
+            </div>
+            <div class="car-selection">
+              <div th:each="vehicle : ${vehicleList}"
+                   class="car-item"
+                   th:classappend="${vehicle.name == selectedVehicleName} ? 'selected'"
+                   th:data-vehicle-id="${vehicle.id}"
+                   th:data-vehicle-name="${vehicle.name}"
+                   th:data-vehicletype="${vehicle.vehicleType}">
+                <img th:src="@{/images/} + ${vehicle.fileName}"
+                     th:alt="${vehicle.name}" />
+                <p th:text="${vehicle.name}"  th:field="*{vehicleName}"></p>
+              </div>
+            </div>
+            <div class="selected-info">
+              선택된 차량: **<span id="selectedCarDisplay" th:text="${selectedVehicleName ?: '선택된 차량 없음'}"></span>**
+              <input type="hidden" name="vehicleId" id="selectedVehicleId" th:field="*{vehicleId}" />
+            </div>
+          </div>
+        </div>
+        <div class="accordion-item">
+          <div class="accordion-header">
+            <div class="accordion-header-left">
+              <span class="step-badge">STEP 2</span>
+              <div class="accordion-header-title">
+                <div class="accordion-header-main">
+                  <span class="required">구매 상담 희망 지역</span>
+                </div>
+                <span class="accordion-header-sub">가까운 지점을 안내해 드리기 위해 필요한 정보입니다.</span>
+              </div>
+            </div>
+            <div class="step-right">
+              <span class="step-right-text stepText2">선택 안 함</span>
+              <span class="accordion-arrow">▼</span>
+            </div>
+          </div>
+          <div class="accordion-content">
+            <div class="form-row">
+              <input type="hidden" name="sido" id="sidoName" th:field="*{hopearea.sido}">
+              <input type="hidden" name="siGunGu" id="siGunGuName" th:field="*{hopearea.siGunGu}">
+              <input type="hidden" name="eupMyeonDong" id="eupMyeonDongName" th:field="*{hopearea.eupMyeonDong}">
+              <label for="sido" class="required">시/도</label>
+              <select class="area" name="sido" id="sido">
+                <option value="">시/도 선택</option>
+              </select>
+
+              <label for="siGunGu" class="required">시/군/구</label>
+              <select class="area" name="siGunGu" id="siGunGu">
+                <option value="">시/군/구 선택</option>
+              </select>
+
+              <label for="eupMyeonDong">읍/면/동</label>
+              <select class="area" name="eupMyeonDong" id="eupMyeonDong">
+                <option value="">읍/면/동 선택</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <div class="accordion-item">
+          <div class="accordion-header">
+            <div class="accordion-header-left">
+              <span class="step-badge">STEP 3</span>
+              <div class="accordion-header-title">
+                <div class="accordion-header-main">
+                  <span class="required">구매 희망 정보</span>
+                </div>
+                <span class="accordion-header-sub">구체적인 구매 계획을 알려주시면 더 정확한 상담이 가능합니다.</span>
+              </div>
+            </div>
+            <div class="step-right">
+              <span class="step-right-text stepText3"></span>
+              <span class="accordion-arrow">▼</span>
+            </div>
+          </div>
+          <div class="accordion-content">
+            <div class="accordion-description">
+              더 나은 구매 상담을 위해 고객님의 구매 희망 관련 정보를 확인하고 있습니다.<br>
+              <strong>*</strong>가 표시된 항목은 필수 선택 항목입니다.
+            </div>
+
+            <div class="survey-section">
+              <p class="question-title required">차량 구매 목적</p>
+              <hr class="section-divider">
+              <div class="input-group">
+                <input type="checkbox" id="p1" name="purchasePurpose" value="출퇴근용">
+                <label for="p1">출퇴근용</label>
+              </div>
+              <div class="input-group">
+                <input type="checkbox" id="p2" name="purchasePurpose" value="패밀리카">
+                <label for="p2">패밀리카</label>
+              </div>
+              <div class="input-group">
+                <input type="checkbox" id="p3" name="purchasePurpose" value="업무용">
+                <label for="p3">업무용</label>
+              </div>
+              <div class="input-group">
+                <input type="checkbox" id="p4" name="purchasePurpose" value="세컨드카">
+                <label for="p4">세컨드카</label>
+              </div>
+              <div class="input-group">
+                <input type="checkbox" id="other" name="purchasePurpose" value="기타">
+                <label for="other">기타</label>
+                <input type="text" id="otherInput" name="otherInput" class="other-input"
+                       placeholder="기타 사유를 입력하세요" disabled>
+              </div>
+            </div>
+
+            <div class="survey-section">
+              <p class="question-title required">희망 구매 시점</p>
+              <hr class="section-divider">
+              <div class="input-group">
+                <input type="radio" id="pt1m" name="purchasePeriod" value="1개월 이내">
+                <label for="pt1m">1개월 이내</label>
+              </div>
+              <div class="input-group">
+                <input type="radio" id="pt3m" name="purchasePeriod" value="3개월 이내">
+                <label for="pt3m">3개월 이내</label>
+              </div>
+              <div class="input-group">
+                <input type="radio" id="pt6m" name="purchasePeriod" value="6개월 이내">
+                <label for="pt6m">6개월 이내</label>
+              </div>
+              <div class="input-group">
+                <input type="radio" id="ptNon" name="purchasePeriod" value="미정">
+                <label for="ptNon">미정</label>
+              </div>
+            </div>
+            <div class="survey-section">
+              <p class="question-title">선호 차량 유형</p>
+              <hr class="section-divider">
+              <div class="input-group">
+                <input type="checkbox" id="vt1" name="vehicleType" value="세단">
+                <label for="vt1">세단</label>
+              </div>
+              <div class="input-group">
+                <input type="checkbox" id="vt2" name="vehicleType" value="SUV">
+                <label for="vt2">SUV</label>
+              </div>
+              <div class="input-group">
+                <input type="checkbox" id="vt3" name="vehicleType" value="기타">
+                <label for="vt3">기타</label>
+              </div>
+            </div>
+            <div class="survey-section">
+              <p class="question-title">선호 엔진</p>
+              <hr class="section-divider">
+              <div class="input-group">
+                <input type="checkbox" id="et1" name="engineType" value="가솔린">
+                <label for="et1">가솔린</label>
+              </div>
+              <div class="input-group">
+                <input type="checkbox" id="et2" name="engineType" value="전기">
+                <label for="et2">전기</label>
+              </div>
+              <div class="input-group">
+                <input type="checkbox" id="et3" name="engineType" value="하이브리드">
+                <label for="et3">하이브리드</label>
+              </div>
+              <div class="input-group">
+                <input type="checkbox" id="et4" name="engineType" value="수소">
+                <label for="et4">수소</label>
+              </div>
+              <div class="input-group">
+                <input type="checkbox" id="et5" name="engineType" value="고성능 (N)">
+                <label for="et5">고성능 (N)</label>
+              </div>
+            </div>
+            <div class="survey-section">
+              <p class="question-title">희망 연락일</p>
+              <hr class="section-divider">
+              <input type="date" id="counselingLikeTime" name="counselingLikeTime" class="other-input"
+                     placeholder="예: 평일 오후 7시 이후 연락 바랍니다.">
+            </div>
+            <div class="btns">
+              <input type="button" value="확인" id="btnComplete" class="btn btn-outline">
+            </div>
+          </div>
+        </div>
+        <hr class="page-divider">
+        <div name="applyForm" th:action="@{/counseling/add}" method="post">
+          <div class="btns">
+            <input type="submit" value="구매 신청 제출" class="btn btn-primary">
+            <input type="reset" value="취소" class="btn btn-secondary">
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <!-- ✅ footer fragment include -->
+<th:block th:replace="~{bottom}"></th:block>
+
+</body>
+
+<script>
+    // 아코디언
+    let items = document.querySelectorAll(".accordion-item");
+
+    items.forEach((item) => {
+        let header = item.querySelector(".accordion-header");
+        let form = document.applyForm;
+        header.addEventListener("click", () => {
+            let openContent = document.querySelector(".accordion-content.open");
+            let sidoEl = document.querySelector("#sidoName");
+            let siGunGuEl = document.querySelector("#siGunGuName");
+            let eupMyeonDongEl = document.querySelector("#eupMyeonDongName");
+            let sido = sidoEl.value;
+            let siGunGu = siGunGuEl.value;
+            let eupMyeonDong = eupMyeonDongEl.value;
+            let stepText1 = document.querySelector(".stepText1");
+            let stepText2 = document.querySelector(".stepText2");
+
+            // 열려 있는 패널이 있고, 그게 지금 클릭한 것이 아니라면 닫기
+            if (openContent && openContent !== item.querySelector(".accordion-content")) {
+                openContent.classList.remove("open");
+
+                // Step 1 헤더 요약 텍스트 업데이트 (차종이 선택되었다면)
+                let selectedVehicleName = document.getElementById('selectedCarDisplay').textContent;
+                stepText1.textContent = selectedVehicleName || "선택 안 함";
+
+                // Step 2 헤더 요약 텍스트 업데이트
+                if (openContent.closest('.accordion-item').querySelector('.step-badge').textContent === 'STEP 2') {
+                    let areaText = sido + '   ' + siGunGu + '  ' + eupMyeonDong;
+                    stepText2.textContent = areaText.length > 0 ? areaText : "선택 안 함";
+                }
+
+                // 닫히는 패널이 Step 3라면, 입력 필드를 다시 보여주기
+                if (openContent.closest('.accordion-item').querySelector('.step-badge').textContent === 'STEP 3') {
+                    openContent.style.display = ''; // 입력 필드를 다시 보이게 함
+                    openContent.closest('.accordion-item').querySelector('.purchase-summary-table-container')?.remove(); // 요약 테이블 제거
+                    let stepText3 = openContent.closest('.accordion-item').querySelector(".stepText3");
+                    // 요약 텍스트 복구 (선택 안 함)
+                    if (stepText3 && stepText3.textContent === '') {
+                        stepText3.textContent = '선택 안 함';
+                    }
+                }
+
+                let openArrow = openContent.previousElementSibling.querySelector(".accordion-arrow");
+                if (openArrow) openArrow.style.transform = "rotate(0deg)";
+            }
+
+            // 현재 패널 open/close toggle
+            let content = item.querySelector(".accordion-content");
+            let arrow = item.querySelector(".accordion-arrow");
+            content.classList.toggle("open");
+
+            // 화살표 회전
+            if (content.classList.contains("open")) {
+                arrow.style.transform = "rotate(180deg)";
+                // 현재 여는 패널이 Step 3라면, 숨겨진 입력 필드 다시 표시
+                const isStep3 = item.querySelector('.step-badge').textContent === 'STEP 3';
+                if (isStep3) {
+                    content.style.display = '';
+                    item.querySelector('.purchase-summary-table-container')?.remove();
+                    // 헤더 텍스트 복구 (선택 안 함)
+                    let stepText3 = item.querySelector(".stepText3");
+                    if (stepText3.textContent === '') {
+                        stepText3.textContent = '선택 안 함';
+                    }
+                }
+            } else {
+                arrow.style.transform = "rotate(0deg)";
+            }
+        });
+    });
+
+    document.addEventListener("DOMContentLoaded", () => {
+        let form = document.applyForm;
+        let likeInfo = document.querySelector(".likeInfo");
+        let result = document.querySelector(".result");
+        let btnComplete = document.querySelector("#btnComplete");
+
+        let stepText1 = document.querySelector(".stepText1");
+        let stepText2 = document.querySelector(".stepText2");
+
+        // --- ▼▼▼ Step 3 요약 통합 함수: 데이터 수집 및 임시 헤더 업데이트 역할만 수행 ▼▼▼ ---
+        function updateStep3HeaderSummary() {
+            let form = document.applyForm;
+            let purchasePurposeList = [];
+            let engineTypeList = [];
+            let vehicleTypeList = [];
+            let otherInput = document.querySelector("#otherInput");
+            let otherInputVal = otherInput.value;
+
+            let purchasePurpose = document.querySelectorAll("[name=purchasePurpose]");
+            let engineType = document.querySelectorAll("[name=engineType]");
+            let vehicleType = document.querySelectorAll("[name=vehicleType]");
+            let purchasePeriod = form.purchasePeriod.value;
+            let counselingLikeTime = form.counselingLikeTime.value;
+
+            // 1. 구매 목적 수집
+            purchasePurpose.forEach(v => {
+                if (v.checked) {
+                    if (v.value != "기타") {
+                        purchasePurposeList.push(v.value);
+                    } else if (otherInput.checked && otherInputVal) {
+                        purchasePurposeList.push(`기타(${otherInputVal})`);
+                    }
+                }
+            });
+
+            // 2. 엔진 타입 수집
+            engineType.forEach(v => {
+                if (v.checked) {
+                    engineTypeList.push(v.value);
+                }
+            });
+
+            // 3. 차량 유형 수집
+            vehicleType.forEach(v => {
+                if (v.checked) {
+                    vehicleTypeList.push(v.value);
+                }
+            });
+
+            let stepText3 = document.querySelector(".stepText3");
+            stepText3.textContent = '';
+
+            return {
+                purchasePurposeList,
+                otherInputVal,
+                purchasePeriod,
+                vehicleTypeList,
+                engineTypeList,
+                counselingLikeTime
+            };
+        }
+        // --- ▲▲▲ Step 3 요약 통합 함수 끝 ▲▲▲ ---
+
+        // --- ▼▼▼ Step 1 차종 선택 기능 JavaScript 통합 및 수정 ▼▼▼ ---
+        let carItems = document.querySelectorAll('.car-item');
+        let tabButtons = document.querySelectorAll('.tab-button');
+        let selectedCarDisplay = document.getElementById('selectedCarDisplay');
+        let selectedVehicleIdInput = document.getElementById('selectedVehicleId');
+
+        // --- 1. 탭 이동 및 필터링 기능 (vehicleType 기준으로 필터링) ---
+        function filterVehicles(vehicleType) {
+            carItems.forEach(item => {
+                if (item.getAttribute('data-vehicletype') === vehicleType) {
+                    item.classList.remove('hidden');
+                } else {
+                    item.classList.add('hidden');
+                }
+            });
+        }
+
+        tabButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                document.querySelector('.tab-button.active')?.classList.remove('active');
+                this.classList.add('active');
+
+                let vehicleType = this.getAttribute('data-vehicletype');
+                filterVehicles(vehicleType);
+            });
+        });
+
+        // 초기 로딩 시에도 data-vehicletype을 사용해 필터링
+        let initialVehicleType = document.querySelector('.tab-button.active')?.getAttribute('data-vehicletype');
+        if (initialVehicleType) {
+            filterVehicles(initialVehicleType);
+        }
+
+        // --- 2. 차량 선택 기능 (Step 1 헤더 업데이트 로직 추가) ---
+        carItems.forEach(item => {
+            item.addEventListener('click', function() {
+                document.querySelector('.car-item.selected')?.classList.remove('selected');
+                this.classList.add('selected');
+
+                let vehicleId = this.getAttribute('data-vehicle-id');
+                let vehicleName = this.getAttribute('data-vehicle-name');
+
+                selectedCarDisplay.textContent = vehicleName;
+                selectedVehicleIdInput.value = vehicleId;
+
+                // *수정: 차량 선택 시 Step 1 헤더 텍스트를 즉시 업데이트*
+                stepText1.textContent = vehicleName;
+                console.log("선택된 차량 ID:", vehicleId);
+            });
+        });
+
+        let initialId = selectedVehicleIdInput.value;
+        // 초기 vehicleName 설정 (페이지 로딩 시)
+        if (initialId) {
+            let initialSelectedItem = document.querySelector(`.car-item[data-vehicle-id="${initialId}"]`);
+            if (initialSelectedItem) {
+                initialSelectedItem.classList.add('selected');
+                let initialVehicleName = initialSelectedItem.getAttribute('data-vehicle-name');
+                selectedCarDisplay.textContent = initialVehicleName;
+                stepText1.textContent = initialVehicleName;
+            }
+        }
+
+        // --- ▲▲▲ Step 1 차종 선택 기능 JavaScript 통합 및 수정 ▲▲▲ ---
+
+        // Step 3 입력 필드의 변경 시마다 헤더 요약 텍스트 업데이트 (실시간)
+        const step3Inputs = document.querySelectorAll(
+            "[name=purchasePurpose], [name=purchasePeriod], [name=vehicleType], [name=engineType], #counselingLikeTime, #otherInput"
+        );
+        step3Inputs.forEach(input => {
+            const eventType = (input.tagName === 'INPUT' && (input.type === 'text' || input.type === 'date')) ? 'input' : 'change';
+            input.addEventListener(eventType, updateStep3HeaderSummary);
+        });
+        updateStep3HeaderSummary(); // 초기값 설정
+
+        // --- Step 3 '확인' 버튼 리스너 (주요 수정 사항) ---
+        if (btnComplete) {
+            btnComplete.addEventListener("click", () => {
+                let summaryData = updateStep3HeaderSummary();
+
+                // 1. 유효성 검사
+                let otherCheckbox = document.querySelector("#other");
+                if (otherCheckbox.checked && (!summaryData.otherInputVal)) {
+                    alert("기타 선택 시 반드시 입력란에 입력해주세요");
+                    return;
+                }
+
+                // 2. Step 3 헤더 요약 텍스트 제거 (초록박스 내용 지우기)
+                let stepText3 = document.querySelector(".stepText3");
+                stepText3.textContent = '';
+
+                // 3. Step 3 항목 전체를 감싸는 컨테이너 (아코디언 내용) 찾기
+                let step3Content = btnComplete.closest(".accordion-content");
+                let step3Item = btnComplete.closest(".accordion-item");
+
+                // 4. 표 형식 요약 HTML 생성
+                let tableHtml = `
+			      <div class="purchase-summary-table-container">
+			          <style>
+			              .purchase-summary-table { 
+			                  width: 100%; 
+			                  border-collapse: collapse; 
+			                  border-top: 1px solid #c9c9c9;
+			                  margin-bottom: 20px;
+			              }
+			              .purchase-summary-table td {
+			                  padding: 18px 0; 
+			                  padding-left: 20px;
+			                  padding-right: 20px;
+			                  font-size: 15px;
+			                  line-height: 1.8;
+			              }
+			              
+			              .purchase-summary-table tr {
+			                  border-bottom: 1px solid #ededed; 
+			              }
+			              
+			              .purchase-summary-table tbody tr:last-child {
+			                  border-bottom: none;
+			              }
+
+			              .purchase-summary-table .label {
+			                  width: 40%; 
+			                  color: #333;
+							  font-weight: 700;
+			                  text-align: right;
+							  font-size: 17px;
+			              }
+			              
+			              .purchase-summary-table .value {
+			                  width: 60%; 
+			                  color: navy;
+			                  font-weight: 700;
+			                  text-align: right;
+							  font-size: 17px;
+			              }
+			          </style>
+			          <table class="purchase-summary-table">
+			          <tbody>
+			  `  ;
+
+                 // 헬퍼 함수: 요약 정보를 테이블 행으로 추가
+                 let addRow = (label, values, otherVal = null, checkOther = false) => {
+                    let displayValue = values.join(", ");
+
+                    if (checkOther && otherVal && document.querySelector("#other").checked) {
+                        displayValue += (displayValue ? ", " : "") + `${otherVal}`;
+                    }
+
+                    if (displayValue) {
+                        tableHtml += `
+                            <tr>
+                                <td class="label" style="border-bottom: none;">${label}</td>
+                                <td class="value">${displayValue}</td>
+                            </tr>
+                        `;
+                    }
+                    return displayValue;
+                };
+
+                // 1. 차량 구매 목적
+                let purposeDisplay = addRow("차량 구매 목적", summaryData.purchasePurposeList.filter(p => !p.startsWith('기타')), summaryData.otherInputVal, true);
+                // 2. 희망 구매 시점
+                let periodDisplay = addRow("희망 구매 시점", [summaryData.purchasePeriod]);
+                // 3. 선호 차량 유형
+                let vehicleDisplay = addRow("선호 차량 유형", summaryData.vehicleTypeList);
+                // 4. 선호 엔진
+                let engineDisplay = addRow("선호 엔진", summaryData.engineTypeList);
+                // 5. 희망 연락 시간
+                let timeDisplay = addRow("희망 연락 시간", [summaryData.counselingLikeTime]);
+                tableHtml += `</tbody></table></div>`;
+
+                // 5. 요약 테이블 삽입
+                step3Item.querySelector('.purchase-summary-table-container')?.remove();
+                if (step3Content) {
+                    step3Content.style.display = 'none'; // 입력 필드 숨기기
+                    // 요약 테이블을 숨겨진 입력 필드 바로 앞에 삽입
+                    step3Content.insertAdjacentHTML('beforebegin', tableHtml);
+                }
+            });
+        }
+        // --- Step 3 '확인' 버튼 리스너 끝 ---
+
+        let sidoEl = document.querySelector("#sidoName");
+        let siGunGuEl = document.querySelector("#siGunGuName");
+        let eupMyeonDongEl = document.querySelector("#eupMyeonDongName");
+        let sidoTxt = sidoEl.value;
+        let siGunGuTxt = siGunGuEl.value;
+        let eupMyeonDongTxt = eupMyeonDongEl.value;
+
+        // Step 2 지역 선택 드롭다운 변경 시 헤더 업데이트
+        document.querySelectorAll('#sidoName, #siGunGuName, #eupMyeonDongName').forEach(select => {
+            select.addEventListener('change', () => {
+                let sidoSel = document.querySelector("#sidoName");
+                let siGunGuSel = document.querySelector("#siGunGuName");
+                let eupMyeonDongSel = document.querySelector("#eupMyeonDongName");
+                console.log(sidoSel.value);
+
+                // 선택된 옵션의 텍스트를 가져옵니다. "시/도 선택"과 같은 기본 옵션은 빈 문자열로 처리합니다.
+                let sidoTxt = sidoSel.selectedIndex > 0 ? sidoSel.options[sidoSel.selectedIndex].textContent : '';
+                let siGunGuTxt = siGunGuSel.selectedIndex > 0 ? siGunGuSel.options[siGunGuSel.selectedIndex].textContent : '';
+                let eupMyeonDongTxt = eupMyeonDongSel.selectedIndex > 0 ? eupMyeonDongSel.options[eupMyeonDongSel.selectedIndex].textContent : '';
+
+                let areaText = `${sidoSel.value} ${siGunGuSel.value} ${eupMyeonDongSel.value}`.trim();
+
+                // Step 2 헤더 업데이트
+                stepText2.textContent = areaText.length > 0 ? areaText : "선택 안 함";
+            });
+        });
+
+        // 기타(other) 입력 필드 활성화 로직 (jQuery 외부 로직과 통합)
+        $("#other").on("change", function () {
+            let otherInput = $("#otherInput");
+            if ($(this).is(":checked")) {
+                otherInput.removeAttr("disabled");
+                otherInput.focus();
+            } else {
+                otherInput.attr("disabled", "disabled");
+                otherInput.val("");
+            }
+        });
+    });
+
+
+
+    document.addEventListener("DOMContentLoaded", () => {
+
+        /*
+            도메인 변경 (25-11-13)
+            sgis.lostat.go.kr -> sgis.mods.go.kr
+        */
+        // 토큰기간: ~ 2025-12-30일
+        let CONSUMER_KEY = "51d6b465af6e457f8f55";        // 🔹 SGIS 발급
+        let CONSUMER_SECRET = "ad81dbbb3fea4f0eaeb5";     // 🔹 SGIS 발급
+
+        // 1) AccessToken 발급
+        async function getToken() {
+            let url = `https://sgisapi.mods.go.kr/OpenAPI3/auth/authentication.json?consumer_key=${CONSUMER_KEY}&consumer_secret=${CONSUMER_SECRET}`;
+            let res = await fetch(url);
+            let json = await res.json();
+            return json.result.accessToken;
+        }
+
+        // 2) 시/도 조회 (상위 단계)
+        async function loadSido(token) {
+            let url = `https://sgisapi.mods.go.kr/OpenAPI3/addr/stage.json?accessToken=${token}`;
+            let res = await fetch(url);
+            let json = await res.json();
+
+            let sidoSel = document.getElementById("sido");
+
+            json.result.forEach(item => {
+                let op = document.createElement("option");
+                op.value = item.cd;
+                op.textContent = item.addr_name;
+                sidoSel.appendChild(op);
+            });
+
+            // 시도 변경 시 시군구 로드
+            sidoSel.addEventListener("change", (e) => {
+                let options = e.currentTarget.options;
+                let idx = e.currentTarget.options.selectedIndex;
+                console.log("시도값: " + options[idx].textContent);
+                $("#sidoName").val(options[idx].textContent);
+                loadSigungu(token, sidoSel.value);
+            });
+        }
+
+        // 3) 시군구 조회
+        async function loadSigungu(token, sidoCode) {
+            let url = `https://sgisapi.mods.go.kr/OpenAPI3/addr/stage.json?accessToken=${token}&cd=${sidoCode}`;
+            let res = await fetch(url);
+            let json = await res.json();
+
+            let sgSel = document.getElementById("siGunGu");
+            sgSel.innerHTML = `<option value="">시/군/구 선택</option>`;
+
+            let emdSel = document.getElementById("eupMyeonDong");
+            emdSel.innerHTML = `<option value="">읍/면/동 선택</option>`;
+
+            json.result.forEach(item => {
+                let op = document.createElement("option");
+                op.value = item.cd;
+                op.textContent = item.addr_name;
+                sgSel.appendChild(op);
+            });
+        }
+
+        // 4) 읍면동 조회
+        async function loadEmd(token, sigunguCode) {
+            let url = `https://sgisapi.mods.go.kr/OpenAPI3/addr/stage.json?accessToken=${token}&cd=${sigunguCode}`;
+            let res = await fetch(url);
+            let json = await res.json();
+
+            let emdSel = document.getElementById("eupMyeonDong");
+            emdSel.innerHTML = `<option value="">읍/면/동 선택</option>`;
+
+            json.result.forEach(item => {
+                let op = document.createElement("option");
+                op.value = item.cd;
+                op.textContent = item.addr_name;
+                emdSel.appendChild(op);
+            });
+        }
+
+        // 5) 시군구 변경 시 호출될 이벤트 리스너 함수
+        function changeSigungu(token) {
+            let sgSel = document.getElementById("siGunGu");
+
+            sgSel.addEventListener("change", (e) => {
+                let options = e.currentTarget.options;
+                let idx = e.currentTarget.options.selectedIndex;
+                // 텍스트 출력
+                console.log("시군구값: " + options[idx].textContent);
+                $("#siGunGuName").val(options[idx].textContent);
+                // 읍면동 로드
+                loadEmd(token, sgSel.value);
+            });
+        }
+
+        // 6) 읍면동 변경 시 호출될 이벤트 리스너 함수
+        function changeEmd() {
+            let emdSel = document.getElementById("eupMyeonDong");
+
+            emdSel.addEventListener("change", (e) => {
+                let options = e.currentTarget.options;
+                let idx = e.currentTarget.options.selectedIndex;
+                // 텍스트 출력
+                console.log("읍면동값: " + options[idx].textContent);
+                $("#eupMyeonDongName").val(options[idx].textContent);
+            });
+        }
+
+        // 초기 실행
+        (async function() {
+            let token = await getToken();   // 1) 토큰 발급
+            loadSido(token);                // 2) 시도 로드
+            changeSigungu(token);           // 5) 시군구 리스너 등록
+            changeEmd();                    // 6) 읍면동 리스너 등록
+        })();
+    });
+
+    window.onload = function() {
+        let memberIdElement = document.getElementById('memberId');
+
+        if (!memberIdElement) {
+            alert('로그인이 필요한 서비스입니다.');
+        } else {
+            let memberId = memberIdElement.value;
+            console.log('로그인된 사용자 ID:', memberId);
+        }
+    };
+</script>
+</html>

@@ -1,0 +1,26 @@
+services:
+  instagram-server:
+    build: .
+    ports:
+      - "8090:8090"
+    depends_on:
+      my-db:
+        condition: service_healthy
+  my-db:
+    image: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: 1234	
+      MYSQL_USER: "hm01"
+      MYSQL_PASSWORD: "1234"
+      MYSQL_DATABASE: 5core
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+    volumes:
+      - ./mysql_data:/var/lib/mysql
+    ports:
+      - 3307:3306
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping" ]
+      interval: 5s
+      retries: 10

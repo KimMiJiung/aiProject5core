@@ -1,0 +1,1401 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>자동차 딜러 CRM</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    body {
+      display: flex;
+      height: 100vh;
+      background: #f3f5f9;
+      color: #1f2933;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    /* 컬러 토큰 느낌 */
+    :root {
+      --primary: #0d47a1;
+      --primary-soft: #e3eefc;
+      --bg-elevated: #ffffff;
+      --border-subtle: #e2e8f0;
+      --text-muted: #6b7280;
+      --danger: #e53935;
+      --success: #1aa36f;
+      --warning: #f59e0b;
+    }
+
+    /* 레이아웃 */
+    .sidebar {
+      width: 248px;
+      background: linear-gradient(180deg, #0d47a1 0%, #093272 100%);
+      color: #ffffff;
+      display: flex;
+      flex-direction: column;
+      padding: 20px 0;
+    }
+
+    .sidebar__logo {
+      padding: 0 24px 20px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.14);
+      margin-bottom: 16px;
+    }
+
+    .sidebar__logo-title {
+      font-size: 20px;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+    }
+
+    .sidebar__section-title {
+      font-size: 12px;
+      text-transform: uppercase;
+      opacity: 0.75;
+      padding: 0 24px;
+      margin-bottom: 6px;
+    }
+
+    .menu-list {
+      list-style: none;
+      padding: 0 8px;
+    }
+
+    .menu-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 16px;
+      margin: 2px 8px;
+      border-radius: 8px;
+      font-size: 14px;
+      cursor: pointer;
+      transition: background 0.18s ease, transform 0.12s ease;
+      color: #eef3ff;
+      opacity: 0.9;
+    }
+
+    .menu-item:hover {
+      background: rgba(255, 255, 255, 0.15);
+      transform: translateY(-1px);
+      opacity: 1;
+    }
+
+    .menu-item--active {
+      background: #ffffff;
+      color: #0d47a1;
+      opacity: 1;
+      font-weight: 600;
+    }
+
+    .menu-item__bullet {
+      width: 6px;
+      height: 6px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.6);
+    }
+
+    .menu-item--active .menu-item__bullet {
+      background: #0d47a1;
+    }
+
+    .sidebar__bottom {
+      margin-top: auto;
+      padding: 12px 24px 8px;
+      font-size: 12px;
+      opacity: 0.7;
+    }
+
+    .main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+    }
+
+    .header {
+      height: 64px;
+      background: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 24px;
+      border-bottom: 1px solid #e5e7eb;
+    }
+
+    .header__left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .logo {
+      font-size: 18px;
+      font-weight: 700;
+      color: #0d47a1;
+    }
+
+    .header__chip {
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: #e3eefc;
+      font-size: 11px;
+      color: #1f3e7a;
+    }
+
+    .user-info {
+      font-size: 14px;
+      color: #374151;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .user-info__role {
+      font-size: 11px;
+      padding: 3px 8px;
+      border-radius: 999px;
+      background: #f3f4f6;
+      color: #6b7280;
+    }
+
+    .user-info span.logout {
+      color: #0d47a1;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    .content {
+      padding: 20px 24px 24px;
+      overflow-y: auto;
+    }
+
+    .content__row {
+      display: flex;
+      gap: 24px;
+      align-items: flex-start;
+    }
+
+    /* 카드 공통 */
+    .card {
+      background: var(--bg-elevated);
+      padding: 18px 18px 16px;
+      border-radius: 14px;
+      box-shadow: 0 4px 10px rgba(15, 23, 42, 0.06);
+      border: 1px solid var(--border-subtle);
+    }
+
+    .card__header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .card__title {
+      font-size: 15px;
+      font-weight: 600;
+      color: #1f2937;
+    }
+
+    .card__subtitle {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .card__chip {
+      font-size: 11px;
+      padding: 3px 8px;
+      border-radius: 999px;
+      background: #f3f4f6;
+      color: #6b7280;
+    }
+
+    /* 딜러 영역 */
+    .dealer-panel {
+      width: 32%;
+      min-width: 280px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      margin-top: 8px;
+    }
+
+    .dealer-profile {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .dealer-profile__top {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .dealer-avatar {
+      width: 70px;
+      height: 70px;
+      border-radius: 999px;
+      background: linear-gradient(135deg, #1e40af, #0ea5e9);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #ffffff;
+      font-weight: 700;
+      font-size: 20px;
+    }
+
+    .dealer-profile__name {
+      font-size: 18px;
+      color: #0d47a1;
+      margin-bottom: 4px;
+      font-weight: 700;
+    }
+
+    .dealer-profile__meta {
+      font-size: 13px;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    .dealer-profile__meta strong {
+      color: #4b5563;
+      font-weight: 600;
+    }
+
+    .dealer-profile__divider {
+      height: 1px;
+      background: #e5e7eb;
+      margin: 2px 0 8px;
+    }
+
+    .dealer-contact {
+      font-size: 13px;
+      color: #374151;
+      display: grid;
+      row-gap: 4px;
+    }
+
+    .dealer-contact__label {
+      color: var(--text-muted);
+      width: 46px;
+      display: inline-block;
+    }
+
+    .dealer-status-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 4px;
+    }
+
+    .dealer-status-tag {
+      font-size: 11px;
+      padding: 3px 8px;
+      border-radius: 999px;
+      background: #ecfdf3;
+      color: var(--success);
+      border: 1px solid rgba(16, 185, 129, 0.2);
+    }
+
+    .dealer-status-text {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    /* KPI */
+    .kpi-box {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 6px;
+    }
+
+    .kpi-item {
+      background: var(--primary-soft);
+      padding: 10px 10px;
+      border-radius: 10px;
+      text-align: left;
+      color: var(--primary);
+      font-weight: 600;
+      font-size: 14px;
+    }
+
+    .kpi-item__label {
+      font-size: 11px;
+      font-weight: 500;
+      opacity: 0.8;
+      margin-bottom: 4px;
+    }
+
+    .kpi-item__value {
+      font-size: 16px;
+    }
+
+    .kpi-item__trend {
+      font-size: 11px;
+      margin-top: 2px;
+      color: var(--success);
+    }
+
+    .kpi-item__trend--down {
+      color: var(--danger);
+    }
+
+    /* 차트 카드 */
+    .chart-card {
+      margin-top: 6px;
+    }
+
+    .chart-card canvas {
+      width: 100%;
+      max-width: 100%;
+    }
+
+    /* 오른쪽 메인 영역 */
+    .main-panel {
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .main-panel__header-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 4px;
+    }
+
+    .page-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: #111827;
+    }
+
+    .page-subtitle {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    .filter-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .filter-pill {
+      padding: 5px 10px;
+      border-radius: 999px;
+      border: 1px solid #d1d5db;
+      background: #ffffff;
+      cursor: pointer;
+      transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+    }
+
+    .filter-pill--active {
+      background: #0d47a1;
+      color: #ffffff;
+      border-color: #0d47a1;
+      font-weight: 500;
+    }
+
+    /* 고객 리스트 */
+    .customer-section {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .customer-list-wrapper {
+      max-height: 280px;
+      overflow-y: auto;
+      padding-right: 4px;
+    }
+
+    .customer-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+
+    .customer-table thead {
+      position: sticky;
+      top: 0;
+      background: #f9fafb;
+      z-index: 1;
+    }
+
+    .customer-table th,
+    .customer-table td {
+      padding: 8px 10px;
+      text-align: left;
+      border-bottom: 1px solid #edf2f7;
+      white-space: nowrap;
+    }
+
+    .customer-table th {
+      font-size: 12px;
+      color: #6b7280;
+      font-weight: 600;
+    }
+
+    .customer-row {
+      transition: background 0.12s ease;
+      cursor: pointer;
+    }
+
+    .customer-row:hover {
+      background: #f3f4ff;
+    }
+
+    .customer-name-cell {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .customer-avatar {
+      width: 28px;
+      height: 28px;
+      border-radius: 999px;
+      background: #e5e7eb;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      color: #4b5563;
+      font-weight: 600;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 500;
+    }
+
+    .badge--vip {
+      background: #fef3c7;
+      color: #92400e;
+    }
+
+    .badge--lead {
+      background: #ecfdf3;
+      color: #166534;
+    }
+
+    .badge--pending {
+      background: #fef2f2;
+      color: #b91c1c;
+    }
+
+    .customer-tag {
+      font-size: 11px;
+      color: #6b7280;
+    }
+
+    /* 업무 요약 카드 */
+    .summary-list {
+      display: grid;
+      row-gap: 4px;
+      margin-top: 2px;
+    }
+
+    .summary-item {
+      display: flex;
+      justify-content: space-between;
+      font-size: 13px;
+      color: #374151;
+    }
+
+    .summary-item__label {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .summary-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+      background: #0d47a1;
+    }
+
+    .summary-dot--warning {
+      background: var(--warning);
+    }
+
+    .summary-dot--danger {
+      background: var(--danger);
+    }
+
+    .summary-item__value {
+      font-weight: 600;
+    }
+
+    /* 월간 판매 차트 */
+    .monthly-card {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .monthly-card__meta {
+      font-size: 11px;
+      color: var(--text-muted);
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .legend {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 11px;
+    }
+
+    .legend-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      background: #0d47a1;
+    }
+
+    .legend-dot--secondary {
+      background: #22c55e;
+    }
+
+    /* 스크롤바 커스터마이징 (옵션) */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: #cbd5f5;
+      border-radius: 999px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+	
+	/* 달력 스타일 추가 */
+	   .calendar-container {
+	     height: 600px;
+	     overflow-y: auto;
+	     padding: 12px;
+	     background: #fafbfc;
+	     border-radius: 8px;
+	   }
+
+	   .calendar-header {
+	     display: flex;
+	     justify-content: space-between;
+	     align-items: center;
+	     margin-bottom: 16px;
+	     padding-bottom: 12px;
+	     border-bottom: 1px solid #e5e7eb;
+	   }
+
+	   .calendar-title {
+	     font-size: 15px;
+	     font-weight: 600;
+	     color: #1f2937;
+	   }
+
+	   .calendar-nav {
+	     display: flex;
+	     gap: 8px;
+	   }
+
+	   .calendar-nav-btn {
+	     width: 32px;
+	     height: 32px;
+	     border: 1px solid #d1d5db;
+	     background: #ffffff;
+	     border-radius: 6px;
+	     cursor: pointer;
+	     display: flex;
+	     align-items: center;
+	     justify-content: center;
+	     font-size: 14px;
+	     color: #374151;
+	     transition: all 0.15s ease;
+	   }
+
+	   .calendar-nav-btn:hover {
+	     background: #f3f4f6;
+	     border-color: #0d47a1;
+	     color: #0d47a1;
+	   }
+
+	   .calendar-nav-btn.disabled {
+	     opacity: 0.4;
+	     cursor: not-allowed;
+	   }
+
+	   .calendar-grid {
+	     display: grid;
+	     grid-template-columns: repeat(7, 1fr);
+	     gap: 4px;
+	     font-size: 12px;
+	   }
+
+	   .calendar-day-header {
+	     text-align: center;
+	     font-weight: 600;
+	     color: #6b7280;
+	     padding: 8px 4px;
+	     background: #f8fafc;
+	     border-radius: 6px;
+	   }
+
+	   .calendar-day {
+	     aspect-ratio: 1;
+	     display: flex;
+	     flex-direction: column;
+	     padding: 6px 4px;
+	     border-radius: 6px;
+	     cursor: pointer;
+	     transition: all 0.15s ease;
+	     border: 1px solid transparent;
+	     position: relative;
+	     min-height: 60px;
+	   }
+
+	   .calendar-day:hover {
+	     background: #f3f4ff;
+	     border-color: #cbd5e1;
+	   }
+
+	   .calendar-day.today {
+	     background: linear-gradient(135deg, #0d47a1, #1e40af);
+	     color: white;
+	   }
+
+	   .calendar-day.other-month {
+	     color: #d1d5db;
+	     background: transparent;
+	   }
+
+	   .calendar-day-number {
+	     font-weight: 600;
+	     font-size: 13px;
+	     margin-bottom: 4px;
+	   }
+
+	   .calendar-day.today .calendar-day-number {
+	     color: white;
+	   }
+
+	   .calendar-events {
+	     display: flex;
+	     flex-direction: column;
+	     gap: 2px;
+	     flex: 1;
+	     min-height: 0;
+	   }
+
+	   .calendar-event {
+	     font-size: 10px;
+	     padding: 2px 4px;
+	     border-radius: 4px;
+	     overflow: hidden;
+	     text-overflow: ellipsis;
+	     white-space: nowrap;
+	     font-weight: 500;
+	   }
+
+	   .calendar-event.progress {
+		background: #bbf7d0;
+		color: #166534;
+	   }
+
+	   .calendar-event.completed {
+		background: #fef3c7;
+		  color: #92400e;
+	   }
+
+	   .calendar-event.empty {
+	     color: #9ca3af;
+	     font-style: italic;
+	   }
+
+	   .no-events {
+	     color: #9ca3af;
+	     font-size: 11px;
+	     text-align: center;
+	     padding-top: 8px;
+	   }
+	   /* 메신저 & 알림 폼 & AI 챗봇 뷰 */
+	   .messaging-section, .notice-form-section, .ai-consult-form-section, .notice-list-section { 
+	     display: flex;
+	     flex-direction: column;
+	     gap: 10px;
+	   }
+
+	   /* 폼 요소 기본 스타일 통일 및 개선 */
+	   .message-input-group input, 
+	   .message-input-group button, 
+	   .notice-form-section input, 
+	   .notice-form-section textarea,
+	   .form-group select {
+	     padding: 10px 12px; 
+	     border-radius: 10px; 
+	     border: 1px solid var(--border-subtle); 
+	     font-size: 14px;
+	     transition: border-color 0.2s ease, box-shadow 0.2s ease;
+	     width: 100%; /* 너비 100%로 설정하여 폼 그룹 내에서 가득 차도록 함 */
+	   }
+
+	   /* 포커스 시 강조 */
+	   .notice-form-section input:focus, 
+	   .notice-form-section textarea:focus,
+	   .form-group select:focus,
+	   .message-input-group input:focus {
+	       outline: none;
+	       border-color: var(--primary); 
+	       box-shadow: 0 0 0 3px var(--primary-soft); 
+	   }
+	   
+	   /* 알림 폼 */
+	   .notice-form {
+	     display: flex;
+	     flex-direction: column;
+	     gap: 16px; 
+	     margin-top: 8px; 
+	   }
+	   
+	   /* --- 공지사항 리스트 섹션 스타일 (NEW) --- */
+	   .notice-list-section {
+	       flex: 1; /* 메신저와 같은 너비를 갖도록 설정 */
+	   }
+	   
+	   .notice-list {
+	       display: flex;
+	       flex-direction: column;
+	       gap: 10px;
+	       max-height: 300px; /* 리스트 높이 제한 */
+	       overflow-y: auto;
+	   }
+
+	   .notice-item {
+	       display: flex;
+	       justify-content: space-between;
+	       align-items: center;
+	       padding: 10px 14px;
+	       border-radius: 8px;
+	       background: #f8f9fa;
+	       border: 1px solid #e9ecef;
+	       transition: background 0.2s ease;
+	       cursor: pointer;
+	   }
+
+	   .notice-item:hover {
+	       background: #e3eefc;
+	   }
+
+	   .notice-item__content {
+	       flex-grow: 1;
+	       min-width: 0;
+	       padding-right: 15px;
+	   }
+
+	   .notice-item__title {
+	       font-size: 14px;
+	       font-weight: 600;
+	       color: #1f2937;
+	       white-space: nowrap;
+	       overflow: hidden;
+	       text-overflow: ellipsis;
+	   }
+
+	   .notice-item__meta {
+	       font-size: 11px;
+	       color: var(--text-muted);
+	       margin-top: 2px;
+	   }
+
+	   .notice-item__target {
+	       font-size: 11px;
+	       font-weight: 600;
+	       padding: 3px 8px;
+	       border-radius: 999px;
+	       background: var(--primary-soft);
+	       color: var(--primary);
+	       min-width: 60px;
+	       text-align: center;
+	   }
+
+    @media (max-width: 960px) {
+      body {
+        flex-direction: column;
+      }
+      .sidebar {
+        width: 100%;
+        flex-direction: row;
+        align-items: center;
+        height: 56px;
+      }
+      .sidebar__logo {
+        border-bottom: none;
+        margin-bottom: 0;
+      }
+      .sidebar__section-title,
+      .sidebar__bottom {
+        display: none;
+      }
+      .menu-list {
+        display: flex;
+        flex: 1;
+        justify-content: flex-end;
+        padding-right: 16px;
+      }
+      .menu-item {
+        margin: 0 4px;
+        padding: 6px 10px;
+      }
+      .main {
+        height: calc(100vh - 56px);
+      }
+      .content__row {
+        flex-direction: column;
+      }
+      .dealer-panel {
+        width: 100%;
+        flex-direction: row;
+      }
+	  .calendar-day {
+	    min-height: 48px;
+	    padding: 4px 2px;
+	  }
+
+	  .calendar-day-number {
+	    font-size: 12px;
+	  }
+
+	  .calendar-event {
+	    font-size: 9px;
+	  }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="sidebar">
+    <div class="sidebar__logo">
+      <div class="sidebar__logo-title">관리 메뉴</div>
+    </div>
+    <div class="sidebar__section-title">Navigation</div>
+    <ul class="menu-list">
+	  <li>
+	    <a th:href="@{/main}" class="menu-item">
+	      <span class="menu-item__bullet"></span>
+	      <span>메인 대시보드</span>
+	    </a>
+	  </li>
+      <li>
+        <a th:href="@{/dealer}" class="menu-item menu-item--active">
+          <span class="menu-item__bullet"></span>
+          <span>딜러 프로필</span>
+        </a>
+      </li>
+      <li>
+        <a th:href="@{/dealer/care}" class="menu-item">
+          <span class="menu-item__bullet"></span>
+          <span>상담 신청 명단</span>
+        </a>
+      </li>
+      <li>
+        <a th:href="@{/dealer/myCustomer}" class="menu-item">
+          <span class="menu-item__bullet"></span>
+          <span>상담 관리</span>
+        </a>
+      </li>
+      <li>
+        <a th:href="@{/dealer/sale}" class="menu-item">
+          <span class="menu-item__bullet"></span>
+          <span>구매 관리</span>
+        </a>
+      </li>
+    </ul>
+    <div class="sidebar__bottom">
+      HYUNDAI CRM · Dealer Console
+    </div>
+  </div>
+
+  <div class="main">
+    <div class="header">
+      <div class="header__left">
+        <div class="logo">HYUNDAI CRM</div>
+        <div class="header__chip">Dealer Dashboard</div>
+      </div>
+      <div class="user-info">
+        <span class="user-info__role">담당 딜러</span>
+        <span>[[${#authentication.getPrincipal().getUsername()}]] 님</span>
+        <span class="logout"><a sec:authorize="isAuthenticated()" th:href="@{/logout}" class="nav-link">로그아웃</a></span>
+      </div>
+    </div>
+
+    <div class="content">
+      <div class="content__row">
+
+        <!-- 딜러 패널 -->
+        <aside class="dealer-panel">
+          <section class="card dealer-profile">
+            <div class="card__header">
+              <div>
+                <h3 class="card__title">딜러 정보</h3>
+                <p class="card__subtitle">기본 프로필 및 연락처</p>
+              </div>
+              <span class="card__chip">실시간 동기화</span>
+            </div>
+
+            <div class="dealer-profile__top">
+              <div class="dealer-avatar">
+                <span>[[${#strings.substring(dealer.name,0,1)}]]</span>
+              </div>
+              <div>
+                <div class="dealer-profile__name">[[${dealer.name}]]</div>
+                <p class="dealer-profile__meta">
+                  <strong>직급</strong> [[${dealer.role}]]<br />
+                  <strong>근무지</strong> 현대자동차 서울지점
+                </p>
+              </div>
+            </div>
+
+            <div class="dealer-profile__divider"></div>
+
+            <div class="dealer-contact">
+              <div>
+                <span class="dealer-contact__label">전화</span>
+                <span>[[${dealer.phone}]]</span>
+              </div>
+              <div>
+                <span class="dealer-contact__label">이메일</span>
+                <span>[[${dealer.email}]]</span>
+              </div>
+            </div>
+
+            <div class="dealer-status-row">
+              <span class="dealer-status-tag">온라인 • 상담 가능</span>
+              <span class="dealer-status-text">최근 활동: 5분 전</span>
+            </div>
+          </section>
+		  
+		    <section class="card notice-list-section" style="flex:1;">
+		        <div class="card__header">
+		          <h3 class="card__title">공지사항 목록</h3>
+		          <span class="card__subtitle">총 [[${noticePage.totalElements}]]건의 공지/알림 내역입니다.</span>
+		        </div>
+		        
+		      <div class="notice-list">
+		        <div th:each="notice : ${notices}" class="notice-item" 
+		          th:classappend="${notice.isImportant ? 'important-notice-item' : ''}"
+		          th:style="${notice.isImportant ? 'border-left: 4px solid var(--warning);' : ''}"
+		          >
+		          <div class="notice-item__content">
+		            <span class="notice-item__title" th:text="${notice.isImportant ? '⭐ ' + notice.title : notice.title}">공지사항 제목</span>
+		            <span class="notice-item__meta">
+		              등록일: <span th:text="${notice.createDate}"></span> 
+		              | 등록자: <span th:text="${notice.createName}">관리자</span>
+		            </span>
+		          </div>
+		          <span class="notice-item__target" 
+		            th:text="${notice.target}"
+		            th:style="${notice.isImportant ? 'background: #fef3c7; color: #b45309;' : ''}"
+		            >전체 딜러</span>
+		        </div>
+		        <div th:if="${notices.isEmpty()}" style="text-align: center; color: var(--text-muted); padding: 20px;">
+		           등록된 공지사항이 없습니다.
+		        </div>
+		      </div>
+		        
+		      <div th:if="${!noticePage.isEmpty()}" class="pagination-container" style="display: flex; justify-content: center; margin-top: 15px;">
+		        <nav aria-label="Page navigation">
+		          <ul class="pagination" style="list-style: none; display: flex; gap: 5px; padding: 0;">			                  
+		  			<li th:class="${noticePage.first ? 'disabled' : ''}" style="display: inline-block;">
+		                <a th:if="${!noticePage.first}" th:href="@{/admin/profile(page=${noticePage.number - 1})}" class="page-link" 
+		                    style="padding: 6px 10px; border: 1px solid #ccc; border-radius: 5px; color: #0d47a1; text-decoration: none; font-size: 13px;">
+		                     이전
+		                </a>
+		                <span th:if="${noticePage.first}" class="page-link disabled"
+		                    style="padding: 6px 10px; border: 1px solid #ccc; border-radius: 5px; color: #6c757d; text-decoration: none; font-size: 13px; cursor: not-allowed;">
+		                     이전
+		                </span>
+		              </li>	                  
+		              <li th:each="i : ${#numbers.sequence(0, noticePage.totalPages - 1)}" 
+		                th:class="${i == currentPage ? 'active' : ''}"
+		                style="display: inline-block;">
+		                <a th:if="${i == currentPage}" class="page-link active" 
+		                   style="padding: 6px 10px; border: 1px solid #0d47a1; border-radius: 5px; background: #0d47a1; color: #fff; text-decoration: none; font-size: 13px; font-weight: bold;"
+		                   th:text="${i + 1}"></a>
+		                <a th:unless="${i == currentPage}" th:href="@{/admin/profile(page=${i})}" class="page-link" 
+		                   style="padding: 6px 10px; border: 1px solid #ccc; border-radius: 5px; color: #0d47a1; text-decoration: none; font-size: 13px;"
+		                   th:text="${i + 1}"></a>
+		              </li>
+		              
+		  		  <li th:class="${noticePage.last ? 'disabled' : ''}" style="display: inline-block;">
+		                  <a th:if="${!noticePage.last}" th:href="@{/admin/profile(page=${noticePage.number + 1})}" class="page-link"
+		                    style="padding: 6px 10px; border: 1px solid #ccc; border-radius: 5px; color: #0d47a1; text-decoration: none; font-size: 13px;">
+		                      다음
+		                  </a>
+		                  <span th:if="${noticePage.last}" class="page-link disabled"
+		                    style="padding: 6px 10px; border: 1px solid #ccc; border-radius: 5px; color: #6c757d; text-decoration: none; font-size: 13px; cursor: not-allowed;">
+		                      다음
+		                  </span>
+		               </li>
+		         </ul>
+		        </nav>
+		    </div>
+		  </section>
+
+          <section class="card">
+            <div class="card__header">
+              <h3 class="card__title">나의 KPI</h3>
+              <span class="card__subtitle"></span>
+            </div>
+            <div class="kpi-box">
+              <div class="kpi-item">
+                <div class="kpi-item__label">상담 진행</div>
+                <div class="kpi-item__value">[[${progressCnt}]]건</div>
+                <div class="kpi-item__trend"></div>
+              </div>
+			  <div class="kpi-item">
+			    <div class="kpi-item__label">상담 완료</div>
+			    <div class="kpi-item__value">[[${completCnt}]]건</div>
+			    <div class="kpi-item__trend kpi-item__trend--down"></div>
+			  </div>
+              <div class="kpi-item">
+                <div class="kpi-item__label">판매 완료</div>
+                <div class="kpi-item__value">[[${saleCnt}]]대</div>
+                <div class="kpi-item__trend"></div>
+              </div>
+            </div>
+          </section>
+
+		  <section class="card monthly-card" style="flex:1.2;">
+		    <div class="card__header">
+		      <h3 class="card__title">월간 판매량</h3>
+		      <span class="card__subtitle">실시간 딜러별 월별 실적</span>
+		    </div>
+		    
+			<div style="height: 580px; overflow: hidden; background: #fafbfc; border-radius: 8px;">
+				<iframe
+				  th:src="@{|http://localhost:8506/5core?dealerId=${dealerId}|}"
+				  style="width:100%;height:580px;border:none;"
+				  scrolling="no">
+				</iframe>
+			</div>
+		  
+        </aside>
+
+        <!-- 메인 패널 -->
+        <section class="main-panel">
+          <div class="main-panel__header-row">
+            <div>
+              <h2 class="page-title">고객 명단</h2>
+              <p class="page-subtitle">실시간 상담신청 현황 및 VIP 고객 관리</p>
+            </div>
+          </div>
+
+          <!-- 고객 리스트 -->
+          <section class="card customer-section">
+            <div class="card__header">
+              <h3 class="card__title">고객 리스트</h3>
+              <div class="card__subtitle"></div>
+            </div>
+            <div class="customer-list-wrapper">
+              <table class="customer-table">
+                <thead>
+                  <tr>
+                    <th>고객</th>
+                    <th>전화번호</th>
+                    <th>이메일</th>
+                    <th>등급</th>
+                    <th>상태</th>
+                    <th>구매 횟수</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr th:each="customer, customerStat : ${counselingList}" class="customer-row">
+                    <td>
+                      <div class="customer-name-cell">
+                        <div class="customer-avatar">
+                          <span th:text="${#strings.substring(customer.customer.member.name,0,1)}"></span>
+                        </div>
+                        <span th:text="${customer.customer.member.name}"></span>
+                      </div>
+                    </td>
+                    <td th:text="${customer.customer.member.phone}"></td>
+                    <td th:text="${customer.customer.member.email}"></td>
+                    <td>
+                      <span th:if="${customer.customer.segment == 'vip'}" class="badge badge--vip">VIP</span>
+                      <span th:if="${customer.customer.segment == '일반'}" class="badge badge--lead">일반</span>
+                    </td>
+                    <td>
+                      <span class="badge badge--pending" >[[${customer.status}]]</span>
+                      <!--<span class="badge badge--lead" >시승 예약</span>
+                      <span class="badge badge--vip" >구매 완료</span>-->
+                    </td>
+                    <td>
+                      <span class="customer-tag" >[[${customer.customer.purchaseCount}]]</span>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <!-- 오늘의 업무 요약 + 월간 판매 -->
+          <div class="content__row" style="gap:16px; align-items:stretch;">
+			
+			<!-- 달력 -->
+			<section class="card" style="flex:1.5;">
+			  <div class="card__header">
+			    <h3 class="card__title">상담 일정</h3>
+			    <span class="card__subtitle">상담진행중 • 상담완료 고객</span>
+			  </div>
+			  
+			  <div class="calendar-container">
+			    <div class="calendar-header">
+			      <div class="calendar-title" id="calendarTitle">2025년 12월</div>
+			      <div class="calendar-nav">
+			        <button class="calendar-nav-btn" id="prevMonth">‹</button>
+			        <button class="calendar-nav-btn" id="todayBtn">오늘</button>
+			        <button class="calendar-nav-btn" id="nextMonth">›</button>
+			      </div>
+			    </div>
+			    
+			    <div class="calendar-grid" id="calendarGrid">
+			      <!-- 동적으로 생성 -->
+			    </div>
+			  </div>
+			</section>
+
+			<section class="card monthly-card" style="flex:1.2;">
+			  <div class="card__header">
+			    <h3 class="card__title">총 차종별 판매량</h3>
+			    <span class="card__subtitle">차종별 판매 추이 (실시간)</span>
+			  </div>
+			  
+			  <!-- KPI+파이 완벽 fit -->
+			  <div style="height: 615px; overflow: hidden; background: #fafbfc; border-radius: 8px; padding: 8px;">
+			    <iframe
+			        th:src="@{|http://localhost:8503/5core?dealerId=${dealerId}|}"
+			        style="width: 100%; height: 100%; border: none;"
+			        scrolling="no"
+			        frameborder="0">
+			    </iframe>
+			  </div>
+			</section>
+			
+			
+          </div>
+        </section>
+      </div>
+    </div>
+  </div>
+  
+  <script th:inline="javascript">
+      window.counselingScheduleData = /*[[${counselingSchedule}]]*/ [];
+  </script>
+
+  <script>
+  class Calendar {
+      constructor(data) {
+          this.data = data || [];
+          this.currentYear = new Date().getFullYear();
+          this.currentMonth = new Date().getMonth();
+          this.init();
+      }
+	  
+	  dateToYMD(date) {
+	      const d = new Date(date.getFullYear(), date.getMonth(), date.getDate()); // 시분초 0으로
+	      const y = d.getFullYear();
+	      const m = (d.getMonth() + 1).toString().padStart(2, '0');
+	      const day = d.getDate().toString().padStart(2, '0');
+	      return `${y}-${m}-${day}`;  // "yyyy-MM-dd"
+	  }
+
+      init() {
+          this.renderHeader();
+          this.renderCalendar();
+          this.attachEvents();
+      }
+
+      renderHeader() {
+          const title = document.getElementById('calendarTitle');
+          if (title) {
+              const monthText = (this.currentMonth + 1).toString().padStart(2, '0');
+              title.textContent = `${this.currentYear}년 ${monthText}월`;
+          }
+      }
+
+      renderCalendar() {
+          const grid = document.getElementById('calendarGrid');
+          if (!grid) return;
+          grid.innerHTML = '';
+
+          // 1. 요일 헤더
+          ['일', '월', '화', '수', '목', '금', '토'].forEach(day => {
+              const header = document.createElement('div');
+              header.className = 'calendar-day-header';
+              header.textContent = day;
+              grid.appendChild(header);
+          });
+
+          // 2. 현재 년/월 기준으로 캘린더 시작일 계산 (해당 월 1일이 포함된 주의 일요일)
+          const firstDayOfMonth = new Date(this.currentYear, this.currentMonth, 1);
+          const startDate = new Date(firstDayOfMonth);
+          startDate.setDate(firstDayOfMonth.getDate() - firstDayOfMonth.getDay());
+
+          // 3. 6주(42칸) 채우기
+          for (let i = 0; i < 42; i++) {
+              const date = new Date(startDate);
+              date.setDate(startDate.getDate() + i);
+
+              const dayCell = document.createElement('div');
+              dayCell.className = 'calendar-day';
+
+              // 다른 달 날짜는 연한 회색
+              if (date.getMonth() !== this.currentMonth) {
+                  dayCell.classList.add('other-month');
+              }
+
+              // 오늘 날짜 파란색
+              if (this.isToday(date)) {
+                  dayCell.classList.add('today');
+              }
+
+              dayCell.innerHTML = `
+                  <div class="calendar-day-number">${date.getDate()}</div>
+                  <div class="calendar-events">${this.getDayEvents(date)}</div>
+              `;
+
+              dayCell.onclick = () => this.showDayDetail(date);
+              grid.appendChild(dayCell);
+          }
+      }
+
+	  getDayEvents(date) {
+	      const dayStr = this.dateToYMD(date);
+	      const events = this.data.filter(item =>
+	          item.counselingDate === dayStr &&
+	          (item.status === '상담진행중' || item.status === '상담완료')
+	      );
+
+	      if (events.length === 0) {
+	          return '<div class="calendar-event empty">상담없음</div>';
+	      }
+
+	      return events
+	          .slice(0, 2)
+	          .map(event => `
+	              <div class="calendar-event ${event.status === '상담완료' ? 'completed' : 'progress'}">
+	                  ${event.customerName}
+	              </div>
+	          `).join('') +
+	          (events.length > 2 ? `<div class="calendar-event">+${events.length - 2}</div>` : '');
+	  }
+
+      isToday(date) {
+          const today = new Date();
+          return date.toDateString() === today.toDateString();
+      }
+
+	  showDayDetail(date) {
+	      const dayStr = this.dateToYMD(date);
+	      const events = this.data.filter(item =>
+	          item.counselingDate === dayStr &&
+	          (item.status === '상담진행중' || item.status === '상담완료')
+	      );
+
+	      if (events.length === 0) {
+	          alert(`${date.toLocaleDateString('ko-KR')} 상담없음`);
+	          return;
+	      }
+
+	      const details = events.map(e =>
+	          `👤 ${e.customerName} (${e.phone})\n상태: ${e.status}`
+	      ).join('\n\n');
+	      alert(`📅 ${date.toLocaleDateString('ko-KR')} (${events.length}건)\n\n${details}`);
+	  }
+
+      prevMonth() {
+          this.currentMonth--;
+          if (this.currentMonth < 0) {
+              this.currentMonth = 11;
+              this.currentYear--;
+          }
+          this.render();
+      }
+
+      nextMonth() {
+          this.currentMonth++;
+          if (this.currentMonth > 11) {
+              this.currentMonth = 0;
+              this.currentYear++;
+          }
+          this.render();
+      }
+
+      goToday() {
+          const today = new Date();
+          this.currentYear = today.getFullYear();
+          this.currentMonth = today.getMonth();
+          this.render();
+      }
+
+      render() {
+          this.renderHeader();
+          this.renderCalendar();
+      }
+
+      attachEvents() {
+          const prevBtn = document.getElementById('prevMonth');
+          const nextBtn = document.getElementById('nextMonth');
+          const todayBtn = document.getElementById('todayBtn');
+
+          if (prevBtn) prevBtn.onclick = () => this.prevMonth();
+          if (nextBtn) nextBtn.onclick = () => this.nextMonth();
+          if (todayBtn) todayBtn.onclick = () => this.goToday();
+      }
+  }
+
+  // 초기화
+  document.addEventListener('DOMContentLoaded', function() {
+      let data = window.counselingScheduleData || [];
+      data = data.filter(item =>
+          item && item.counselingDate &&
+          (item.status === '상담진행중' || item.status === '상담완료')
+      );
+      new Calendar(data);
+  });
+  </script>
+
+
+
+</body>
+
+</html>

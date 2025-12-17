@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <th:block th:replace="~{top}"></th:block>
+  <title>고객 상담신청 목록</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"rel="stylesheet"/>
+  <style>
+    .main-con {
+		max-width: 100%; 
+	}
+
+	/* 상단 */
+	.applyListHeader {
+		margin-top: -40px;
+		margin-bottom: 50px;
+		padding: 20px;
+		text-align: center;
+		background-color: #f8f8f8;
+	}
+	.applyListHeader > h1 {
+		margin-top: 25px;
+		font-size: 40px;
+		font-weight: bold;
+	}
+	.applyListHeader > p {
+		margin: 50px 0 50px 0;
+		font-size: 0.9em;
+	}
+	
+	.contents {
+		max-width: 1500px;
+		margin: 0 auto;
+	}
+	
+	/* ================================================= */
+	/* ❗ 리스트와 챗봇을 나란히 배치하기 위한 Flexbox 설정 */
+	/* ================================================= */
+	.main-content-flex {
+		display: flex;
+		gap: 20px; /* 리스트와 챗봇 사이 간격 */
+	}
+	
+	.list-area {
+		flex: 0 0 70%; /* 리스트 영역: 65% 너비 고정 */
+		max-width: 70%;
+	}
+	
+	.chatbot-area {
+		flex: 0 0 30%; /* 챗봇 영역: 35% 너비 고정 */
+		max-width: 30%;
+		/* 챗봇 섹션은 목록 섹션과 동일한 높이로 시작하도록 마진 조정 */
+		margin-top: 0; 
+	}
+	
+	/* 화면이 작아지면 다시 세로로 쌓이도록 미디어 쿼리 추가 (선택 사항) */
+	@media (max-width: 1200px) {
+	    .main-content-flex {
+	        flex-direction: column;
+	    }
+	    .list-area, .chatbot-area {
+	        flex: 1 1 100%;
+	        max-width: 100%;
+	    }
+	}
+	
+	/* 표 */
+	.table-responsive {
+		height: 525px;	
+	}
+	
+    .table thead th {
+      vertical-align: middle;
+      text-align: center;
+	  background-color: navy;
+	  color: #fff;
+	  font-size: 0.89em;
+    }
+    .table tbody td {
+      vertical-align: middle;
+	  font-size: 0.89em;
+    }
+    .table tbody tr:hover {
+      background-color: #e9f0ff;
+    }
+    .text-truncate {
+      max-width: 230px;
+    }
+	
+	/* 상담 상태 + 버튼 정렬/스타일 */
+	.status-cell {
+	  white-space: nowrap;
+	  text-align: center;
+	}
+
+	.action-cell {
+	  white-space: nowrap;
+	  text-align: center; /* 버튼 그룹 중앙 정렬 */
+	}
+	
+	.action-cell .btn-group {
+	  display: flex;
+	  gap: 0.5rem; /* 버튼 사이 간격 */
+	  justify-content: center;
+	}
+
+	.status-cell .badge.status-badge {
+	  width: 100px;
+	  height: 30px;
+	  font-size: 0.8rem;
+	  padding: 7px;
+	}
+	
+	.action-cell .btn-sm {
+	  padding: 0.18rem 0.55rem;
+	  font-size: 0.8rem;
+	  line-height: 1.1;
+	  font-weight: bold;
+	  padding: 7px;
+	}
+
+	.btn-cancel {
+		height: 30px;
+		border: 1px solid red;
+		color: #555;
+	}
+	
+	.btn-cancel:hover {
+		border: 1px solid red;
+		background-color: red;
+		color: #fff;
+	}
+	
+	.btn-edit {
+		height: 30px;
+		border: 1px solid navy;
+		color: #555;
+	}
+	
+	.btn-edit:hover {
+		border: 1px solid navy;
+		background-color: navy;
+		color: #fff;
+	}
+	
+	/* 취소됨 상태일 때 배지 색상 */
+	.status-cell .badge.bg-secondary {
+	  background-color: #6c757d !important;
+	}
+	/* 목록, 엑셀 다운 버튼 */
+	.li-btn {
+		color: white;
+		background-color: navy;
+		border: 1px solid dimgray;
+		font-weight: bold;
+		font-size: 0.89em;
+	}
+	.li-btn:hover {
+		background-color: white;
+		color: navy;
+		border: 1px solid dimgray;
+	}
+	
+	.ex-btn {
+		margin-left: 5px;
+		color: gray;
+		border: 1px solid dimgray;
+		font-weight: bold;
+		font-size: 0.89em;
+	}
+	
+	.ex-btn:hover {
+		background-color: green;
+		color: white;
+		border: 1px solid dimgray;
+	}
+	
+	/*상담 진행중 수정,취소 버튼 비활성화*/
+	.disabled-link {
+	  pointer-events: none;  /* 클릭 막기 */
+	  opacity: 0.5;          /* 비활성화처럼 보이게 */
+	  cursor: not-allowed;
+	}	
+	
+	/* 테이블 셀 크기 조정 */
+	/* 챗봇이 옆에 있을 때는 리스트 너비가 좁아지므로 너비 비율 조정 */
+	.list-area .table thead th:nth-child(1) { width: 2%; } /* 체크박스 */
+	.list-area .table thead th:nth-child(2) { width: 3%; } /* 고객ID */
+	.list-area .table thead th:nth-child(3) { width: 16%; } /* 담당딜러 */
+	.list-area .table thead th:nth-child(4) { width: 10%; } /* 예약시간 */
+	.list-area .table thead th:nth-child(5) { width: 14%; } /* 등록일 */
+	.list-area .table thead th:nth-child(6) { width: 17%; } /* 선택차량 */
+	.list-area .table thead th:nth-child(7) { width: 12%; } /* 희망구매시점 */
+	.list-area .table thead th:nth-child(8) { width: 10%; } /* 상담상태 */
+	.list-area .table thead th:nth-child(9) { width: 8%; } /* 버튼 그룹 */
+
+	/* 페이지 버튼 */
+	.page-link {
+		font-weight: bold;
+	}
+	
+	.pagination .page-item .page-link {
+	    background-color: #f0f0f0; /* 연한 회색으로 변경 예시 */
+	    border-color: #777;        /* 테두리 색상도 변경 가능 */
+	    color: #333;               /* 텍스트 색상 (선택 사항) */
+	}
+	/* 활성화된 페이지 링크의 배경색 변경 */
+	.pagination .page-item.active .page-link {
+	    background-color: navy; /* 👈 진한 남색으로 변경 예시 */
+	    border-color: navy;     /* 테두리도 같은 색으로 */
+	    color: white;           /* 텍스트 색상을 흰색으로 유지 */
+	}
+	/* 마우스 오버 시 배경색 변경 */
+	.pagination .page-item .page-link:hover {
+	    background-color: lightsteelblue;
+		border-color: #111;
+	}
+	
+	/*AI 실시간 상담 챗봇 */
+	.card {
+		margin-top: 45px;
+	}
+	.card-header {
+		background-color: navy;
+		height: 37px;
+	}
+	.ai-title {
+		font-size: 0.9em; 
+		font-weight: bold;
+		color: #fff;
+	}
+	.card-body {
+		height: 490px;
+	}
+	
+  </style>
+</head>
+<body>
+  <div class="container main-con">
+	<div class="applyListHeader">
+      <h1>고객 상담신청 목록</h1>
+      <p>아래에서 신청 내역을 확인하고 상태별 필터나 키워드 검색이 가능합니다.</p>
+    </div>
+
+	<div class="contents">
+	    
+	    <div class="main-content-flex">
+	    
+	    <div class="list-area">
+	    
+		    <section class="d-flex flex-wrap justify-content-between align-items-center mb-3">
+		      <div class="d-flex gap-2">
+				<input type="hidden" id="memberId" th:value="${#authentication.getPrincipal().getUsername()}">
+		        <select class="form-select form-select-sm" id="statusFilter"  aria-label="상담 상태 필터">
+		          <option th:selected="${statusFilter == null or statusFilter == '전체 상태'}">전체 상태</option>
+		          <option th:selected="${statusFilter == '상담대기'}">상담대기</option>
+		          <option th:selected="${statusFilter == '상담진행중'}">상담진행중</option>
+		          <option th:selected="${statusFilter == '상담취소'}">상담취소</option>
+		          <option th:selected="${statusFilter == '상담완료'}">상담완료</option>
+				  <option th:selected="${statusFilter == '구매완료'}">구매완료</option>
+		        </select>
+		        <select
+		          class="form-select form-select-sm" id="sortFilter" style="width: 140px" aria-label="정렬 기준 선택">
+		          <option th:selected="${sortFilter == null or sortFilter == '등록일 최신순'}">등록일 최신순</option>
+		          <option th:selected="${sortFilter == '등록일 오래된순'}">등록일 오래된순</option>
+		        </select>
+		      </div>
+			
+			  <div class="d-flex gap-2 mt-2 mt-sm-0">
+		        <input type="hidden" id="searchInput" class="form-control form-control-sm" placeholder="고객ID 또는 연락처 검색" aria-label="고객ID 또는 연락처 검색" th:value="${keyword}"/>
+		      </div>
+		    </section>
+		
+		    <section class="table-responsive shadow-sm bg-white rounded">
+		      <table class="table table-striped table-hover align-middle">
+		        <thead class="table-light">
+		          <tr>
+		            <th class="text-center">
+		              <input type="checkbox" id="selectAll" class="form-check-input" aria-label="전체 선택"/>
+		            </th>
+		            <th class="text-center">ID</th>
+		            <th class="text-center">담당딜러</th>
+		            <th class="text-center">예약시간</th>
+		            <th class="text-center">등록일</th>
+		            <th class="text-center">선택차량</th>
+					<th class="text-center">희망구매시점</th>
+				    <th class="text-center">상담상태</th>
+					<th class="text-center">관리</th>
+		          </tr>
+		        </thead>
+		        <tbody id="tableBody">
+					<tr th:each="apply, loop : ${applyList}" 
+									th:data-id="${apply.id}" 
+									th:onclick="|location.href='@{/counseling/detail/{id}(id=${apply.id})}'|" 
+									style="cursor: pointer;">	
+						
+		
+						<td class="text-center">
+							<input type="checkbox" class="form-check-input rowCheckbox"
+								   onclick="event.stopPropagation();" />
+						</td>
+						<td class="text-center" th:text="${apply.customer.member.id}"></td>
+						<td class="text-center" th:if="${apply.dealer != null}" th:text="${apply.dealer.member.name} + ' (' + ${apply.dealer.member.phone} + ')'">미정</dd>
+						<td class="text-center" th:unless="${apply.dealer != null}">딜러/배정 대기</td>
+						<td class="text-center" th:text="${apply.counselingLikeTime}"></td>
+						<td class="text-center" th:text="${#temporals.format(apply.createDate, 'yyyy-MM-dd HH:mm')}"></td>
+						
+						<td class="text-center">
+						  <a th:href="@{|/vehicles/vehicle/detail/${apply.vehicleId}|}" 
+						     th:text="${apply.vehicleName}" 
+						     class="fw-semibold" 
+						     style="text-decoration: none; color: navy;"
+						     onclick="event.stopPropagation();"
+		                     title="선택 모델 상세 보기">
+						    차량모델명
+						  </a>
+						</td>
+						
+						<td class="status-cell">
+							<span th:text="${apply.purchasePeriod}"></span>
+						</td>
+						
+						<td class="status-cell">
+						  <span th:classappend="${apply.status == '상담취소'} ? 'bg-secondary' : 
+						                           (apply.status == '구매완료' ? 'bg-success text-white' : 
+						                           (apply.status == '상담진행중' ? 'bg-info text-white' : 'bg-warning text-dark'))"
+						        class="badge status-badge" th:text="${apply.status}"></span>
+						</td>
+						
+						<td class="action-cell">
+						  <div class="btn-group" onclick="event.stopPropagation();">
+							<a th:href="@{/counseling/applyList/cencel/{id}(id=${apply.id})}"
+							   class="btn btn-sm btn-cancel"
+							   aria-label="상담 취소"
+							   onclick="event.stopPropagation();"
+							   th:classappend="${(apply.status == '상담진행중' || apply.status == '상담취소' || apply.status == '구매완료')} ? ' disabled-link'">
+							   취소
+							</a>					
+							<a th:href="@{/counseling/detail/{id}(id=${apply.id})}" 
+							   class="btn btn-sm btn-edit"
+							   aria-label="상담 수정"
+							   th:classappend="${(apply.status == '상담진행중' || apply.status == '상담취소' || apply.status == '구매완료')} ? ' disabled-link'">
+							   수정
+							</a>
+						  </div>
+						</td>
+					</tr>
+					<tr th:if="${applyList == null or #lists.isEmpty(applyList)}">
+						<td colspan="9" class="text-center text-muted py-4">조회된 상담 내역이 없습니다.</td>
+					</tr>
+		        </tbody>
+		      </table>
+		    </section>
+		
+			<section class="d-flex justify-content-end align-items-center mt-3"> 
+			    <div class="mb-2 mb-sm-0">
+					<a th:href="@{/counseling/addApply}" class="btn btn-outline li-btn">
+					  구매상담신청
+					</a>
+			        <button id="btnExcelDownload" class="btn btn-outline-secondary ex-btn" aria-label="엑셀 다운로드">
+			          엑셀 다운로드
+			        </button>
+			    </div>
+			</section>
+		
+			<section class="d-flex justify-content-center mt-3 mb-5">
+			    <nav th:if="${counselingPage.totalPages > 1}" aria-label="구매신청 페이지">
+			        <ul class="pagination pagination-sm mb-0">
+			            
+						<!-- 이전 버튼 -->
+						<li class="page-item" th:classappend="${counselingPage.first} ? 'disabled'">
+						    <a class="page-link"
+						       th:href="${counselingPage.first} ? '#' : 
+						                @{/counseling/applyList/{memberId}(
+						                    memberId=${#authentication.getPrincipal().getUsername()},
+						                    page=${counselingPage.number - 1},
+						                    statusFilter=${statusFilter},
+						                    sortFilter=${sortFilter},
+						                    keyword=${keyword})}"
+						       tabindex="-1"
+						       aria-disabled="${counselingPage.first}">이전</a>
+						</li>
+
+						<!-- 페이지 번호 -->
+						<li th:each="i : ${#numbers.sequence(0, counselingPage.totalPages - 1)}"
+						    th:class="${i == counselingPage.number} ? 'page-item active' : 'page-item'">
+						    <a class="page-link"
+						       th:text="${i + 1}"
+						       th:href="@{/counseling/applyList/{memberId}(
+						            memberId=${#authentication.getPrincipal().getUsername()},
+						            page=${i},
+						            statusFilter=${statusFilter},
+						            sortFilter=${sortFilter},
+						            keyword=${keyword})}"></a>
+						</li>
+
+						<!-- 다음 버튼 -->
+						<li class="page-item" th:classappend="${counselingPage.last} ? 'disabled'">
+						    <a class="page-link"
+						       th:href="${counselingPage.last} ? '#' : 
+						                @{/counseling/applyList/{memberId}(
+						                    memberId=${#authentication.getPrincipal().getUsername()},
+						                    page=${counselingPage.number + 1},
+						                    statusFilter=${statusFilter},
+						                    sortFilter=${sortFilter},
+						                    keyword=${keyword})}"
+						       aria-disabled="${counselingPage.last}">다음</a>
+						</li>
+						
+			        </ul>
+			    </nav>
+			</section>			
+		</div> 
+		<div class="chatbot-area">
+			<div class="card shadow-sm mb-5">
+				<div class="card-header">
+					<h5 class="mb-0 ai-title">AI 실시간 상담 챗봇</h5>
+				</div>
+				<div class="card-body p-0">
+					<iframe
+						th:src="@{|http://localhost:8504/5core|}"
+						style="width: 100%; height: 490px; border: none; border-radius: 0 0 8px 8px; overflow: hidden;">
+					</iframe>
+				</div>
+			</div>
+		</div>
+		</div> </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    /* ====== 요소 선택 ====== */
+    let selectAllCheckbox = document.getElementById('selectAll');
+    let rowCheckboxes = () => document.querySelectorAll('input.rowCheckbox');
+    let statusFilter = document.getElementById('statusFilter');
+    let sortFilter = document.getElementById('sortFilter');
+    let searchInput = document.getElementById('searchInput');
+    let searchButton = document.getElementById('searchBtn');
+    let tableBody = document.getElementById('tableBody');
+    let btnExcelDownload = document.getElementById('btnExcelDownload');
+
+    function buildQueryString(page = 0) {
+		let status = statusFilter.value;
+		let sort = sortFilter.value;
+		let keyword = searchInput.value.trim();
+        
+		let params = new URLSearchParams();
+        params.append('page', page);
+        params.append('statusFilter', status); 
+        params.append('sortFilter', sort);
+        if (keyword !== '') params.append('keyword', keyword);		
+        
+        return params.toString();
+    }
+	
+	function applyFiltersAndSorting() {
+		let memberId = document.getElementById("memberId").value;
+		window.location.href = `/5core/counseling/applyList/${memberId}?${buildQueryString(0)}`;
+	}
+	
+	statusFilter.addEventListener('change', applyFiltersAndSorting);
+    
+    // 개별 버튼 클릭 시 상세 페이지로 이동 방지 로직 및 액션 처리
+    function handleActionClick(event) {
+	  let btn = event.target.closest('button');
+	  if (!btn || (!btn.classList.contains('btn-cancel') && !btn.classList.contains('btn-delete'))) return;
+	  
+	  let row = btn.closest('tr');
+	  let counselingId = row.dataset.id;
+	  let customerId = row.cells[1].textContent.trim();
+	  let vehicleName = row.cells[5].querySelector('a')?.textContent.trim() ?? 'N/A';
+	  
+	  // 이벤트 버블링을 막아 <tr> 클릭에 의한 상세 페이지 이동을 방지
+	  event.stopPropagation();
+	  
+	  if (!counselingId) {
+		  alert('상담 ID를 찾을 수 없습니다.');
+		  return;
+	  }
+
+	  if (btn.classList.contains('btn-cancel')) {
+	    handleCancel(btn, counselingId, customerId, vehicleName);
+	  } else if (btn.classList.contains('btn-delete')) {
+		handleDelete(row, counselingId, customerId, vehicleName);
+	  }
+    }
+
+
+    /* ====== 메인 기능 (기존 로직 유지, 서버 요청 필요 부분만 수정) ====== */
+    
+    // 전체 선택, 개별 선택 체크박스 동기화
+    function handleSelectAllChange() {
+      let checked = selectAllCheckbox.checked;
+      rowCheckboxes().forEach((cb) => {
+        cb.checked = checked;
+      });
+    }
+
+    // 선택된 행 삭제 (프론트엔드 임시)
+    function handleDeleteSelected() {
+      let checkedBoxes = Array.from(rowCheckboxes()).filter((cb) => cb.checked);
+
+      if (checkedBoxes.length === 0) {
+        alert('삭제할 항목을 선택해 주세요.');
+        return;
+      }
+      if (!confirm(`${checkedBoxes.length}건을 삭제하시겠습니까?`)) return;
+
+      checkedBoxes.forEach((cb) => {
+        let row = cb.closest('tr');
+        if (row) {
+			// **TODO**: 여기서 실제 삭제 API 호출이 필요합니다.
+			row.remove();
+		}
+      });
+
+      selectAllCheckbox.checked = false;
+	  // 삭제 후 목록을 다시 로드할 필요가 있을 경우
+	  // window.location.reload(); 
+    }
+	
+    // 테이블을 CSV로 변환 (서버에서 받은 현재 페이지 데이터만 변환)
+	// 선택된 행만 CSV로 변환
+	function tableToCSVWithSelection() {
+	  let rows = [];
+
+	  let headers = [];
+	  document.querySelectorAll('.list-area table thead th').forEach((th, idx) => {
+	    // 체크박스 열(0)과 관리 열(마지막)은 제외
+	    if (idx === 0 || idx === document.querySelectorAll('.list-area table thead th').length - 1) return; 
+	    let text = th.textContent.trim();
+	    if (text !== '') headers.push(`"${text}"`);
+	  });
+	  rows.push(headers.join(','));
+
+	  // **변경: 선택된 체크박스만 필터링**
+	  let checkedBoxes = Array.from(rowCheckboxes()).filter((cb) => cb.checked);
+	  
+	  checkedBoxes.forEach((cb) => {
+	    let tr = cb.closest('tr');
+	    if (!tr) return;
+
+	    let data = [];
+	    tr.querySelectorAll('td').forEach((td, idx) => {
+	      // 체크박스 열(0)과 관리 열(마지막)은 제외
+	      if (idx === 0 || idx === tr.querySelectorAll('td').length - 1) return;
+
+	      if (idx === 8) { // 9번째 컬럼 (인덱스 8)
+	        let badge = td.querySelector('.status-badge');
+	        let text = badge ? badge.textContent.trim() : td.textContent.trim();
+	        data.push(`"${text.replace(/"/g, '""')}"`);
+	        return;
+	      }
+	      
+	      // 선택 차량 셀(인덱스 5)의 경우 링크 텍스트를 사용
+	      if (idx === 5) {
+	         let link = td.querySelector('a');
+	         let text = link ? link.textContent.trim() : td.textContent.trim();
+	         data.push(`"${text.replace(/"/g, '""')}"`);
+	         return;
+	      }
+
+	      // 희망구매시점 셀 (인덱스 6)
+	      if (idx === 6) {
+	         let text = td.textContent.trim();
+	         data.push(`"${text.replace(/"/g, '""')}"`);
+	         return;
+	      }
+
+
+	      let text = td.textContent.trim().replace(/"/g, '""');
+	      data.push(`"${text}"`);
+	    });
+	    if (data.length) rows.push(data.join(','));
+	  });
+
+	  return rows.join('\n');
+	}
+
+
+    // CSV 파일 다운로드
+    function downloadCSV(csv, filename) {
+      let BOM = '\uFEFF';
+      let blob = new Blob([BOM + csv], {
+        type: 'text/csv;charset=utf-8;',
+      });
+      let url = URL.createObjectURL(blob);
+
+      let link = document.createElement('a');
+      link.href = url;
+      link.download = filename;
+      link.style.display = 'none';
+
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+    }
+
+	// 엑셀 다운로드 버튼 동작 (선택된 행만 다운로드)
+	function handleExcelDownload() {
+	  let checkedBoxes = Array.from(rowCheckboxes()).filter((cb) => cb.checked);
+	  
+	  // **변경: 체크박스 선택 필수**
+	  if (checkedBoxes.length === 0) {
+	    alert('다운로드할 상담리스트를 선택해 주세요.');
+	    return;
+	  }
+	  
+	  if (!confirm(`선택된 ${checkedBoxes.length}건의 데이터를 CSV(엑셀)로 다운로드하시겠습니까?\n\n(엑셀에서 정상적으로 열립니다.)`)) {
+	    return;
+	  }
+	  
+	  let csvData = tableToCSVWithSelection();
+	  let dateStr = new Date().toISOString().slice(0, 10);
+	  downloadCSV(csvData, `구매신청리스트_${dateStr}.csv`);
+	}
+
+
+	// 상담 취소 기능
+	function handleCancel(btn, id, customerId, vehicleName) {
+	  // 7번째 컬럼이 희망구매시점, 8번째 컬럼이 상담상태
+	  let statusCell = btn.closest('tr').cells[8]; 
+	  let badge = statusCell.querySelector('.status-badge');
+
+	  if (!badge) return;
+
+	  let currentStatus = badge.textContent.trim();
+	  if (currentStatus === '상담취소') return;
+
+	  if (!confirm(`[${customerId} / ${vehicleName}] 상담을 '상담취소' 상태로 변경하시겠습니까?`)) {
+	    return;
+	  }
+	  
+	  
+	  // 임시 프론트엔드 처리
+	  badge.textContent = '상담취소';
+	  badge.className = 'badge bg-secondary status-badge';
+	  btn.style.display = 'none';
+	  alert('상담 상태가 취소로 변경되었습니다. (프론트엔드 임시 처리)');
+	}
+
+	// 상담 삭제 기능
+	function handleDelete(row, id, customerId, vehicleName) {
+	  if (!confirm(`[${customerId} / ${vehicleName}] 상담을 영구 삭제하시겠습니까?`)) {
+	    return;
+	  }
+	  
+	  // 임시 프론트엔드 처리
+	  row.remove();
+	  alert('상담이 삭제되었습니다. (프론트엔드 임시 처리)');
+	  // window.location.reload(); 
+	}
+
+
+    /* ====== 이벤트 연결 ====== */
+    selectAllCheckbox.addEventListener('change', handleSelectAllChange);
+    statusFilter.addEventListener('change', applyFiltersAndSorting);
+    sortFilter.addEventListener('change', applyFiltersAndSorting);
+    searchInput.addEventListener('keyup', (e) => {
+      if (e.key === 'Enter') applyFiltersAndSorting();
+    });
+    btnExcelDownload.addEventListener('click', handleExcelDownload);
+	
+	// 취소/삭제 버튼 클릭 처리 (이벤트 위임)
+	tableBody.addEventListener('click', handleActionClick);
+
+    
+  </script>
+  <th:block th:replace="~{bottom}"></th:block>
+</body>
+</html>

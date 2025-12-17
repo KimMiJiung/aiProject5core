@@ -1,0 +1,1183 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>자동차 관리자 CRM</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    body {
+      display: flex;
+      height: 100vh;
+      background: #f3f5f9;
+      color: #1f2933;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    :root {
+      --primary: #0d47a1;
+      --primary-soft: #e3eefc;
+      --bg-elevated: #ffffff;
+      --border-subtle: #e2e8f0;
+      --text-muted: #6b7280;
+      --danger: #e53935;
+      --success: #1aa36f;
+      --warning: #f59e0b;
+    }
+
+    .sidebar {
+      width: 248px;
+      background: linear-gradient(180deg, #0d47a1 0%, #093272 100%);
+      color: #ffffff;
+      display: flex;
+      flex-direction: column;
+      padding: 20px 0;
+    }
+
+    .sidebar__logo {
+      padding: 0 24px 20px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.14);
+      margin-bottom: 16px;
+    }
+
+    .sidebar__logo-title {
+      font-size: 20px;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+    }
+
+    .sidebar__section-title {
+      font-size: 12px;
+      text-transform: uppercase;
+      opacity: 0.75;
+      padding: 0 24px;
+      margin-bottom: 6px;
+    }
+
+    .menu-list {
+      list-style: none;
+      padding: 0 8px;
+    }
+
+    .menu-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 16px;
+      margin: 2px 8px;
+      border-radius: 8px;
+      font-size: 14px;
+      cursor: pointer;
+      transition: background 0.18s ease, transform 0.12s ease;
+      color: #eef3ff;
+      opacity: 0.9;
+    }
+
+    .menu-item:hover {
+      background: rgba(255, 255, 255, 0.15);
+      transform: translateY(-1px);
+      opacity: 1;
+    }
+
+    .menu-item--active {
+      background: #ffffff;
+      color: #0d47a1;
+      opacity: 1;
+      font-weight: 600;
+    }
+
+    .menu-item__bullet {
+      width: 6px;
+      height: 6px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.6);
+    }
+
+    .menu-item--active .menu-item__bullet {
+      background: #0d47a1;
+    }
+
+    .sidebar__bottom {
+      margin-top: auto;
+      padding: 12px 24px 8px;
+      font-size: 12px;
+      opacity: 0.7;
+    }
+
+    .main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+    }
+
+    .header {
+      height: 64px;
+      background: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 24px;
+      border-bottom: 1px solid #e5e7eb;
+    }
+
+    .header__left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .logo {
+      font-size: 18px;
+      font-weight: 700;
+      color: #0d47a1;
+    }
+
+    .header__chip {
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: #e3eefc;
+      font-size: 11px;
+      color: #1f3e7a;
+    }
+
+    .user-info {
+      font-size: 14px;
+      color: #374151;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .user-info__role {
+      font-size: 11px;
+      padding: 3px 8px;
+      border-radius: 999px;
+      background: #f3f4f6;
+      color: #6b7280;
+    }
+
+    .user-info span.logout {
+      color: #0d47a1;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    .content {
+      padding: 20px 24px 24px;
+      overflow-y: auto;
+    }
+
+    .content__row {
+      display: flex;
+      gap: 16px;
+      align-items: stretch;
+      flex: 1;
+    }
+
+    .content__row--bottom {
+      margin-top: 16px;
+    }
+
+    .card {
+      height: 600px;
+      background: var(--bg-elevated);
+      padding: 18px 18px 16px;
+      border-radius: 14px;
+      box-shadow: 0 4px 10px rgba(15, 23, 42, 0.06);
+      border: 1px solid var(--border-subtle);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .card--flex {
+      flex: 1;
+    }
+
+    .card__header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .card__title {
+      font-size: 15px;
+      font-weight: 600;
+      color: #1f2937;
+    }
+
+    .card__subtitle {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .card__chip {
+      font-size: 11px;
+      padding: 3px 8px;
+      border-radius: 999px;
+      background: #f3f4f6;
+      color: #6b7280;
+    }
+
+    .admin-panel {
+      width: 35%;
+      min-width: 300px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      margin-top: 8px;
+    }
+
+    .admin-card {
+      height: 200px;
+      background: var(--bg-elevated);
+      padding: 18px 18px 16px;
+      border-radius: 14px;
+      box-shadow: 0 4px 10px rgba(15, 23, 42, 0.06);
+      border: 1px solid var(--border-subtle);
+    }
+
+    .admin-profile {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      background: var(--bg-elevated);
+    }
+
+    .admin-profile__top {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .admin-avatar {
+      width: 78px;
+      height: 78px;
+      border-radius: 999px;
+      background: linear-gradient(135deg, #1e40af, #0ea5e9);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #ffffff;
+      font-weight: 700;
+      font-size: 24px;
+      box-shadow: 0 4px 10px rgba(13, 71, 161, 0.2);
+    }
+
+    .admin-profile__name {
+      font-size: 20px;
+      color: #0d47a1;
+      margin-bottom: 4px;
+      font-weight: 800;
+    }
+
+    .admin-profile__meta {
+      font-size: 14px;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+
+    .admin-profile__meta strong {
+      color: #4b5563;
+      font-weight: 600;
+    }
+
+    .admin-profile__divider {
+      height: 1px;
+      background: #e5e7eb;
+      margin: 2px 0 8px;
+    }
+
+    .admin-contact {
+      font-size: 14px;
+      color: #374151;
+      display: grid;
+      row-gap: 8px;
+      padding: 8px 0;
+    }
+
+    .admin-contact__label {
+      color: var(--text-muted);
+      width: 50px;
+      display: inline-block;
+      font-weight: 500;
+    }
+
+    .schedule-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      padding-top: 4px;
+    }
+
+    .schedule-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 8px 10px;
+      border-radius: 8px;
+      background: #fcfcfc;
+      border-left: 4px solid #e5e7eb;
+      transition: background 0.2s ease;
+    }
+
+    .schedule-item:hover {
+      background: #f3f5f9;
+    }
+
+    .schedule-item--active {
+      border-left-color: var(--primary);
+    }
+
+    .schedule-item--pending {
+      border-left-color: var(--warning);
+    }
+
+    .schedule-item--overdue {
+      border-left-color: var(--danger) !important;
+      opacity: 0.7;
+    }
+
+    .schedule-item__dot {
+      width: 10px;
+      height: 10px;
+      min-width: 10px;
+      border-radius: 999px;
+      background: #d1d5db;
+    }
+
+    .schedule-item--active .schedule-item__dot {
+      background: var(--primary);
+    }
+
+    .schedule-item--pending .schedule-item__dot {
+      background: var(--warning);
+    }
+
+    .schedule-item--overdue .schedule-item__dot {
+      background: var(--danger) !important;
+    }
+
+    .schedule-item__content {
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+    }
+
+    .schedule-item__title {
+      font-size: 14px;
+      font-weight: 600;
+      color: #374151;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .schedule-item__meta {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    .schedule-item__priority {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--danger);
+      background: #fef2f2;
+      padding: 3px 8px;
+      border-radius: 999px;
+      border: 1px solid #fca5a5;
+      min-width: 40px;
+      text-align: center;
+    }
+
+    .main-panel {
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .messaging-section,
+    .notice-form-section,
+    .ai-consult-form-section,
+    .notice-list-section {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .message-input-group input,
+    .message-input-group button,
+    .notice-form-section input,
+    .notice-form-section textarea,
+    .form-group select {
+      padding: 10px 12px;
+      border-radius: 10px;
+      border: 1px solid var(--border-subtle);
+      font-size: 14px;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+      width: 100%;
+    }
+
+    .notice-form-section input:focus,
+    .notice-form-section textarea:focus,
+    .form-group select:focus,
+    .message-input-group input:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px var(--primary-soft);
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 14px;
+      font-weight: 600;
+      color: #1f2937;
+      margin-bottom: 4px;
+    }
+
+    .message-list {
+      max-height: 250px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      padding: 0 4px;
+    }
+
+    .message-bubble {
+      max-width: 75%;
+      padding: 10px 14px;
+      border-radius: 14px;
+      font-size: 14px;
+      line-height: 1.4;
+    }
+
+    .message-bubble--admin {
+      background: var(--primary);
+      color: #ffffff;
+      align-self: flex-end;
+      border-bottom-right-radius: 4px;
+    }
+
+    .message-bubble--dealer {
+      background: #e3eefc;
+      color: #1f3e7a;
+      align-self: flex-start;
+      border-bottom-left-radius: 4px;
+    }
+
+    .message-meta {
+      font-size: 11px;
+      color: #9ca3af;
+      margin-top: 6px;
+    }
+
+    .message-input-group {
+      display: flex;
+      gap: 8px;
+      padding-top: 12px;
+      border-top: 1px solid var(--border-subtle);
+      margin-top: 8px;
+    }
+
+    .message-input-group input {
+      flex: 1;
+    }
+
+    .message-input-group button {
+      background: var(--primary);
+      color: #ffffff;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.15s ease;
+      padding: 0 16px;
+      height: 40px;
+      width: auto;
+      border-radius: 10px;
+      border: none;
+    }
+
+    .message-input-group button:hover {
+      background: #1e40af;
+    }
+
+    .notice-form {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      margin-top: 8px;
+    }
+
+    .form-group textarea {
+      resize: vertical;
+      min-height: 100px;
+    }
+
+    .form-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+      padding-top: 10px;
+      border-top: 1px solid #f3f4f6;
+      margin-top: 12px;
+    }
+
+    .form-actions button {
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.15s ease, box-shadow 0.2s ease;
+      border: none;
+    }
+
+    .btn-submit {
+      background: var(--primary);
+      color: #ffffff;
+      box-shadow: 0 3px 6px rgba(13, 71, 161, 0.2);
+    }
+
+    .btn-submit:hover {
+      background: #1e40af;
+    }
+
+    .btn-cancel {
+      background: #e5e7eb;
+      color: #4b5563;
+      border: 1px solid #d1d5db;
+    }
+
+    .btn-cancel:hover {
+      background: #d1d5db;
+    }
+
+    .ai-consult-form-section {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .chatbot-live-view {
+      flex: 1;
+    }
+
+    .chatbot-live-view iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+      border-radius: 8px;
+      overflow: hidden;
+      min-height: 400px;
+    }
+
+    .notice-list-section {
+      flex: 1;
+    }
+
+    .notice-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      max-height: 300px;
+      overflow-y: auto;
+    }
+
+    .notice-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 14px;
+      border-radius: 8px;
+      background: #f8f9fa;
+      border: 1px solid #e9ecef;
+      transition: background 0.2s ease;
+      cursor: pointer;
+    }
+
+    .notice-item:hover {
+      background: #e3eefc;
+    }
+
+    .notice-item__content {
+      flex-grow: 1;
+      min-width: 0;
+      padding-right: 15px;
+    }
+
+    .notice-item__title {
+      font-size: 14px;
+      font-weight: 600;
+      color: #1f2937;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .notice-item__meta {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    .notice-item__target {
+      font-size: 11px;
+      font-weight: 600;
+      padding: 3px 8px;
+      border-radius: 999px;
+      background: var(--primary-soft);
+      color: var(--primary);
+      min-width: 60px;
+      text-align: center;
+    }
+
+    .notice-empty {
+      text-align: center;
+      color: var(--text-muted);
+      padding: 20px;
+    }
+
+    .pagination-container {
+      display: flex;
+      justify-content: center;
+      margin-top: 15px;
+    }
+
+    .pagination {
+      list-style: none;
+      display: flex;
+      gap: 5px;
+      padding: 0;
+    }
+
+    .page-link {
+      padding: 6px 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      color: #0d47a1;
+      text-decoration: none;
+      font-size: 13px;
+    }
+
+    .page-link--active {
+      border: 1px solid #0d47a1;
+      background: #0d47a1;
+      color: #fff;
+      font-weight: bold;
+    }
+
+    .page-link--disabled {
+      color: #6c757d;
+      cursor: not-allowed;
+    }
+
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: #cbd5f5;
+      border-radius: 999px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    @media (max-width: 960px) {
+      body {
+        flex-direction: column;
+      }
+      .sidebar {
+        width: 100%;
+        flex-direction: row;
+        align-items: center;
+        height: 56px;
+      }
+      .sidebar__logo {
+        border-bottom: none;
+        margin-bottom: 0;
+      }
+      .sidebar__section-title,
+      .sidebar__bottom {
+        display: none;
+      }
+      .menu-list {
+        display: flex;
+        flex: 1;
+        justify-content: flex-end;
+        padding-right: 16px;
+      }
+      .menu-item {
+        margin: 0 4px;
+        padding: 6px 10px;
+      }
+      .main {
+        height: calc(100vh - 56px);
+      }
+      .content__row {
+        flex-direction: column;
+      }
+      .admin-panel {
+        width: 100%;
+        flex-direction: row;
+        flex-wrap: wrap;
+        min-width: unset;
+      }
+    }
+
+    .delete-schedule-btn:hover {
+      color: var(--danger);
+    }
+  </style>
+</head>
+<body>
+<div class="sidebar">
+  <div class="sidebar__logo">
+    <div class="sidebar__logo-title">관리 메뉴</div>
+  </div>
+
+  <div class="sidebar__section-title">Navigation</div>
+  <ul class="menu-list">
+    <li>
+      <a th:href="@{/main}" class="menu-item">
+        <span class="menu-item__bullet"></span>
+        <span>메인 대시보드</span>
+      </a>
+    </li>
+    <li>
+      <a th:href="@{/admin/profile}" class="menu-item menu-item--active">
+        <span class="menu-item__bullet"></span>
+        <span>프로필</span>
+      </a>
+    </li>
+    <li>
+      <a th:href="@{/admin/list}" class="menu-item">
+        <span class="menu-item__bullet"></span>
+        <span>멤버 관리</span>
+      </a>
+    </li>
+    <li>
+      <a th:href="@{/admin/globalSales}" class="menu-item">
+        <span class="menu-item__bullet"></span>
+        <span>글로벌 판매 실적</span>
+      </a>
+    </li>
+	<li>
+	  <a th:href="@{/admin/aiForecast}" class="menu-item">
+	    <span class="menu-item__bullet"></span>
+	    <span>AI수요예측</span>
+	  </a>
+	</li>		
+    <li>
+      <a th:href="@{/admin/modelSales}" class="menu-item">
+        <span class="menu-item__bullet"></span>
+        <span>차량별 판매 실적</span>
+      </a>
+    </li>
+  </ul>
+  <div class="sidebar__bottom">
+    HYUNDAI CRM · Admin Console
+  </div>
+</div>
+
+<div class="main">
+  <div class="header">
+    <div class="header__left">
+      <div class="logo">HYUNDAI CRM</div>
+      <div class="header__chip">Admin Dashboard</div>
+    </div>
+    <div class="user-info">
+      <span class="user-info__role">관리자</span>
+      <span>[[${#authentication.getPrincipal().getUsername()}]] 님</span>
+      <span class="logout"><a sec:authorize="isAuthenticated()" th:href="@{/logout}" class="nav-link">로그아웃</a></span>
+    </div>
+  </div>
+
+  <div class="content">
+    <div class="content__row">
+      <aside class="admin-panel">
+        <div>
+          <div th:if="${successMessage}" class="alert alert-success" th:text="${successMessage}"
+               style="background: #e6ffed; border-left: 5px solid #00a04c; padding: 10px; margin-bottom: 15px; color: #00a04c; border-radius: 4px;">
+            성공 메시지
+          </div>
+          <div th:if="${errorMessage}" class="alert alert-danger" th:text="${errorMessage}"
+               style="background: #ffe6e6; border-left: 5px solid #d32f2f; padding: 10px; margin-bottom: 15px; color: #d32f2f; border-radius: 4px;">
+            실패 메시지
+          </div>
+        </div>
+
+        <section class="admin-card admin-profile">
+          <div class="card__header">
+            <div>
+              <h3 class="card__title">관리자 정보</h3>
+              <p class="card__subtitle">기본 프로필 및 연락처</p>
+            </div>
+            <span class="card__chip">실시간 동기화</span>
+          </div>
+
+          <div class="admin-profile__top">
+            <div class="admin-avatar">
+              <span>[[${#strings.substring(admin.name,0,1)}]]</span>
+            </div>
+            <div>
+              <div class="admin-profile__name">[[${admin.name}]]</div>
+              <p class="admin-profile__meta">
+                <strong>직급</strong> [[${admin.role}]]<br />
+                <strong>근무지</strong> 현대자동차 서울지점
+              </p>
+            </div>
+          </div>
+
+          <div class="admin-profile__divider"></div>
+
+          <div class="admin-contact">
+            <div>
+              <span class="admin-contact__label">전화</span>
+              <span>[[${admin.phone}]]</span>
+            </div>
+            <div>
+              <span class="admin-contact__label">이메일</span>
+              <span>[[${admin.email}]]</span>
+            </div>
+          </div>
+        </section>
+
+        <section class="card admin-schedule">
+          <div class="card__header">
+            <div>
+              <h3 class="card__title">주요 업무 스케줄 관리</h3>
+              <p class="card__subtitle">업무 일정과 메모를 등록하고 관리합니다.</p>
+            </div>
+            <span class="card__chip">스케쥴 저장</span>
+          </div>
+
+          <form th:action="@{/admin/schedule/add}" method="post" style="padding-bottom: 10px; border-bottom: 1px solid #e2e8f0;">
+            <div class="form-group" style="margin-bottom: 10px;">
+              <label for="scheduleDate" style="display: block; margin-bottom: 5px; font-size: 14px; color: var(--text-muted);">일정 마감일 (선택)</label>
+              <input type="date" id="scheduleDate" name="scheduleDate" class="form-control" style="width: 100%; border: 1px solid var(--border-subtle); padding: 8px; border-radius: 4px;"/>
+            </div>
+            <div class="message-input-group" style="display: flex; gap: 10px;">
+              <input type="text" id="scheduleText" name="scheduleText" placeholder="새로운 업무/메모를 입력하세요..." required
+                     style="flex-grow: 1; padding: 8px; border: 1px solid var(--border-subtle); border-radius: 4px;"/>
+              <button type="submit" class="btn-submit" style="flex-shrink: 0;">등록</button>
+            </div>
+          </form>
+
+          <div class="card__header" style="margin-bottom: 5px; margin-top: 15px;">
+            <h4 class="card__title" style="font-size: 14px; color: #1f2933;">
+              등록된 일정 목록 (총 <span th:text="${schedules.size()}">0</span>개)
+            </h4>
+          </div>
+
+          <div class="schedule-list" id="scheduleListContainer" style="max-height: 250px; overflow-y: auto; padding-right: 5px;">
+            <div th:if="${schedules.isEmpty()}" style="text-align: center; color: var(--text-muted); padding: 10px;">
+              등록된 일정이 없습니다.
+            </div>
+
+            <div th:each="schedule : ${schedules}" class="schedule-item" style="border-left: 5px solid blue; padding-left: 10px; margin-bottom: 5px;">
+              <div class="schedule-item__content">
+                <span class="schedule-item__title" style="font-weight: bold;"
+                      th:text="${'ID: ' + schedule.id + ' | 내용: ' + schedule.content}">[ID: 1] 메모 내용</span>
+
+                <span class="schedule-item__meta" style="color: gray; font-size: 12px;">
+                  <span th:if="${schedule.dueDate != null}">
+                    마감일: <span th:text="${schedule.dueDate}"></span>
+                  </span>
+                  <span th:unless="${schedule.dueDate != null}">
+                    등록일: <span th:text="${schedule.registeredAt}"></span>
+                  </span>
+                </span>
+              </div>
+
+              <form th:action="@{/admin/schedule/delete/{id}(id=${schedule.id})}" method="post"
+                    style="flex-shrink: 0; margin-left: 10px;">
+                <button type="submit" class="delete-schedule-btn" title="삭제"
+                        style="background: none; border: none; color: red; cursor: pointer; padding: 0;">
+                  X
+                </button>
+              </form>
+            </div>
+          </div>
+        </section>
+      </aside>
+
+      <section class="main-panel">
+        <!-- 상단: 공지 등록 + AI 챗봇 -->
+        <div class="content__row">
+          <section class="card notice-form-section card--flex">
+            <div class="card__header">
+              <h3 class="card__title">전체 알림/공지 등록 폼</h3>
+              <span class="card__subtitle">딜러들에게 공지사항을 전파합니다.</span>
+            </div>
+
+            <form th:object="${notice}" class="notice-form" th:action="@{/admin/notice/add}" method="POST">
+              <div class="form-group">
+                <label for="noticeTarget">전송 대상</label>
+                <select id="noticeTarget" name="target" class="form-control">
+                  <option value="전체 딜러">전체 딜러</option>
+                  <option value="VIP 전담">VIP 전담</option>
+                  <option value="서울 지점">서울 지점</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <p class="text-danger" th:errors="*{title}"></p>
+                <label for="noticeTitle">공지 제목</label>
+                <input type="text" id="noticeTitle" name="title" th:field="*{title}" class="form-control" placeholder="제목을 입력하세요" maxlength="500"/>
+              </div>
+
+              <div class="form-group">
+                <label for="noticeContent">내용</label>
+                <textarea id="noticeContent" name="content" th:field="*{content}" class="form-control" placeholder="공지 내용을 입력하세요. (최대 500자)" maxlength="500"></textarea>
+                <p class="text-danger" th:errors="*{content}"></p>
+              </div>
+
+              <div class="form-actions">
+                <button type="reset" class="btn-cancel">취소</button>
+                <button type="submit" class="btn-submit">공지 등록</button>
+              </div>
+            </form>
+          </section>
+
+          <section class="card ai-consult-form-section card--flex">
+            <div class="card__header">
+              <h3 class="card__title">AI 챗봇 라이브 뷰</h3>
+              <span class="card__subtitle">온라인 관리자 쳇봇 화면입니다.</span>
+            </div>
+            <div class="chatbot-live-view" style="flex:1;">
+              <iframe th:src="@{|http://localhost:8510/5core|}"
+                      style="width: 100%; height: 100%; border: none; border-radius: 8px; overflow: hidden;"></iframe>
+            </div>
+          </section>
+        </div>
+
+        <!-- 하단: 공지 목록 + 딜러 메신저 -->
+        <div class="content__row content__row--bottom">
+          <section class="card notice-list-section card--flex">
+            <div class="card__header">
+              <h3 class="card__title">공지사항 목록</h3>
+              <span class="card__subtitle">총 [[${noticePage.totalElements}]]건의 공지/알림 내역입니다.</span>
+            </div>
+
+            <div class="notice-list">
+              <div th:each="notice : ${notices}" class="notice-item"
+                   th:classappend="${notice.isImportant ? ' important-notice-item' : ''}">
+                <div class="notice-item__content">
+                  <span class="notice-item__title"
+                        th:text="${notice.isImportant ? '⭐ ' + notice.title : notice.title}">공지사항 제목</span>
+                  <span class="notice-item__meta">
+                    등록일: <span th:text="${notice.createDate}"></span>
+                    | 등록자: <span th:text="${notice.createName}">관리자</span>
+                  </span>
+                </div>
+                <span class="notice-item__target"
+                      th:text="${notice.target}"
+                      th:style="${notice.isImportant ? 'background: #fef3c7; color: #b45309;' : ''}">
+                  전체 딜러
+                </span>
+              </div>
+
+              <div th:if="${notices.isEmpty()}" class="notice-empty">
+                등록된 공지사항이 없습니다.
+              </div>
+            </div>
+
+            <div th:if="${!noticePage.isEmpty()}" class="pagination-container">
+              <nav aria-label="Page navigation">
+                <ul class="pagination">
+                  <li th:classappend="${noticePage.first ? ' disabled' : ''}">
+                    <a th:if="${!noticePage.first}" th:href="@{/admin/profile(page=${noticePage.number - 1})}" class="page-link">이전</a>
+                    <span th:if="${noticePage.first}" class="page-link page-link--disabled">이전</span>
+                  </li>
+                  <li th:each="i : ${#numbers.sequence(0, noticePage.totalPages - 1)}"
+                      th:classappend="${i == currentPage ? ' active' : ''}">
+                    <a th:if="${i == currentPage}" class="page-link page-link--active" th:text="${i + 1}"></a>
+                    <a th:unless="${i == currentPage}" th:href="@{/admin/profile(page=${i})}" class="page-link" th:text="${i + 1}"></a>
+                  </li>
+                  <li th:classappend="${noticePage.last ? ' disabled' : ''}">
+                    <a th:if="${!noticePage.last}" th:href="@{/admin/profile(page=${noticePage.number + 1})}" class="page-link">다음</a>
+                    <span th:if="${noticePage.last}" class="page-link page-link--disabled">다음</span>
+                  </li>
+                </ul>
+              </nav>
+            </div>
+          </section>
+
+          <section class="card messaging-section card--flex">
+            <div class="card__header">
+              <h3 class="card__title">딜러 소통방 (메신저)</h3>
+              <span class="card__subtitle">딜러들과 실시간으로 소통하세요</span>
+            </div>
+
+            <div class="message-list">
+              <div class="message-bubble message-bubble--dealer">
+                관리자님, 신형 '아이오닉 9' 관련 판매 자료 업데이트 부탁드립니다.
+                <div class="message-meta">홍길동 딜러 · 10:20 AM</div>
+              </div>
+              <div class="message-bubble message-bubble--admin">
+                네, 곧바로 자료실에 업로드하겠습니다. 확인 후 다시 안내드리겠습니다.
+                <div class="message-meta">관리자 · 10:25 AM</div>
+              </div>
+              <div class="message-bubble message-bubble--dealer">
+                감사합니다!
+                <div class="message-meta">홍길동 딜러 · 10:27 AM</div>
+              </div>
+            </div>
+
+            <div class="message-input-group">
+              <input type="text" class="message-input" placeholder="메시지를 입력하세요..." />
+              <button type="button" class="message-submit">보내기</button>
+            </div>
+          </section>
+        </div>
+      </section>
+    </div>
+  </div>
+</div>
+  
+  <script>
+	$(document).ready(function(){
+       // 로컬 저장소 키
+       const STORAGE_KEY = 'adminSchedules';
+       
+       // 1. 스케줄 로드 및 렌더링 함수
+       function renderSchedules() {
+           const schedules = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+           const container = $('#scheduleListContainer');
+           container.empty();
+           
+           if (schedules.length === 0) {
+               container.append('<div style="text-align: center; color: var(--text-muted); padding: 10px;" id="emptyMessage">등록된 일정이 없습니다.</div>');
+               return;
+           }
+           
+           // 최신순으로 정렬 (Timestamp 기준)
+           schedules.sort((a, b) => b.timestamp - a.timestamp);
+
+           schedules.forEach((item, index) => {
+               // D-Day 계산 및 클래스 설정
+               let dateInfo = '';
+               let itemClass = '';
+               let priorityTag = '';
+               
+               if (item.date) {
+                   const dueDate = new Date(item.date);
+                   const today = new Date();
+                   today.setHours(0, 0, 0, 0); // 오늘 날짜 0시 기준으로 비교
+                   
+                   const timeDiff = dueDate.getTime() - today.getTime();
+                   const dayDiff = Math.ceil(timeDiff / (1000 * 3600 * 24));
+                   
+                   dateInfo = `마감: ${item.date}`;
+                   
+                   if (dayDiff === 0) {
+                       itemClass = 'schedule-item--active'; // 오늘 마감
+                       priorityTag = '<span class="schedule-item__priority" style="background: #fef3c7; color: #b45309; border: 1px solid #fcd34d;">D-Day</span>';
+                   } else if (dayDiff > 0 && dayDiff <= 7) {
+                       itemClass = 'schedule-item--pending'; // 7일 이내
+                       priorityTag = `<span class="schedule-item__priority" style="background: #fee2e2; color: var(--danger);">D-${dayDiff}</span>`;
+                   } else if (dayDiff < 0) {
+                       itemClass = 'schedule-item--overdue';
+                       priorityTag = '<span class="schedule-item__priority" style="background: #e5e7eb; color: #6b7280;">기한 초과</span>';
+                   } else {
+                       itemClass = '';
+                       priorityTag = '';
+                   }
+               } else {
+                   itemClass = '';
+                   dateInfo = `등록일: ${new Date(item.timestamp).toLocaleDateString()}`;
+               }
+
+               const $item = $(`
+                   <div class="schedule-item ${itemClass}">
+                     <div class="schedule-item__dot"></div>
+                     <div class="schedule-item__content">
+                       <span class="schedule-item__title">${item.text}</span>
+                       <span class="schedule-item__meta">${dateInfo}</span>
+                     </div>
+                     ${priorityTag}
+                     <button class="delete-schedule-btn" data-id="${item.timestamp}" 
+                             style="background: none; border: none; color: #9ca3af; cursor: pointer; padding: 0 5px; margin-left: auto;">
+                          <i class="bi bi-x-lg"></i>
+                     </button>
+                   </div>
+               `);
+               container.append($item);
+           });
+           
+           // 삭제 버튼 이벤트 바인딩
+           $('.delete-schedule-btn').on('click', deleteSchedule);
+       }
+
+       // 2. 스케줄 추가 함수
+       function addSchedule() {
+           const textInput = $('#scheduleText');
+           const dateInput = $('#scheduleDate');
+           const text = textInput.val().trim();
+           const date = dateInput.val(); // YYYY-MM-DD 형식
+           
+           if (text === "") {
+               alert("내용을 입력해 주세요.");
+               return;
+           }
+           
+           const schedules = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+           const newSchedule = {
+               text: text,
+               date: date, // 선택된 마감일
+               timestamp: Date.now() // 고유 ID 역할
+           };
+           
+           schedules.push(newSchedule);
+           localStorage.setItem(STORAGE_KEY, JSON.stringify(schedules));
+           
+           textInput.val(''); // 입력 필드 초기화
+           dateInput.val('');
+           renderSchedules(); // 목록 새로고침
+       }
+       
+       // 3. 스케줄 삭제 함수
+       function deleteSchedule() {
+           const timestampToDelete = $(this).data('id');
+           let schedules = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+           
+           // 클릭한 항목을 제외하고 필터링
+           schedules = schedules.filter(item => item.timestamp !== timestampToDelete);
+           localStorage.setItem(STORAGE_KEY, JSON.stringify(schedules));
+           
+           renderSchedules(); // 목록 새로고침
+       }
+
+       // 버튼 이벤트 연결
+       $('#addScheduleBtn').on('click', addSchedule);
+       
+       // 엔터키 입력 시 등록
+	   $('#scheduleText').on('keypress', function(e) {
+          if (e.which === 13) {
+              e.preventDefault(); // 폼 제출 방지
+              addSchedule();
+          }
+       });
+
+       // 페이지 로드 시 기존 스케줄 로드
+       renderSchedules();      
+   });
+   </script>
+</body>
+</html>

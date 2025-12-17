@@ -1,0 +1,761 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>상담 신청 상세 및 수정</title>
+  <th:block th:replace="~{top}"></th:block>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+  <style>
+    :root {
+      --hyu-navy: navy;
+      --hyu-navy-dark: #001a3d;
+      --hyu-navy-soft: #e3eefc;
+      --bg-gray: #f3f5f9;
+      --border-subtle: #e5e7eb;
+      --text-main: #111827;
+      --text-muted: #6b7280;
+      --card-bg: #ffffff;
+      --shadow-sm: 0 4px 12px rgba(15, 23, 42, 0.08);
+      --shadow-md: 0 8px 20px rgba(15, 23, 42, 0.12);
+      --border-radius: 12px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      color: var(--text-main);
+      font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      line-height: 1.6;
+    }
+
+    /* 페이지 컨테이너 */
+    .a-container {
+      max-width: 1400px;
+      width: 95%;
+      margin: 0 auto;
+      padding: 40px 24px;
+    }
+
+    /* 상단 히어로 영역 */
+	.detail-top {
+		margin-top: -40px;
+		padding: 20px;
+		text-align: center;
+		background-color: #f8f8f8;
+	}
+	.detail-top > h1 {
+		margin-top: 30px;
+		font-size: 40px;
+		font-weight: bold;
+	}
+	.detail-top p {
+		margin: 50px 0 50px 0;
+		font-size: 0.9em;
+	}
+	
+    /* 카드 기본 스타일 */
+    .card {
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--border-radius);
+      box-shadow: var(--shadow-sm);
+      background: var(--card-bg);
+      overflow: hidden;
+    }
+
+    .card-main {
+      box-shadow: var(--shadow-md);
+    }
+
+    /* 네이비 헤더 */
+    .line-co {
+      background: linear-gradient(135deg, var(--hyu-navy) 0%, var(--hyu-navy-dark) 100%);
+      padding: 13px 24px;
+    }
+
+    .line-co h5 {
+      color: #ffffff;
+      font-weight: 600;
+      font-size: 17px;
+      margin: 0;
+    }
+
+    /* 카드 바디 */
+    .card-main .card-body {
+      background: #fcfcff;
+      padding: 28px;
+    }
+
+    .card-main .card-body .row {
+      border-bottom: 1px solid var(--border-subtle);
+      padding-bottom: 16px;
+      margin-bottom: 16px;
+      position: relative;
+    }
+
+    .card-main .card-body .row:last-child {
+      border-bottom: none;
+      margin-bottom: 0;
+      padding-bottom: 0;
+    }
+
+    /* 폼 레이블 */
+    .col-form-label {
+      font-weight: 600;
+      color: var(--hyu-navy);
+      font-size: 15px;
+      padding-top: 4px;
+    }
+
+    /* 폼 컨트롤 - 등록일 내용 */
+    .form-control-plaintext {
+      font-weight: 500;
+      color: #333;
+      font-size: 15px;
+    }
+
+    /* 체크박스/라디오 */
+    .form-check-inline {
+      margin-right: 20px;
+      margin-bottom: 8px;
+    }
+
+    .form-check-input {
+      margin-right: 8px;
+      transform: scale(1.1);
+      accent-color: var(--hyu-navy);
+      border-radius: 4px;
+    }
+
+    .form-check-label {
+      font-weight: 500;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 15px;
+    }
+
+    /* 구매 목적 - 기타 */
+    .custom-label-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .other-input {
+      width: 100%;
+      max-width: 280px;
+      padding: 10px 12px;
+      border: 1px solid var(--border-subtle);
+      border-radius: 8px;
+      font-size: 14px;
+      transition: all 0.2s ease;
+    }
+
+    .other-input:focus,
+    .other-input:not(:disabled) {
+      border-color: var(--hyu-navy);
+      box-shadow: 0 0 0 3px rgba(0, 44, 95, 0.1);
+      outline: none;
+    }
+
+    /* 지역 드롭다운 */
+    .area-select {
+      width: 180px;
+      height: 42px;
+      padding: 8px 12px;
+      border: 1px solid var(--border-subtle);
+      border-radius: 8px;
+      font-size: 14px;
+      background: #fff;
+      transition: all 0.2s ease;
+    }
+
+    .area-select:focus {
+      border-color: var(--hyu-navy);
+      box-shadow: 0 0 0 3px rgba(0, 44, 95, 0.1);
+      outline: none;
+    }
+
+    .area-group {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    /* 상태 뱃지 */
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 14px;
+      font-weight: 600;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    .status-wait {
+      background: linear-gradient(135deg, #fef3c7, #fed22b);
+      color: #92400e;
+    }
+
+    .status-progress {
+      background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+      color: navy;
+    }
+
+    .status-done {
+      background: linear-gradient(135deg, #d1fae5, #bbf7d0);
+      color: #166534;
+    }
+
+    .status-cancel {
+      background: linear-gradient(135deg, #f3f4f6, #e5e7eb);
+      color: #374151;
+    }
+
+    /* 등록 셀 */
+    .register-cell {
+      border-top: 1px solid var(--border-subtle);
+      padding: 20px 0;
+      margin-top: 20px;
+      border-radius: 0 0 var(--border-radius) var(--border-radius);
+    }
+
+	.register-cell .col-form-label {
+	    color: var(--hyu-navy);
+	    font-size: 15px;
+	    font-weight: 600;
+		margin-left: 10px;
+		
+	}
+	
+	.form-check-input:checked {
+	    background-color: var(--hyu-navy) !important;
+	    border-color: var(--hyu-navy) !important;
+	}
+	
+	/* 딜러 칸 */
+	.dealer-message {
+		padding: 10px;
+		background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+		border-radius: 5px;
+	}
+	.dealer-message-content {
+		color: navy;
+		font-weight: 500;
+	}
+	
+	
+    /* 네이비 버튼 */
+    .btn-navy {
+	  margin-top: -30px;
+      background: linear-gradient(135deg, var(--hyu-navy), var(--hyu-navy-dark));
+      border: 1px solid var(--hyu-navy);
+      color: #ffffff;
+      font-weight: 600;
+      padding: 10px 20px;
+      border-radius: 10px;
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 12px rgba(0, 44, 95, 0.2);
+    }
+
+    .btn-navy:hover {
+      background: #ffffff;
+      color: var(--hyu-navy-dark);
+      border-color: var(--hyu-navy-dark);
+      transform: translateY(-1px);
+      box-shadow: 0 6px 16px rgba(0, 44, 95, 0.25);
+    }
+
+    /* 링크 스타일 */
+    .text-primary,
+    a.text-primary,
+    a.text-primary:hover {
+      color: var(--hyu-navy) !important;
+      font-weight: 600;
+    }
+
+    /* 딜러 이미지 */
+    .dealer-img {
+      width: 90px;
+      height: 90px;
+      object-fit: cover;
+      border: 3px solid #fff;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+
+    /* 버튼 그룹 */
+    .btn-sales {
+      gap: 12px;
+    }
+
+    /* AI 버튼 */
+    #showAiRecommendationBtn {
+      background: linear-gradient(35deg, rgb(6, 96, 217), rgb(2, 41, 96));
+      border: none;
+      border-radius: 12px;
+      font-weight: 600;
+      font-size: 16px;
+      padding: 14px 28px;
+      box-shadow: 0 6px 16px rgba(59, 130, 246, 0.3);
+	  color: #fff;
+    }
+
+    #showAiRecommendationBtn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(59, 130, 246, 0.4);
+    }
+
+    /* 모달 */
+    .modal-content {
+      border-radius: var(--border-radius);
+      border: 1px solid var(--border-subtle);
+      box-shadow: var(--shadow-md);
+    }
+
+    .modal-header {
+      background: linear-gradient(135deg, var(--hyu-navy), var(--hyu-navy-dark));
+      border-radius: var(--border-radius) var(--border-radius) 0 0;
+      border-bottom: none;
+    }
+
+    /* 반응형 */
+    @media (max-width: 768px) {
+      .a-container {
+        padding: 24px 16px;
+      }
+      
+      .detail-top {
+        margin-top: 24px;
+        padding: 28px 20px;
+      }
+      
+      .detail-top h1 {
+        font-size: 24px;
+      }
+      
+      .area-group {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      
+      .area-select {
+        width: 100%;
+      }
+      
+      .btn-sales {
+        flex-direction: column;
+        width: 100%;
+      }
+      
+      .btn-navy {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 상단 타이틀 영역 -->
+  <div class="detail-top">
+    <h1>상담 신청 상세 및 수정</h1>
+    <p>상담 내용을 수정하고 상태를 확인할 수 있습니다.</p>
+  </div>
+
+  <div class="a-container py-5">
+    <div th:if="${message}" class="alert alert-success alert-dismissible fade show" role="alert">
+        <span th:text="${message}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+        <span th:text="${error}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+
+    <form th:action="@{/counseling/update/{id}(id=${counseling.id})}" th:object="${counseling}" method="post">
+      <div class="row g-4">
+        <!-- 왼쪽: 상담 기본 정보 -->
+        <div class="col-lg-8">
+          <div class="card shadow-sm card-main h-100">
+            <div class="card-header text-white line-co">
+              <h5 class="mb-0">상담 기본 정보 수정</h5>
+            </div>
+            <div class="card-body">
+              <div class="row mb-3">
+                <label class="col-sm-3 col-form-label">상담 ID</label>
+                <div class="col-sm-9">
+                  <input type="text" class="form-control-plaintext" th:value="*{id}" readonly>
+                </div>
+              </div>
+              
+              <!-- 상담 상태 영역 -->
+              <div class="row mb-3">
+                <label class="col-sm-3 col-form-label">상담 상태</label>
+                <div class="col-sm-9">
+                  <div th:switch="*{status}">
+                    <span th:case="'상담대기'" class="status-badge status-wait" th:text="*{status}"></span>
+                    <span th:case="'상담진행중'" class="status-badge status-progress" th:text="*{status}"></span>
+                    <span th:case="'상담완료'" class="status-badge status-done" th:text="*{status}"></span>
+                    <span th:case="'상담취소'" class="status-badge status-cancel" th:text="*{status}"></span>
+                    <span th:case="*" th:text="*{status}"></span>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- 선호 차량 유형 영역 -->
+              <div class="row mb-3">
+                <label class="col-sm-3 col-form-label">선호 차량 유형</label>
+                <div class="col-sm-9">
+                  <p class="form-control-plaintext" th:text="*{vehicleType}"></p>
+                </div>
+              </div>
+              
+              <!-- 선택 차량 영역 -->  
+              <div class="row mb-3">
+                <label class="col-sm-3 col-form-label">선택 차량</label>
+                <div class="col-sm-9">
+                  <p class="form-control-plaintext">
+                    <a th:href="@{/vehicles/vehicle/detail/{vehicleName}(vehicleName=*{vehicleId})}" 
+                       th:text="*{vehicleName}"
+                       class="fw-bold text-decoration-none text-primary"
+                       title="선택된 차량 모델 상세 페이지로 이동"
+                       target="_blank">차량 모델명</a>
+                  </p>
+                  <input type="hidden" th:field="*{vehicleId}" /> 
+                </div>
+              </div>
+              
+              <!-- 구매 희망 지역 영역 -->            
+              <div class="row mb-3">
+                <label class="col-sm-3 col-form-label">구매 희망 지역</label>
+                <div class="col-sm-9">
+                  <div class="area-group">
+                    <input type="hidden" id="sidoName" th:field="*{hopearea.sido}">
+                    <input type="hidden" id="siGunGuName" th:field="*{hopearea.siGunGu}">
+                    <input type="hidden" id="eupMyeonDongName" th:field="*{hopearea.eupMyeonDong}">
+                    <select class="area-select" id="sido">
+                      <option value="">시/도 선택</option>
+                    </select>
+                    <select class="area-select" id="siGunGu">
+                      <option value="">시/군/구 선택</option>
+                    </select>
+                    <select class="area-select" id="eupMyeonDong">
+                      <option value="">읍/면/동 선택</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- 구매 희망 시점 영역 -->
+              <div class="row mb-3">
+                <label class="col-sm-3 col-form-label">구매 희망 시점</label>
+                <div class="col-sm-9">
+                  <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" id="pt1m" th:field="*{purchasePeriod}" value="1개월 이내">
+                    <label class="form-check-label" for="pt1m">1개월 이내</label>
+                  </div>
+                  <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" id="pt3m" th:field="*{purchasePeriod}" value="3개월 이내">
+                    <label class="form-check-label" for="pt3m">3개월 이내</label>
+                  </div>
+                  <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" id="pt6m" th:field="*{purchasePeriod}" value="6개월 이내">
+                    <label class="form-check-label" for="pt6m">6개월 이내</label>
+                  </div>
+                  <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" id="ptNon" th:field="*{purchasePeriod}" value="미정">
+                    <label class="form-check-label" for="ptNon">미정</label>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- 차량 구매 목적 영역 -->
+              <div class="row mb-3">
+                <label class="col-sm-3 col-form-label">차량 구매 목적</label>
+                <div class="col-sm-9">
+                  <div class="form-check form-check-inline">
+                    <input class="form-check-input purpose-checkbox" type="checkbox" id="p1" name="purchasePurpose" value="출퇴근용" 
+                        th:checked="${#strings.contains(counseling.purchasePurpose, '출퇴근용')}">
+                    <label class="form-check-label" for="p1">출퇴근용</label>
+                  </div>
+                  <div class="form-check form-check-inline">
+                    <input class="form-check-input purpose-checkbox" type="checkbox" id="p2" name="purchasePurpose" value="패밀리카" 
+                        th:checked="${#strings.contains(counseling.purchasePurpose, '패밀리카')}">
+                    <label class="form-check-label" for="p2">패밀리카</label>
+                  </div>
+                  <div class="form-check form-check-inline">
+                    <input class="form-check-input purpose-checkbox" type="checkbox" id="p3" name="purchasePurpose" value="업무용" 
+                        th:checked="${#strings.contains(counseling.purchasePurpose, '업무용')}">
+                    <label class="form-check-label" for="p3">업무용</label>
+                  </div>
+                  <div class="form-check form-check-inline">
+                    <input class="form-check-input purpose-checkbox" type="checkbox" id="p4" name="purchasePurpose" value="세컨드카" 
+                        th:checked="${#strings.contains(counseling.purchasePurpose, '세컨드카')}">
+                    <label class="form-check-label" for="p4">세컨드카</label>
+                  </div>
+                  <div class="form-check form-check-inline custom-label-group">
+                    <input class="form-check-input purpose-checkbox" type="checkbox" id="other" name="purchasePurpose" value="기타" 
+                        th:checked="${#strings.contains(counseling.purchasePurpose, '기타')}">
+                    <label class="form-check-label" for="other">기타</label>
+                    <input type="text" id="otherInputText" th:field="*{otherInput}" class="other-input form-control-sm"
+                           placeholder="기타 사유를 입력하세요" 
+                           th:disabled="${!#strings.contains(counseling.purchasePurpose, '기타')}">
+                  </div>
+                </div>
+              </div>
+              
+              <!-- 예약 희망 시간 영역 -->
+              <div class="row mb-3">
+                <label for="counselingLikeTime" class="col-sm-3 col-form-label">예약 희망 시간</label>
+                <div class="col-sm-9">
+                  <input type="date" id="counselingLikeTime" th:field="*{counselingLikeTime}" class="form-control">
+                </div>
+                <div class="row mb-0 pt-3 mt-3 register-cell">
+                  <label class="col-sm-3 col-form-label">등록일</label>
+                  <div class="col-sm-7">
+                    <p class="form-control-plaintext" th:text="${#temporals.format(counseling.createDate, 'yyyy-MM-dd HH:mm')}"></p>
+                  </div>
+                  <th:block th:if="*{modifyDate != null}">
+                    <label class="col-sm-3 col-form-label">최종 수정일</label>
+                    <div class="col-sm-7">
+                      <p class="form-control-plaintext" th:text="${#temporals.format(counseling.modifyDate, 'yyyy-MM-dd HH:mm')}"></p>
+                    </div>
+                  </th:block>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 딜러 정보란 -->
+        <div class="col-lg-4">
+          <div class="card shadow-sm h-100">
+            <div class="card-header text-white line-co">
+              <h5 class="mb-0">담당 딜러 정보</h5>
+            </div>
+            <div class="card-body">
+              <div th:if="${counseling.status == '상담진행중' and counseling.dealer != null}"> 
+                <div class="d-flex align-items-center mb-3"> 
+                  <div class="flex-shrink-0 me-3">
+                    <img th:if="${counseling.dealer.member.name == '최지훈'}" 
+                         th:src="@{/img/30-male.png}" 
+                         alt="최지훈 딜러 이미지"
+                         class="rounded-circle dealer-img">
+                    <img th:if="${counseling.dealer.member.name == '딜러'}" 
+                         th:src="@{/img/50-male.png}" 
+                         alt="딜러 이미지"
+                         class="rounded-circle dealer-img">
+                    <img th:if="${counseling.dealer.member.name == '한서희'}" 
+                         th:src="@{/img/30-female.png}" 
+                         alt="한서희 딜러 이미지"
+                         class="rounded-circle dealer-img">
+                  </div>
+                  <div class="flex-grow-1">
+                    <p class="mb-1 text-muted small fw-medium">담당 딜러:</p>
+                    <h5 class="fw-bold mb-2" th:text="${counseling.dealer.member.name}"></h5>
+                    <p class="text-secondary mb-0 fw-semibold" th:text="${counseling.dealer.member.phone}"></p>
+                  </div>
+                </div>
+                <hr class="my-3">
+                <div class="dealer-message">
+                  <i class="bi bi-info-circle-fill me-2 text-primary"></i>
+                  <span class="dealer-message-content" th:text="|고객님의 의견을 반영하여 딜러가 상담을 진행중입니다. 곧 연락드리겠습니다.|"></span>
+                </div>
+              </div>
+              <div th:if="${counseling.status == '상담대기' and counseling.dealer == null}">
+                <div class="text-center p-4">
+                  <h4 class="text-danger mb-3 fw-bold">딜러 미배정</h4>
+                  <p class="text-muted mb-3">현재 상담 대기 중입니다.</p>
+                  <p class="fw-bold text-primary">담당 딜러 배정 후 신속히 연락드리겠습니다.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 하단 버튼 -->
+        <div class="col-12">
+          <div class="d-flex justify-content-end gap-2 mt-4 btn-sales">
+            <a th:href="@{|/counseling/applyList/${#authentication.getPrincipal().getUsername()}|}" class="btn btn-navy">
+              구매상담리스트
+            </a>
+            <button type="submit" class="btn btn-navy">
+              상담 내용 저장
+            </button>
+          </div>
+        </div>
+	
+		<div class="row mb-4 mt-4" th:if="*{status != '상담대기'}">
+		  <div class="col-12 text-center">
+		    <button type="button" class="btn btn-lg" id="showAiRecommendationBtn" data-bs-toggle="modal" data-bs-target="#aiRecommendationModal">
+		      차량 추천 정보 보기
+		    </button>
+		  </div>
+		</div>
+      </div>
+    </form>
+    
+    <form id="formUpdateStatus" method="post" style="display:none;"></form>
+    
+    <div class="modal fade" id="aiRecommendationModal" tabindex="-1" aria-labelledby="aiRecommendationModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-xl modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header bg-navy text-white">
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>            
+          <div class="modal-body p-0">
+            <iframe
+              th:src="@{|http://localhost:8502/5core?counselingId=${counseling.id}|}"
+              style="width: 100%; height: 80vh; min-height: 500px; max-height: 900px; border: none; border-radius: 0; display: block; overflow: auto;">
+            </iframe>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+  
+  <!-- 기존 JavaScript 코드 유지 (변경 없음) -->
+  <script>
+    // 기타(other) 입력 필드 활성화 + 지역 API
+    $(document).ready(function() {
+      let $otherCheckbox = $("#other");
+      let $otherInputText = $("#otherInputText");
+      let initialSidoName = $("#sidoName").val();
+      let initialSiGunGuName = $("#siGunGuName").val();
+      let initialEupMyeonDongName = $("#eupMyeonDongName").val();
+      let apiToken = null;
+
+      // 기타 입력 필드 초기 상태
+      if ($otherCheckbox.is(":checked")) {
+        $otherInputText.prop("disabled", false);
+      } else {
+        $otherInputText.prop("disabled", true);
+      }
+
+      $otherCheckbox.on("change", function () {
+        if ($(this).is(":checked")) {
+          $otherInputText.prop("disabled", false);
+          $otherInputText.focus();
+        } else {
+          $otherInputText.prop("disabled", true);
+          $otherInputText.val("");
+        }
+      });
+
+      // SGIS API
+      let CONSUMER_KEY = "51d6b465af6e457f8f55";
+      let CONSUMER_SECRET = "ad81dbbb3fea4f0eaeb5";
+
+      async function getToken() {
+        let url = `https://sgisapi.mods.go.kr/OpenAPI3/auth/authentication.json?consumer_key=${CONSUMER_KEY}&consumer_secret=${CONSUMER_SECRET}`;
+        let res = await fetch(url);
+        let json = await res.json();
+        return json.result.accessToken;
+      }
+
+      async function loadSido(token) {
+        let url = `https://sgisapi.mods.go.kr/OpenAPI3/addr/stage.json?accessToken=${token}`;
+        let res = await fetch(url);
+        let json = await res.json();
+
+        let sidoSel = document.getElementById("sido");
+
+        json.result.forEach(item => {
+          let op = document.createElement("option");
+          op.value = item.cd;
+          op.textContent = item.addr_name;
+          sidoSel.appendChild(op);
+          
+          if (item.addr_name === initialSidoName) {
+            op.selected = true;
+            loadSigungu(token, item.cd, initialSiGunGuName, initialEupMyeonDongName);
+          }
+        });
+
+        $(sidoSel).on("change", function(e) {
+          let selectedText = $(this).find('option:selected').text();
+          $("#sidoName").val(selectedText !== '시/도 선택' ? selectedText : '');
+          loadSigungu(token, this.value, '', '');
+        });
+      }
+
+      async function loadSigungu(token, sidoCode, initialSiGunGu, initialEupMyeonDong) {
+        let url = `https://sgisapi.mods.go.kr/OpenAPI3/addr/stage.json?accessToken=${token}&cd=${sidoCode}`;
+        let res = await fetch(url);
+        let json = await res.json();
+
+        let sgSel = document.getElementById("siGunGu");
+        $(sgSel).empty().append(`<option value="">시/군/구 선택</option>`);
+        
+        let emdSel = document.getElementById("eupMyeonDong");
+        $(emdSel).empty().append(`<option value="">읍/면/동 선택</option>`);
+
+        if (sidoCode) {
+          json.result.forEach(item => {
+            let op = document.createElement("option");
+            op.value = item.cd;
+            op.textContent = item.addr_name;
+            sgSel.appendChild(op);
+            
+            if (item.addr_name === initialSiGunGu) {
+              op.selected = true;
+              loadEmd(token, item.cd, initialEupMyeonDong);
+            }
+          });
+        }
+
+        $(sgSel).off('change').on("change", function(e) {
+          let selectedText = $(this).find('option:selected').text();
+          $("#siGunGuName").val(selectedText !== '시/군/구 선택' ? selectedText : '');
+          loadEmd(token, this.value, '');
+        });
+      }
+
+      async function loadEmd(token, sigunguCode, initialEupMyeonDong) {
+        let url = `https://sgisapi.mods.go.kr/OpenAPI3/addr/stage.json?accessToken=${token}&cd=${sigunguCode}`;
+        let res = await fetch(url);
+        let json = await res.json();
+
+        let emdSel = document.getElementById("eupMyeonDong");
+        $(emdSel).empty().append(`<option value="">읍/면/동 선택</option>`);
+
+        if (sigunguCode) {
+          json.result.forEach(item => {
+            let op = document.createElement("option");
+            op.value = item.cd;
+            op.textContent = item.addr_name;
+            emdSel.appendChild(op);
+
+            if (item.addr_name === initialEupMyeonDong) {
+              op.selected = true;
+            }
+          });
+        }
+
+        $(emdSel).off('change').on("change", function(e) {
+          let selectedText = $(this).find('option:selected').text();
+          $("#eupMyeonDongName").val(selectedText !== '읍/면/동 선택' ? selectedText : '');
+        });
+      }
+      
+      (async function() {
+        apiToken = await getToken();
+        loadSido(apiToken);
+      })();
+    });
+  </script>
+  
+  <th:block th:replace="~{bottom}"></th:block>
+</body>
+</html>

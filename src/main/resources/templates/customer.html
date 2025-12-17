@@ -1,0 +1,805 @@
+<!doctype html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>고객센터</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+  <!-- top nav -->
+  <th:block th:replace="~{top}"></th:block>
+
+  <style>
+    .customer-t {
+		margin-top: -40px;
+        padding: 10px;
+        text-align: center;
+        background-color: #f8f8f8;
+        border: none;
+    }
+    .customer-t > p {
+        margin: 50px 0 50px 0;
+        font-size: 0.9em;
+    }
+	.customer-t > h1 {
+		margin-top: 30px;
+		font-size: 40px;
+		font-weight: bold;
+	}		
+    .accordion-button {
+        color: #333 !important;
+        background-color: white !important;
+        box-shadow: none !important;
+		justify-content: space-between; 
+        display: flex;
+        align-items: center;
+    }
+
+    .accordion-button:not(.collapsed),
+    .accordion-button.active {
+        color: #333 !important;
+        background-color: white !important;
+        box-shadow: none !important;
+    }
+
+    .accordion-button::after {
+        display: none !important;
+        content: none !important;
+    }
+
+    .accordion-button .accordion-icon {
+        font-size: 1.25rem;
+        color: navy;
+        transition: transform 0.3s ease-in-out;
+    }
+
+    .accordion-button.active .accordion-icon {
+        transform: rotate(0deg);
+    }
+
+    .modal-footer .btn:first-child {
+        background-color: #6c757d;
+        border-color: #6c757d;
+        color: white;
+    }
+
+    .modal-footer .btn:last-child {
+        background-color: navy;
+        border-color: navy;
+        color: white;
+    }
+
+    .modal-footer .btn:last-child:hover {
+        background-color: #15305a;
+        border-color: #15305a;
+    }
+
+    .faq-search-section {
+        padding: 2rem 0;
+        margin-bottom: 2rem;
+    }
+
+    .service-card {
+        border: 2px solid #aaa;
+        transition: all 0.3s ease-in-out;
+        margin: 5px;
+        height: 120px;
+        width: 150px;
+        padding: 15px !important;
+        display: flex !important;
+        flex-direction: column;
+        justify-content: flex-start;
+        align-items: flex-start;
+        text-align: left;
+        line-height: 1.4;
+        cursor: pointer;
+    }
+
+    .service-card:hover {
+        transform: none;
+        box-shadow: none;
+        border: 2px solid navy;
+    }
+
+    .service-card .fw-bold {
+        font-size: 0.8rem;
+        margin-bottom: 8px !important;
+    }
+
+    .service-card .small {
+        font-size: 0.73rem;
+        color: #333;
+        font-weight: 700 !important;
+    }
+
+    .search-form-wrapper {
+        width: 100%;
+    }
+
+    .search-form-wrapper .form-control.search-input {
+        border: none;
+        border-bottom: 2px solid #ccc;
+        border-radius: 0;
+        padding-left: 0;
+        padding-right: 0;
+        box-shadow: none !important;
+        text-align: left;
+    }
+
+    .search-form-wrapper .form-control.search-input:focus {
+       border-bottom-color: navy;
+    }
+
+    .search-form-wrapper .btn {
+        background: none;
+        border: none;
+        color: navy;
+        font-size: 1.25rem;
+        padding-left: 0.5rem;
+        padding-right: 0.5rem;
+    }
+
+    .search-form-wrapper .btn:hover {
+         color: navy;
+    }
+
+    .tabs {
+        display: flex;
+        border-bottom: 2px solid #ccc;
+        margin-bottom: 20px;
+    }
+
+    .tabs button {
+        background: none;
+        border: none;
+        padding: 10px 20px;
+        font-size: 1rem;
+        cursor: pointer;
+        color: #555;
+        font-weight: bold;
+        transition: 0.3s;
+    }
+
+    .tabs button.active {
+        color: #fff;
+        background-color: navy;
+        border-radius: 8px 8px 0 0;
+    }
+
+    .tab-content {
+        background-color: #fff;
+        border-radius: 0 12px 12px 12px;
+        padding: 20px;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    }
+
+    .accordion {
+        border-top: 1px solid #ccc;
+    }
+
+    .accordion-item {
+        border-bottom: 1px solid #ccc;
+        padding: 0 10px;
+    }
+
+    .accordion-button {
+        background: none;
+        border: none;
+        width: 100%;
+        text-align: left;
+        padding: 12px 0;
+        font-weight: bold;
+        color: #333;
+        cursor: pointer;
+        transition: 0.3s;
+        position: relative;
+    }
+
+    .accordion-button.active {
+        color: #333;
+    }
+
+    .accordion-body {
+        background-color: #f8f8f8;
+        border-radius: 4px;
+        color: #555;
+        font-size: 0.9rem;
+        margin-bottom: 5px;
+        line-height: 1.6;
+        transition: max-height 0.3s ease-out, padding 0.3s ease-out;
+        overflow: hidden;
+        max-height: 0;
+        padding-top: 0;
+        padding-bottom: 0;
+        padding-left: 15px;
+        padding-right: 15px;
+    }
+
+    .accordion-body.active {
+        max-height: 500px;
+        padding-top: 10px;
+        padding-bottom: 15px;
+    }
+
+    .two-column-card {
+        background-color: whitesmoke;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        padding: 10px 12px;
+        height: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        max-width: 700px;
+        margin: auto;
+    }
+
+    .two-column-card .card-header-icon {
+        font-size: 18px !important;
+        font-style: normal;
+        margin-bottom: 4px !important;
+    }
+
+    .two-column-card .card-title {
+        font-size: 10px;
+    }
+
+    .two-column-card .card-description {
+        font-size: 0.8rem;
+        margin-bottom: 4px !important;
+    }
+
+    .two-column-card .card-actions .btn {
+        padding: 6px 14px !important;
+        font-size: 0.9rem !important;
+        background-color: navy;
+        color: white;
+    }
+
+    .ars-section {
+        background-color: white;
+        border-top: 1px solid #e0e0e0;
+        padding-top: 30px;
+        margin-top: 40px;
+    }
+
+    .ars-section .ars-title {
+        font-size: 2rem;
+        font-weight: bold;
+        color: #333;
+        margin-bottom: 30px;
+    }
+
+    .ars-section .contact-info .contact-number {
+        font-size: 2rem;
+        font-weight: bold;
+        color: navy;
+        margin-bottom: 10px;
+    }
+
+    .ars-section .contact-info .contact-desc {
+        color: #666;
+        line-height: 1.6;
+        margin-bottom: 20px;
+    }
+
+    .ars-section .contact-info .contact-hours,
+    .ars-section .contact-info .emergency-info {
+        color: #999;
+        font-size: 0.9rem;
+    }
+
+    #notice li {
+        margin: 5px 0;
+    }
+
+    #guide button {
+        width: 200px;
+        height: 30px;
+        margin-left: 20px;
+        border: 1px solid navy;
+        border-radius: 5px;
+        color: #fff;
+        background-color: navy;
+    }
+
+    #guide button:hover {
+        background-color: #fff;
+        color: navy;
+    }
+
+    .btn-custom-navy {
+        background-color: navy;
+        border: 1px solid navy;
+        color: #fff;
+    }
+  </style>
+</head>
+
+<body>
+
+<!-- 블루멤버스 상단 (container 밖) -->
+<div class="customer-t">
+    <h1>고객센터</h1>
+    <p>안내·문의·정책 등 고객 지원 서비스를 한 곳에서 제공합니다.</p>
+</div>
+
+<!-- 본문 전체 -->
+<div class="container pb-4">
+
+  <!-- 검색 / 퀵 FAQ -->
+  <div class="faq-search-section">
+      <div class="d-flex align-items-center mx-auto" style="max-width: 800px;">
+          <a href="#" class="btn btn-link text-decoration-none text-nowrap fw-bold me-auto" style="color: navy; padding: 0; font-size: 1.5rem;">
+              자주 하는 질문
+          </a>
+          <div class="search-form-wrapper" style="width: 100%; max-width: 600px;">
+              <form class="d-flex gap-2" role="search" onsubmit="return false;">
+                  <input class="form-control search-input" type="search" placeholder="궁금한 점을 검색해 보세요." aria-label="Search">
+                  <button class="btn" type="submit"><i class="bi bi-search"></i></button>
+              </form>
+          </div>
+      </div>
+
+      <div class="row g-3 justify-content-center mx-auto" style="max-width: 1000px; margin-top: 20px !important;">
+
+          <div class="col-4 col-md-auto">
+              <a class="d-block text-decoration-none service-card rounded bg-white" onclick="handleQuickFAQ(1)">
+                  <div class="fw-bold mb-1" style="font-size:0.8rem; color: navy;"><i class="bi bi-search me-1"></i>Q1</div>
+                  <div class="small">차량계약 후 해지 시 계약금은 환불 받을수있습니까?</div>
+              </a>
+          </div>
+
+          <div class="col-4 col-md-auto">
+              <a class="d-block text-decoration-none service-card rounded bg-white" onclick="handleQuickFAQ(2)">
+                  <div class="fw-bold mb-1" style="font-size:0.8rem; color: navy;"><i class="bi bi-search me-1"></i>Q2</div>
+                  <div class="small">장애인차량 구입조건에 대해 알고 싶습니다.</div>
+              </a>
+          </div>
+
+          <div class="col-4 col-md-auto">
+              <a class="d-block text-decoration-none service-card rounded bg-white" onclick="handleQuickFAQ(3)">
+                  <div class="fw-bold mb-1" style="font-size:0.8rem; color: navy;"><i class="bi bi-search me-1"></i>Q3</div>
+                  <div class="small">차량구입시 신용카드는 얼마까지 이용할 수 있나요?</div>
+              </a>
+          </div>
+
+          <div class="col-4 col-md-auto">
+              <a class="d-block text-decoration-none service-card rounded bg-white" onclick="handleQuickFAQ(4)">
+                  <div class="fw-bold mb-1" style="font-size:0.8rem; color: navy;"><i class="bi bi-search me-1"></i>Q4</div>
+                  <div class="small">차량계약 후 예상납기일에 대해 알수있나요?</div>
+              </a>
+          </div>
+
+          <div class="col-4 col-md-auto">
+              <a class="d-block text-decoration-none service-card rounded bg-white" onclick="handleQuickFAQ(5)">
+                  <div class="fw-bold mb-1" style="font-size:0.8rem; color: navy;"><i class="bi bi-search me-1"></i>Q5</div>
+                  <div class="small">세이브오토 이용에 관해 알고 싶습니다.</div>
+              </a>
+          </div>
+
+      </div>
+  </div>
+
+  <!-- FAQ / 공지사항 / 이용 가이드 -->
+  <div class="row">
+    <div class="col-lg-12 mb-4">
+
+      <div class="card shadow-sm">
+        <div class="card-b">
+
+      <div class="tabs">
+          <button class="active" onclick="showTab('faq')" data-tab="faq">자주 묻는 질문</button>
+          <button onclick="showTab('notice')" data-tab="notice">공지사항</button>
+          <button onclick="showTab('guide')" data-tab="guide">이용 가이드</button>
+      </div>
+
+      <div class="tab-content">
+
+          <!-- ---------------- FAQ ---------------- -->
+          <div id="faq">
+              <div class="accordion">
+
+                <div class="accordion-item">
+                <button class="accordion-button" onclick="toggleAccordion(this)">
+                    차량계약 해지 및 환불 정책
+                    <i class="bi bi-plus-lg accordion-icon"></i>
+                </button>
+                <div class="accordion-body">
+                    계약금 환불은 계약 해지 시점에 따라 달라집니다. 차량 생산 시작 전에는 전액 환불이 가능하나, 진행 단계에 따라 위약금이 발생할 수 있습니다.
+                </div>
+              </div>
+
+                <div class="accordion-item">
+                <button class="accordion-button" onclick="toggleAccordion(this)">
+                    장애인/국가유공자 차량 구입 조건 및 혜택
+                    <i class="bi bi-plus-lg accordion-icon"></i>
+                </button>
+                <div class="accordion-body">
+                    장애 등급 및 유공자 유형에 따라 특별 구입 조건 및 세금 감면 혜택이 제공됩니다.
+                </div>
+              </div>
+
+                <div class="accordion-item">
+                <button class="accordion-button" onclick="toggleAccordion(this)">
+                    차량 구입 시 신용카드 결제 한도 및 이용 안내
+                    <i class="bi bi-plus-lg accordion-icon"></i>
+                </button>
+                <div class="accordion-body">
+                    차량 구매 금액 중 일부 또는 전액을 카드사 정책에 따라 신용카드로 결제할 수 있습니다.
+                </div>
+              </div>
+
+                <div class="accordion-item">
+                <button class="accordion-button" onclick="toggleAccordion(this)">
+                    차량 계약 후 예상 납기일 확인 방법
+                    <i class="bi bi-plus-lg accordion-icon"></i>
+                </button>
+                <div class="accordion-body">
+                    계약 시 안내받은 예상 납기일은 변동될 수 있습니다.
+                </div>
+              </div>
+
+                <div class="accordion-item">
+                <button class="accordion-button" onclick="toggleAccordion(this)">
+                    세이브오토/M포인트 이용에 관해 알고 싶습니다.
+                    <i class="bi bi-plus-lg accordion-icon"></i>
+                </button>
+                <div class="accordion-body">
+                    세이브오토는 카드 포인트를 미리 당겨 사용하여 차량 구매 시 할인 받는 프로그램입니다.
+                </div>
+              </div>
+
+                <div class="accordion-item">
+                <button class="accordion-button" onclick="toggleAccordion(this)">
+                    블루링크 서비스 가입은 어떻게 하나요?
+                    <i class="bi bi-plus-lg accordion-icon"></i>
+                </button>
+                <div class="accordion-body">
+                    차량 계약 시 또는 차량 출고 후 대리점이나 고객센터를 통해 가입할 수 있습니다.
+                </div>
+              </div>
+
+                <div class="accordion-item">
+                <button class="accordion-button" onclick="toggleAccordion(this)">
+                    차량 정기 점검 주기는 어떻게 되나요?
+                    <i class="bi bi-plus-lg accordion-icon"></i>
+                </button>
+                <div class="accordion-body">
+                    주행거리 1만 km 또는 1년마다 정기 점검을 권장합니다.
+                </div>
+              </div>
+
+                <div class="accordion-item">
+                <button class="accordion-button" onclick="toggleAccordion(this)">
+                    AS를 받으려면 어떻게 해야 하나요?
+                    <i class="bi bi-plus-lg accordion-icon"></i>
+                </button>
+                <div class="accordion-body">
+                    가까운 서비스센터 방문 또는 예약 후 이용합니다.
+                </div>
+              </div>
+
+                <div class="accordion-item">
+                <button class="accordion-button" onclick="toggleAccordion(this)">
+                    전자세금계산서 발행은 어떻게 신청하나요?
+                    <i class="bi bi-plus-lg accordion-icon"></i>
+                </button>
+                <div class="accordion-body">
+                    결제 완료 후 마이페이지 또는 고객센터를 통해 신청할 수 있습니다.
+                </div>
+              </div>
+
+                <div class="accordion-item">
+                <button class="accordion-button" onclick="toggleAccordion(this)">
+                    긴급출동 서비스는 몇 번인가요?
+                    <i class="bi bi-plus-lg accordion-icon"></i>
+                </button>
+                <div class="accordion-body">
+                    080-600-6000 번으로 연락 가능합니다.
+                </div>
+              </div>
+
+              </div>
+          </div>
+
+          <!-- ---------------- 공지사항 ---------------- -->
+          <div id="notice" style="display:none;">
+              <ul>
+                <li>[공지] 개인정보처리방침 개정 안내 (2025-11-01)</li>
+                <li>[안내] 시스템 점검 일정 안내 (2025-10-25)</li>
+                <li>[이벤트] 가을 도서 할인 이벤트 (2025-09-10)</li>
+              </ul>
+          </div>
+
+          <!-- ---------------- 이용 가이드 ---------------- -->
+          <div id="guide" style="display:none;">
+            <ul>
+                <li>회원가입, 주문, 결제, 배송, 교환/반품 등 서비스를 이용하는 방법을 단계별로 안내합니다.</li>
+            </ul>
+            <button>이용 가이드 다운로드</button>
+          </div>
+
+      </div>
+
+        </div>
+      </div>
+
+      <!-- 카드 2개 -->
+      <div class="row g-5 mb-5 mt-3 justify-content-center">
+
+          <div class="col-md-5">
+              <div class="two-column-card w-100">
+                  <i class="bi bi-question-circle card-header-icon card-title d-block mb-1">1:1 문의하기</i>
+
+                  <div class="d-flex justify-content-between align-items-center w-100">
+                      <p class="card-description p-1 mb-0">1:1 상담이 필요하신가요?</p>
+
+                      <div class="card-actions d-flex gap-2">
+                          <button type="button" class="btn btn-custom-navy" data-bs-toggle="modal" data-bs-target="#inquiryModal">1:1 문의하기</button>
+                          <button class="btn btn-custom-navy">나의 1:1 문의내역</button>
+                      </div>
+                  </div>
+
+              </div>
+          </div>
+
+          <div class="col-md-5">
+              <div class="two-column-card w-100">
+                  <i class="bi bi-journal-text card-header-icon card-title d-block mb-1">구매가이드</i>
+
+                  <div class="d-flex justify-content-between align-items-center w-100">
+                      <p class="card-description p-1 mb-0">구매가이드를 이용해보세요!</p>
+
+                      <div class="card-actions d-flex gap-2">
+                          <button class="btn btn-custom-navy">구매절차</button>
+                          <button class="btn btn-custom-navy">제도 및 규정</button>
+                      </div>
+                  </div>
+
+              </div>
+          </div>
+
+      </div>
+
+      <!-- ARS 안내 -->
+      <div class="ars-section">
+          <div class="row">
+              <div class="col-md-4">
+                  <h2 class="ars-title">ARS 상담</h2>
+              </div>
+              <div class="col-md-8">
+                  <div class="contact-info">
+                      <div class="contact-number">고객센터 080-600-6000</div>
+                      <div class="contact-desc">
+                          차량 구입/정비 서비스, 멤버십 등 문의<br/>
+                          블루링크 서비스 개통/해지/변경 등
+                      </div>
+                      <div class="contact-hours">평일 : 08:30 ~ 18:00 (주말/공휴일 휴무)</div>
+                      <div class="emergency-info">(긴급출동, 안전 보안 서비스는 365일 24시간 제공)</div>
+                  </div>
+              </div>
+          </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- 1:1 문의 모달 -->
+  <div class="modal fade" id="inquiryModal" tabindex="-1" aria-labelledby="inquiryModalLabel" aria-hidden="true">
+
+    <div class="modal-dialog">
+      <div class="modal-content">
+
+        <div class="modal-header">
+          <h5 class="modal-title" id="inquiryModalLabel">1:1 문의하기</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+
+        <div class="modal-body">
+          <form id="inquiryForm">
+            <div class="mb-3">
+              <label for="name" class="form-label">이름</label>
+              <input type="text" class="form-control" id="name" name="name" required>
+            </div>
+
+            <div class="mb-3">
+              <label for="email" class="form-label">이메일</label>
+              <input type="email" class="form-control" id="email" name="email" required>
+            </div>
+
+            <div class="mb-3">
+              <label for="inquiryType" class="form-label">문의 유형</label>
+              <select class="form-select" id="inquiryType" name="type">
+                <option>일반 문의</option>
+                <option>배송</option>
+                <option>교환/반품</option>
+                <option>기타</option>
+              </select>
+            </div>
+
+            <div class="mb-3">
+              <label for="content" class="form-label">내용</label>
+              <textarea class="form-control" id="content" name="content" rows="4" required></textarea>
+            </div>
+
+          </form>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn" data-bs-dismiss="modal">취소</button>
+          <button type="button" class="btn" onclick="submitInquiry()">보내기</button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+</div> <!-- container 끝 -->
+
+<!-- footer: container 바깥 -->
+<th:block th:replace="~{bottom}"></th:block>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+/* --- TAB 전환----- */
+function showTab(tabId) {
+
+    document.getElementById('faq').style.display = 'none';
+    document.getElementById('notice').style.display = 'none';
+    document.getElementById('guide').style.display = 'none';
+
+    document.getElementById(tabId).style.display = 'block';
+
+    document.querySelectorAll('.tabs button').forEach(btn => {
+        btn.classList.remove('active');
+        if (btn.getAttribute('data-tab') === tabId) {
+            btn.classList.add('active');
+        }
+    });
+
+    /* FAQ 탭으로 돌아왔을 때 모든 아코디언 닫기 */
+    if (tabId === 'faq') {
+        document.querySelectorAll('#faq .accordion-button.active').forEach(activeButton => {
+
+           let icon = activeButton.querySelector('.accordion-icon');
+
+            activeButton.classList.remove('active');
+            activeButton.nextElementSibling.classList.remove('active');
+
+            if (icon) {
+                icon.classList.remove('bi-dash-lg');
+                icon.classList.add('bi-plus-lg');
+            }
+        });
+    }
+}
+
+/* ---아코디언 toggle---- */
+function toggleAccordion(button) {
+
+   let body = button.nextElementSibling;
+   let icon = button.querySelector('.accordion-icon');
+   let isActive = button.classList.contains('active');
+
+    /* 다른 아코디언 닫기 */
+    document.querySelectorAll('.accordion-button.active').forEach(activeButton => {
+
+        if (activeButton !== button) {
+
+           let otherIcon = activeButton.querySelector('.accordion-icon');
+
+            activeButton.classList.remove('active');
+            activeButton.nextElementSibling.classList.remove('active');
+
+            if (otherIcon) {
+                otherIcon.classList.remove('bi-dash-lg');
+                otherIcon.classList.add('bi-plus-lg');
+            }
+        }
+    });
+
+    if (isActive) {
+        button.classList.remove('active');
+        body.classList.remove('active');
+
+        if (icon) {
+            icon.classList.remove('bi-dash-lg');
+            icon.classList.add('bi-plus-lg');
+        }
+
+    } else {
+        button.classList.add('active');
+        body.classList.add('active');
+
+        if (icon) {
+            icon.classList.remove('bi-plus-lg');
+            icon.classList.add('bi-dash-lg');
+        }
+    }
+}
+
+/* ---Quick FAQ 선택----- */
+function handleQuickFAQ(index) {
+
+    showTab('faq');
+
+   let faqButtons = document.querySelectorAll('#faq .accordion-button');
+   let targetIndex = index - 1;
+
+    if (targetIndex >= 0 && targetIndex < faqButtons.length) {
+
+       let targetButton = faqButtons[targetIndex];
+
+        if (!targetButton.classList.contains('active')) {
+            toggleAccordion(targetButton);
+        }
+
+        targetButton.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+}
+
+/* ----페이지 로딩 시---- */
+document.addEventListener('DOMContentLoaded', () => {
+    showTab('faq');
+});
+
+/* ----문의 제출------ */
+function submitInquiry(){
+
+  let form = document.getElementById('inquiryForm');
+
+  let name = form.name.value.trim();
+  let email = form.email.value.trim();
+  let content = form.content.value.trim();
+
+  if(!name || !email || !content){
+
+   let modalBody = document.querySelector('#inquiryModal .modal-body');
+
+    let errorMsg = document.getElementById('inquiryError');
+    if (!errorMsg) {
+        errorMsg = document.createElement('div');
+        errorMsg.id = 'inquiryError';
+        errorMsg.className = 'alert alert-danger p-2 mt-3';
+        modalBody.prepend(errorMsg);
+    }
+
+    errorMsg.textContent = '이름, 이메일, 내용 모두 입력해 주세요.';
+    return;
+  }
+
+ let modalBody = document.querySelector('#inquiryModal .modal-body');
+
+  let successMsg = document.getElementById('inquirySuccess');
+  if (!successMsg) {
+      successMsg = document.createElement('div');
+      successMsg.id = 'inquirySuccess';
+      successMsg.className = 'alert alert-success p-2 mt-3';
+      modalBody.prepend(successMsg);
+  }
+
+  successMsg.textContent = '문의가 성공적으로 접수되었습니다. 빠른 시일 내에 답변드리겠습니다.';
+
+ let errorMsg = document.getElementById('inquiryError');
+  if (errorMsg) errorMsg.remove();
+
+  setTimeout(() => {
+     let modalElement = document.getElementById('inquiryModal');
+     let modal = bootstrap.Modal.getInstance(modalElement);
+
+      if (modal) {
+          modal.hide();
+      }
+
+      form.reset();
+      if (successMsg) successMsg.remove();
+
+  }, 1500);
+}
+
+</script>
+
+</body>
+</html>

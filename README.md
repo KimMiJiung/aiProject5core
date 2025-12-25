@@ -7,6 +7,7 @@ Languages	Java 21 (LTS), Python 3.13
 Dashboard	Streamlit, Plotly, Matplotlib
 Database	MySQL 8.4 (LTS)
 Infrastructure	Docker, Amazon ECR, AWS EC2/RDS
+
 Integrated APIs	Google Maps Platform, 전기차 충전소 실시간 정보 API, 표준 행정구역 API
 API: Google Maps Platform,표준 행정구역 API, 전기차 충전소 정보API
 배포 아키텍처:AWS, ECR, Docker

@@ -22,141 +22,140 @@ public class StreamlitRunner implements ApplicationRunner {
 	// - 예를 들어 c드라이브의 git폴더 안에 5core폴더, ai-server폴더가 함께 있어야 함
 	@Override
 	public void run(ApplicationArguments args) throws Exception {
-		// 현재 5core 프로젝트 위치
 		Path projectDir = Paths.get("").toAbsolutePath();
-		
-		// ai-server 폴더 위치
-		// - 상위 폴더가 같으므로 getParent()를 통해서 찾을 수 있음
 		Path aiServerDir = projectDir.resolve("ai-server");
-		
-		// venv 폴더의 python.exe 경로 (윈도우 기준)
-		Path pythonPath = aiServerDir
-				.resolve(".venv")
-				.resolve("Scripts")
-				.resolve("python.exe");
-		
-		if(!Files.exists(pythonPath)) {
-			System.err.println("python.exe가 존재하지 않음");
-			return;
+
+		// 1. 운영체제 확인
+		boolean isWindows = System.getProperty("os.name").toLowerCase().contains("win");
+
+		String pythonCommand;
+		if (isWindows) {
+			// 로컬 윈도우 환경: 기존 가상환경 경로 사용
+			Path pythonPath = aiServerDir.resolve(".venv").resolve("Scripts").resolve("python.exe");
+
+			if (!Files.exists(pythonPath)) {
+				System.err.println("윈도우용 python.exe가 존재하지 않음: " + pythonPath);
+				return;
+			}
+			pythonCommand = pythonPath.toString();
+		} else {
+			// 도커(리눅스) 환경: 
+			// Dockerfile에서 설치한 시스템 파이썬(/usr/bin/python3)을 사용해야 합니다.
+			// 리눅스에는 .exe 파일이 아예 존재하지 않습니다.
+			pythonCommand = "python3"; 
+
+			// ai-server 폴더 자체의 존재 여부만 체크
+			if (!Files.exists(aiServerDir)) {
+				System.err.println("도커 내부 ai-server 폴더가 존재하지 않음: " + aiServerDir);
+				return;
+			}
 		}
-		
-		if(!Files.exists(aiServerDir.resolve("ai_for_dealer.py"))) {
-			System.err.println("ai_for_dealer.py가 존재하지 않음");
-			return;
-		}
-		
-		if(!Files.exists(aiServerDir.resolve("applyDetail.py"))) {
-			System.err.println("applyDetail.py가 존재하지 않음");
-			return;
-		}
-		
+
 		// Streamlit run ai_for_delaer.py --server.baseUrlPath=5core --server.port=8509 커맨드 실행
 		ProcessBuilder builder = new ProcessBuilder(
-                pythonPath.toString(),
-                "-m", "streamlit", "run",
-                "ai_for_dealer.py",
-                "--server.baseUrlPath=5core",
-                "--server.port=8509"
-        );
-		
-        // applyDetailRecommend: 상담 상세 차량 추천 (8502)
+				pythonCommand, "-m", "streamlit", "run",
+				"ai_for_dealer.py",
+				"--server.baseUrlPath=5core",
+				"--server.port=8509"
+				);
+
+		// applyDetailRecommend: 상담 상세 차량 추천 (8502)
 		ProcessBuilder applyDetailRecommend = new ProcessBuilder(
-                pythonPath.toString(),
-                "-m", "streamlit", "run",
-                "applyDetail.py",
-                "--server.baseUrlPath=5core",
-                "--server.port=8502"
-        );
-		
-        // dealerSaleGraph: 판매 실적 그래프 (8503)
+				pythonCommand, "-m", "streamlit", "run",
+				"applyDetail.py",
+				"--server.baseUrlPath=5core",
+				"--server.port=8502"
+				);
+
+		// dealerSaleGraph: 판매 실적 그래프 (8503)
 		ProcessBuilder dealerSaleGraph = new ProcessBuilder(
-		    pythonPath.toString(), "-m", "streamlit", "run",
-		    "sales_graph.py",
-		    "--server.baseUrlPath=5core",
-		    "--server.port=8503"
-		);		
-		
-        // chatbot: 판매 실적 그래프 (8504)
+				pythonCommand, "-m", "streamlit", "run",
+				"sales_graph.py",
+				"--server.baseUrlPath=5core",
+				"--server.port=8503"
+				);		
+
+		// chatbot: 판매 실적 그래프 (8504)
 		ProcessBuilder chatbot = new ProcessBuilder(
-		    pythonPath.toString(), "-m", "streamlit", "run",
-		    "chatbot_streamlit.py",
-		    "--server.baseUrlPath=5core",
-		    "--server.port=8504"
-		);		
-		
+				pythonCommand, "-m", "streamlit", "run",
+				"chatbot_streamlit.py",
+				"--server.baseUrlPath=5core",
+				"--server.port=8504"
+				);		
+
 		// modelSaleDashboard: 차량별 판매량 대시보드 (8505)
 		ProcessBuilder modelSaleDashboard = new ProcessBuilder(
-		    pythonPath.toString(), "-m", "streamlit", "run",
-		    "model_sales_dashboard.py",
-		    "--server.baseUrlPath=5core",
-		    "--server.port=8505"
-		);
-		
+				pythonCommand, "-m", "streamlit", "run",
+				"model_sales_dashboard.py",
+				"--server.baseUrlPath=5core",
+				"--server.port=8505"
+				);
+
 		// monthlySalesGraph: 딜러 월별 판매 그래프 (8506)
 		ProcessBuilder monthlySalesGraph = new ProcessBuilder(
-		    pythonPath.toString(), "-m", "streamlit", "run",
-		    "monthly_sales_graph.py",
-		    "--server.baseUrlPath=5core",
-		    "--server.port=8506",
-		    "--server.headless=true"
-		);
-		
+				pythonCommand, "-m", "streamlit", "run",
+				"monthly_sales_graph.py",
+				"--server.baseUrlPath=5core",
+				"--server.port=8506",
+				"--server.headless=true"
+				);
+
 		// globalSales: 딜러 월별 판매 그래프 (8507)
 		ProcessBuilder globalSales = new ProcessBuilder(
-		    pythonPath.toString(), "-m", "streamlit", "run",
-		    "global_sales_dashboard.py",
-		    "--server.baseUrlPath=5core",
-		    "--server.port=8507",
-		    "--server.headless=true"
-		);
-		
+				pythonCommand, "-m", "streamlit", "run",
+				"global_sales_dashboard.py",
+				"--server.baseUrlPath=5core",
+				"--server.port=8507",
+				"--server.headless=true"
+				);
+
 		// modelSales: 딜러 월별 판매 그래프 (8508)
 		ProcessBuilder modelSales = new ProcessBuilder(
-		    pythonPath.toString(), "-m", "streamlit", "run",
-		    "model_sales_dashboard.py",
-		    "--server.baseUrlPath=5core",
-		    "--server.port=8508",
-		    "--server.headless=true"
-		);
-		
+				pythonCommand, "-m", "streamlit", "run",
+				"model_sales_dashboard.py",
+				"--server.baseUrlPath=5core",
+				"--server.port=8508",
+				"--server.headless=true"
+				);
+
 		// chatbotAdmin: 관리자용 쳇봇 (8510)
 		ProcessBuilder chatbotAdmin = new ProcessBuilder(
-		    pythonPath.toString(), "-m", "streamlit", "run",
-		    "chatbot_admin_streamlit.py",
-		    "--server.baseUrlPath=5core",
-		    "--server.port=8510",
-		    "--server.headless=true"
-		);	
-		
+				pythonCommand, "-m", "streamlit", "run",
+				"chatbot_admin_streamlit.py",
+				"--server.baseUrlPath=5core",
+				"--server.port=8510",
+				"--server.headless=true"
+				);	
+
 		// copyGlobal: 수요예측 (8511)
 		ProcessBuilder copyGlobal = new ProcessBuilder(
-			    pythonPath.toString(), "-m", "streamlit", "run",
-			    "copyGlobal.py",
-			    "--server.baseUrlPath=5core",
-			    "--server.port=8511",
-			    "--server.headless=true"
-			);	
-		
+				pythonCommand, "-m", "streamlit", "run",
+				"copyGlobal.py",
+				"--server.baseUrlPath=5core",
+				"--server.port=8511",
+				"--server.headless=true"
+				);	
+
 		// AI수요예측
 		// aiDomForecast: 국내수요예측 (8512)
 		ProcessBuilder aiDomForecast = new ProcessBuilder(
-			    pythonPath.toString(), "-m", "streamlit", "run",
-			    "aiDomForecast.py",
-			    "--server.baseUrlPath=5core",
-			    "--server.port=8512",
-			    "--server.headless=true"
-			);
-		
+				pythonCommand, "-m", "streamlit", "run",
+				"aiDomForecast.py",
+				"--server.baseUrlPath=5core",
+				"--server.port=8512",
+				"--server.headless=true"
+				);
+
 		// AI수요예측
 		// aiNaForecast: 북미수요예측 (8513)
 		ProcessBuilder aiNaForecast = new ProcessBuilder(
-			    pythonPath.toString(), "-m", "streamlit", "run",
-			    "aiNaForecast.py",
-			    "--server.baseUrlPath=5core",
-			    "--server.port=8513",
-			    "--server.headless=true"
-			);			
-		
+				pythonCommand, "-m", "streamlit", "run",
+				"aiNaForecast.py",
+				"--server.baseUrlPath=5core",
+				"--server.port=8513",
+				"--server.headless=true"
+				);			
+
 		// 실행 디렉토리
 		builder.directory(aiServerDir.toFile());
 		applyDetailRecommend.directory(aiServerDir.toFile());
@@ -170,7 +169,7 @@ public class StreamlitRunner implements ApplicationRunner {
 		copyGlobal.directory(aiServerDir.toFile()); 
 		aiDomForecast.directory(aiServerDir.toFile());
 		aiNaForecast.directory(aiServerDir.toFile());
-		
+
 		// 프로세스 실행
 		// - 실행되었다면 console에 streamlit이 실행되었다고 뜸
 		builder.start();
@@ -192,8 +191,6 @@ public class StreamlitRunner implements ApplicationRunner {
 		System.out.println("딜러 월별 판매 그래프 실행됨");
 		System.out.println("고객용 쳇봇 실행됨");
 		System.out.println("AI수요예측 실행됨");
-		
-	}
-	
 
+	}
 }

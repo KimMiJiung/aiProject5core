@@ -1,0 +1,462 @@
+:root {
+  --primary: navy;
+  --primary-soft: #e3eefc;
+  --border-subtle: #e5e7eb;
+  --text-main: #111827;
+  --text-muted: #6b7280;
+  --danger: #d9001b;
+  --bg-body: #f3f5f9;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: "Pretendard", -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+}
+
+body {
+  color: var(--text-main);
+}
+
+.apply-container {
+  max-width: 1600px;
+  margin: 40px auto;
+  padding: 32px 32px 40px;
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.08);
+  border: 1px solid var(--border-subtle);
+}
+
+.apply-header {
+  margin-bottom: 24px;
+  border-bottom: 1px solid var(--border-subtle);
+  padding-bottom: 16px;
+}
+
+.apply-title {
+  font-size: 24px;
+  font-weight: 700;
+  margin-bottom: 4px;
+  color: var(--primary);
+}
+
+.apply-subtitle {
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.apply-content {
+  margin-top: 16px;
+}
+
+/* 아코디언 */
+.accordion-item {
+  border-radius: 12px;
+  border: 1px solid var(--border-subtle);
+  margin-bottom: 12px;
+  overflow: hidden;
+  background: #ffffff;
+}
+
+.accordion-header {
+  font-size: 17px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 16px 18px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.accordion-header-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.step-badge {
+  font-size: 15px;
+  padding: 3px 8px;
+  border-radius: 9px;
+  background: var(--primary-soft);
+  color: var(--primary);
+  font-weight: 600;
+}
+
+.accordion-header-title {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 1.05em;
+}
+
+.accordion-header-main {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.accordion-header-sub {
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.accordion-header:hover {
+  background: #f9fafb;
+  color: var(--primary);
+}
+
+.step-right-text {
+  color: navy;
+}
+
+.accordion-arrow {
+  transition: transform 0.3s ease;
+  font-size: 18px;
+  color: var(--text-muted);
+}
+
+.accordion-content {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.35s ease;
+  padding: 0 18px;
+  border-top: 1px solid var(--border-subtle);
+  background: #fcfcff;
+}
+
+.accordion-content.open {
+  padding: 18px 18px 20px;
+  max-height: 800px;
+  font-size: 14px;
+}
+
+.accordion-description {
+  font-size: 14px;
+  color: var(--text-muted);
+  margin: 12px 20px;
+  line-height: 1.5;
+}
+
+/* 폼 공통 */
+.form-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 16px;
+  align-items: center;
+  font-size: 14px;
+}
+
+.form-row label {
+  font-weight: 600;
+  color: #374151;
+}
+
+.required::after {
+  content: '*';
+  color: var(--danger);
+  margin-left: 4px;
+}
+
+.area {
+  width: 200px;
+  padding: 8px 10px;
+  border-radius: 6px;
+  border: 1px solid #d1d5db;
+  background: #ffffff;
+  font-size: 14px;
+  outline: none;
+}
+
+.area:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 1px rgba(13, 71, 161, 0.16);
+}
+
+.survey-section {
+  margin: 16px 0 16px 20px;
+}
+
+.survey-section p {
+  font-size: 1.2em;
+}
+
+.question-title {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.section-divider {
+  border: none;
+  border-top: 1px dashed #e5e7eb;
+  margin: 10px 0 14px;
+}
+
+.input-group {
+  display: inline-flex;
+  align-items: center;
+  margin-right: 20px;
+  margin-bottom: 10px;
+  font-size: 17px;
+}
+
+.input-group input[type="checkbox"],
+.input-group input[type="radio"] {
+  margin-right: 8px;
+  transform: scale(1.15);
+  accent-color: navy;
+  cursor: pointer;
+}
+
+.input-group label {
+  font-weight: 400;
+  cursor: pointer;
+}
+
+.other-input,
+input[type="text"][placeholder="원하시는 시간을 적어주세요."] {
+  margin-left: 3px;
+  padding: 8px 10px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  width: 250px;
+  font-size: 14px;
+  outline: none;
+}
+
+.other-input:focus,
+input[type="text"][placeholder="원하시는 시간을 적어주세요."]:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 1px rgba(13, 71, 161, 0.16);
+}
+
+.field-error {
+  font-size: 12px;
+  color: var(--danger);
+  margin-top: 4px;
+}
+
+/* Step 1 차종 선택 스타일 */
+.tabs {
+  margin-bottom: 20px;
+}
+
+.tabs button {
+  padding: 10px 15px;
+  margin-right: 5px;
+  border: 1px solid #ccc;
+  background-color: #f8f8f8;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.tabs button.active {
+  background-color: navy;
+  color: white;
+  border-color: navy;
+}
+
+.car-selection {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 15px;
+}
+
+.car-item {
+  border: 1px solid #ccc;
+  padding: 10px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  background-color: white;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.car-item.hidden {
+  display: none;
+}
+
+.car-item:hover {
+  border-color: navy;
+  box-shadow: 0 0 5px navy;
+}
+
+.car-item.selected {
+  background-color: #e6f3ff;
+  border: 2px solid navy;
+}
+
+.car-item img {
+  max-width: 80%;
+  height: auto;
+  margin-bottom: 5px;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.selected-info {
+  margin-top: 20px;
+  padding: 10px;
+  border: 1px solid #ddd;
+  background-color: #f9f9f9;
+}
+
+.vehicle-card {
+  width: 200px;
+  padding: 8px;
+  border-radius: 8px;
+  border: 1px solid var(--border-subtle);
+  text-align: center;
+  cursor: pointer;
+  transition: border-color 0.2s, box-shadow 0.2s, background-color 0.2s;
+  background-color: #ffffff;
+}
+
+.vehicle-card:hover {
+  border-color: var(--primary-soft);
+  background-color: #f9fafb;
+}
+
+.vehicle-card.selected {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 2px var(--primary-soft);
+  background-color: var(--primary-soft);
+}
+
+.vehicle-card img {
+  width: 100%;
+  height: 100px;
+  object-fit: contain;
+  margin-bottom: 4px;
+  background-color: #f3f4f6;
+  border-radius: 4px;
+}
+
+.vehicle-card p {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-main);
+  margin: 0;
+}
+
+#selectedVehicleInfo {
+  margin-top: 16px;
+  padding: 10px;
+  background-color: #f5f8ff;
+  border: 1px solid #d4e0ff;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--primary);
+}
+
+/* 버튼 영역 */
+.btns {
+  text-align: center;
+  margin-top: 24px;
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.btn {
+  min-width: 160px;
+  height: 40px;
+  border-radius: 999px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease,
+    transform 0.08s ease;
+}
+
+.btn:active {
+  transform: translateY(1px);
+}
+
+.btn-primary {
+  color: #fff;
+  background-color: navy;
+  border-color: navy;
+}
+
+.btn-primary:hover {
+  color: navy;
+  background-color: #fff;
+  border-color: navy;
+}
+
+.btn-secondary {
+  background-color: #ffffff;
+  color: #4b5563;
+  border-color: #d1d5db;
+}
+
+.btn-secondary:hover {
+  background-color: #f8f8f8;
+  border-color: #555;
+}
+
+.btn-outline {
+  background-color: #ffffff;
+  color: #0d47a1;
+  border-color: #cbd5f5;
+}
+
+.btn-outline:hover {
+  background-color: #e3eefc;
+  border-color: #0d47a1;
+}
+
+/* 결과 출력 */
+.info-block {
+  margin-top: 18px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  background: #f9fafb;
+  border: 1px solid #d1d5db;
+  font-size: 13px;
+  color: #374151;
+  line-height: 1.5;
+  min-height: 20px;
+}
+
+.info-block-title {
+  font-weight: 700;
+  margin: 0 0 4px 10px;
+  color: navy;
+  font-size: 1.3em;
+}
+
+.info-block .summary-details {
+  margin-top: 10px;
+  margin-left: 10px;
+  font-size: 1.05em;
+  font-weight: bold;
+  color: #666;
+  padding-left: 10px;
+  line-height: 1.8;
+}
+
+hr.page-divider {
+  border: none;
+  border-top: 1px solid #e5e7eb;
+  margin: 24px 0 16px;
+}
+
+select {
+  width: 200px;
+  height: 35px;
+  font-size: 16px;
+  margin-right: 10px;
+}

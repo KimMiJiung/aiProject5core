@@ -1,0 +1,349 @@
+:root {
+  --hyu-navy: navy;
+  --hyu-navy-dark: #001a3d;
+  --hyu-navy-soft: #e3eefc;
+  --bg-gray: #f3f5f9;
+  --border-subtle: #e5e7eb;
+  --text-main: #111827;
+  --text-muted: #6b7280;
+  --card-bg: #ffffff;
+  --shadow-sm: 0 4px 12px rgba(15, 23, 42, 0.08);
+  --shadow-md: 0 8px 20px rgba(15, 23, 42, 0.12);
+  --border-radius: 12px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  color: var(--text-main);
+  font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  line-height: 1.6;
+}
+
+/* 페이지 컨테이너 */
+.a-container {
+  max-width: 1400px;
+  width: 95%;
+  margin: 0 auto;
+  padding: 40px 24px;
+}
+
+/* 상단 히어로 영역 */
+.detail-top {
+	margin-top: -40px;
+	padding: 20px;
+	text-align: center;
+	background-color: #f8f8f8;
+}
+.detail-top > h1 {
+	margin-top: 30px;
+	font-size: 40px;
+	font-weight: bold;
+}
+.detail-top p {
+	margin: 50px 0 50px 0;
+	font-size: 0.9em;
+}
+
+/* 카드 기본 스타일 */
+.card {
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow-sm);
+  background: var(--card-bg);
+  overflow: hidden;
+}
+
+.card-main {
+  box-shadow: var(--shadow-md);
+}
+
+/* 네이비 헤더 */
+.line-co {
+  background: linear-gradient(135deg, var(--hyu-navy) 0%, var(--hyu-navy-dark) 100%);
+  padding: 13px 24px;
+}
+
+.line-co h5 {
+  color: #ffffff;
+  font-weight: 600;
+  font-size: 17px;
+  margin: 0;
+}
+
+/* 카드 바디 */
+.card-main .card-body {
+  background: #fcfcff;
+  padding: 28px;
+}
+
+.card-main .card-body .row {
+  border-bottom: 1px solid var(--border-subtle);
+  padding-bottom: 16px;
+  margin-bottom: 16px;
+  position: relative;
+}
+
+.card-main .card-body .row:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+
+/* 폼 레이블 */
+.col-form-label {
+  font-weight: 600;
+  color: var(--hyu-navy);
+  font-size: 15px;
+  padding-top: 4px;
+}
+
+/* 폼 컨트롤 - 등록일 내용 */
+.form-control-plaintext {
+  font-weight: 500;
+  color: #333;
+  font-size: 15px;
+}
+
+/* 체크박스/라디오 */
+.form-check-inline {
+  margin-right: 20px;
+  margin-bottom: 8px;
+}
+
+.form-check-input {
+  margin-right: 8px;
+  transform: scale(1.1);
+  accent-color: var(--hyu-navy);
+  border-radius: 4px;
+}
+
+.form-check-label {
+  font-weight: 500;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 15px;
+}
+
+/* 구매 목적 - 기타 */
+.custom-label-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.other-input {
+  width: 100%;
+  max-width: 280px;
+  padding: 10px 12px;
+  border: 1px solid var(--border-subtle);
+  border-radius: 8px;
+  font-size: 14px;
+  transition: all 0.2s ease;
+}
+
+.other-input:focus,
+.other-input:not(:disabled) {
+  border-color: var(--hyu-navy);
+  box-shadow: 0 0 0 3px rgba(0, 44, 95, 0.1);
+  outline: none;
+}
+
+/* 지역 드롭다운 */
+.area-select {
+  width: 180px;
+  height: 42px;
+  padding: 8px 12px;
+  border: 1px solid var(--border-subtle);
+  border-radius: 8px;
+  font-size: 14px;
+  background: #fff;
+  transition: all 0.2s ease;
+}
+
+.area-select:focus {
+  border-color: var(--hyu-navy);
+  box-shadow: 0 0 0 3px rgba(0, 44, 95, 0.1);
+  outline: none;
+}
+
+.area-group {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+/* 상태 뱃지 */
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 600;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.status-wait {
+  background: linear-gradient(135deg, #fef3c7, #fed22b);
+  color: #92400e;
+}
+
+.status-progress {
+  background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+  color: navy;
+}
+
+.status-done {
+  background: linear-gradient(135deg, #d1fae5, #bbf7d0);
+  color: #166534;
+}
+
+.status-cancel {
+  background: linear-gradient(135deg, #f3f4f6, #e5e7eb);
+  color: #374151;
+}
+
+/* 등록 셀 */
+.register-cell {
+  border-top: 1px solid var(--border-subtle);
+  padding: 20px 0;
+  margin-top: 20px;
+  border-radius: 0 0 var(--border-radius) var(--border-radius);
+}
+
+.register-cell .col-form-label {
+    color: var(--hyu-navy);
+    font-size: 15px;
+    font-weight: 600;
+	margin-left: 10px;
+	
+}
+
+.form-check-input:checked {
+    background-color: var(--hyu-navy) !important;
+    border-color: var(--hyu-navy) !important;
+}
+
+/* 딜러 칸 */
+.dealer-message {
+	padding: 10px;
+	background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+	border-radius: 5px;
+}
+.dealer-message-content {
+	color: navy;
+	font-weight: 500;
+}
+
+
+/* 네이비 버튼 */
+.btn-navy {
+  margin-top: -30px;
+  background: linear-gradient(135deg, var(--hyu-navy), var(--hyu-navy-dark));
+  border: 1px solid var(--hyu-navy);
+  color: #ffffff;
+  font-weight: 600;
+  padding: 10px 20px;
+  border-radius: 10px;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 12px rgba(0, 44, 95, 0.2);
+}
+
+.btn-navy:hover {
+  background: #ffffff;
+  color: var(--hyu-navy-dark);
+  border-color: var(--hyu-navy-dark);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(0, 44, 95, 0.25);
+}
+
+/* 링크 스타일 */
+.text-primary,
+a.text-primary,
+a.text-primary:hover {
+  color: var(--hyu-navy) !important;
+  font-weight: 600;
+}
+
+/* 딜러 이미지 */
+.dealer-img {
+  width: 90px;
+  height: 90px;
+  object-fit: cover;
+  border: 3px solid #fff;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+/* 버튼 그룹 */
+.btn-sales {
+  gap: 12px;
+}
+
+/* AI 버튼 */
+#showAiRecommendationBtn {
+  background: linear-gradient(35deg, rgb(6, 96, 217), rgb(2, 41, 96));
+  border: none;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 16px;
+  padding: 14px 28px;
+  box-shadow: 0 6px 16px rgba(59, 130, 246, 0.3);
+  color: #fff;
+}
+
+#showAiRecommendationBtn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(59, 130, 246, 0.4);
+}
+
+/* 모달 */
+.modal-content {
+  border-radius: var(--border-radius);
+  border: 1px solid var(--border-subtle);
+  box-shadow: var(--shadow-md);
+}
+
+.modal-header {
+  background: linear-gradient(135deg, var(--hyu-navy), var(--hyu-navy-dark));
+  border-radius: var(--border-radius) var(--border-radius) 0 0;
+  border-bottom: none;
+}
+
+/* 반응형 */
+@media (max-width: 768px) {
+  .a-container {
+    padding: 24px 16px;
+  }
+  
+  .detail-top {
+    margin-top: 24px;
+    padding: 28px 20px;
+  }
+  
+  .detail-top h1 {
+    font-size: 24px;
+  }
+  
+  .area-group {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .area-select {
+    width: 100%;
+  }
+  
+  .btn-sales {
+    flex-direction: column;
+    width: 100%;
+  }
+  
+  .btn-navy {
+    width: 100%;
+  }
+}

@@ -1,0 +1,303 @@
+.customer-t {
+	margin-top: -40px;
+    padding: 10px;
+    text-align: center;
+    background-color: #f8f8f8;
+    border: none;
+}
+.customer-t > p {
+    margin: 50px 0 50px 0;
+    font-size: 0.9em;
+}
+.customer-t > h1 {
+	margin-top: 30px;
+	font-size: 40px;
+	font-weight: bold;
+}		
+.accordion-button {
+    color: #333 !important;
+    background-color: white !important;
+    box-shadow: none !important;
+	justify-content: space-between; 
+    display: flex;
+    align-items: center;
+}
+
+.accordion-button:not(.collapsed),
+.accordion-button.active {
+    color: #333 !important;
+    background-color: white !important;
+    box-shadow: none !important;
+}
+
+.accordion-button::after {
+    display: none !important;
+    content: none !important;
+}
+
+.accordion-button .accordion-icon {
+    font-size: 1.25rem;
+    color: navy;
+    transition: transform 0.3s ease-in-out;
+}
+
+.accordion-button.active .accordion-icon {
+    transform: rotate(0deg);
+}
+
+.modal-footer .btn:first-child {
+    background-color: #6c757d;
+    border-color: #6c757d;
+    color: white;
+}
+
+.modal-footer .btn:last-child {
+    background-color: navy;
+    border-color: navy;
+    color: white;
+}
+
+.modal-footer .btn:last-child:hover {
+    background-color: #15305a;
+    border-color: #15305a;
+}
+
+.faq-search-section {
+    padding: 2rem 0;
+    margin-bottom: 2rem;
+}
+
+.service-card {
+    border: 2px solid #aaa;
+    transition: all 0.3s ease-in-out;
+    margin: 5px;
+    height: 120px;
+    width: 150px;
+    padding: 15px !important;
+    display: flex !important;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+    text-align: left;
+    line-height: 1.4;
+    cursor: pointer;
+}
+
+.service-card:hover {
+    transform: none;
+    box-shadow: none;
+    border: 2px solid navy;
+}
+
+.service-card .fw-bold {
+    font-size: 0.8rem;
+    margin-bottom: 8px !important;
+}
+
+.service-card .small {
+    font-size: 0.73rem;
+    color: #333;
+    font-weight: 700 !important;
+}
+
+.search-form-wrapper {
+    width: 100%;
+}
+
+.search-form-wrapper .form-control.search-input {
+    border: none;
+    border-bottom: 2px solid #ccc;
+    border-radius: 0;
+    padding-left: 0;
+    padding-right: 0;
+    box-shadow: none !important;
+    text-align: left;
+}
+
+.search-form-wrapper .form-control.search-input:focus {
+   border-bottom-color: navy;
+}
+
+.search-form-wrapper .btn {
+    background: none;
+    border: none;
+    color: navy;
+    font-size: 1.25rem;
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+}
+
+.search-form-wrapper .btn:hover {
+     color: navy;
+}
+
+.tabs {
+    display: flex;
+    border-bottom: 2px solid #ccc;
+    margin-bottom: 20px;
+}
+
+.tabs button {
+    background: none;
+    border: none;
+    padding: 10px 20px;
+    font-size: 1rem;
+    cursor: pointer;
+    color: #555;
+    font-weight: bold;
+    transition: 0.3s;
+}
+
+.tabs button.active {
+    color: #fff;
+    background-color: navy;
+    border-radius: 8px 8px 0 0;
+}
+
+.tab-content {
+    background-color: #fff;
+    border-radius: 0 12px 12px 12px;
+    padding: 20px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+}
+
+.accordion {
+    border-top: 1px solid #ccc;
+}
+
+.accordion-item {
+    border-bottom: 1px solid #ccc;
+    padding: 0 10px;
+}
+
+.accordion-button {
+    background: none;
+    border: none;
+    width: 100%;
+    text-align: left;
+    padding: 12px 0;
+    font-weight: bold;
+    color: #333;
+    cursor: pointer;
+    transition: 0.3s;
+    position: relative;
+}
+
+.accordion-button.active {
+    color: #333;
+}
+
+.accordion-body {
+    background-color: #f8f8f8;
+    border-radius: 4px;
+    color: #555;
+    font-size: 0.9rem;
+    margin-bottom: 5px;
+    line-height: 1.6;
+    transition: max-height 0.3s ease-out, padding 0.3s ease-out;
+    overflow: hidden;
+    max-height: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
+.accordion-body.active {
+    max-height: 500px;
+    padding-top: 10px;
+    padding-bottom: 15px;
+}
+
+.two-column-card {
+    background-color: whitesmoke;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 10px 12px;
+    height: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    max-width: 700px;
+    margin: auto;
+}
+
+.two-column-card .card-header-icon {
+    font-size: 18px !important;
+    font-style: normal;
+    margin-bottom: 4px !important;
+}
+
+.two-column-card .card-title {
+    font-size: 10px;
+}
+
+.two-column-card .card-description {
+    font-size: 0.8rem;
+    margin-bottom: 4px !important;
+}
+
+.two-column-card .card-actions .btn {
+    padding: 6px 14px !important;
+    font-size: 0.9rem !important;
+    background-color: navy;
+    color: white;
+}
+
+.ars-section {
+    background-color: white;
+    border-top: 1px solid #e0e0e0;
+    padding-top: 30px;
+    margin-top: 40px;
+}
+
+.ars-section .ars-title {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 30px;
+}
+
+.ars-section .contact-info .contact-number {
+    font-size: 2rem;
+    font-weight: bold;
+    color: navy;
+    margin-bottom: 10px;
+}
+
+.ars-section .contact-info .contact-desc {
+    color: #666;
+    line-height: 1.6;
+    margin-bottom: 20px;
+}
+
+.ars-section .contact-info .contact-hours,
+.ars-section .contact-info .emergency-info {
+    color: #999;
+    font-size: 0.9rem;
+}
+
+#notice li {
+    margin: 5px 0;
+}
+
+#guide button {
+    width: 200px;
+    height: 30px;
+    margin-left: 20px;
+    border: 1px solid navy;
+    border-radius: 5px;
+    color: #fff;
+    background-color: navy;
+}
+
+#guide button:hover {
+    background-color: #fff;
+    color: navy;
+}
+
+.btn-custom-navy {
+    background-color: navy;
+    border: 1px solid navy;
+    color: #fff;
+}

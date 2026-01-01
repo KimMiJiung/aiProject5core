@@ -1,0 +1,100 @@
+/* [1] 슬라이더 전체 레이아웃 */
+.slider-wrap {
+    width: 100%;
+    margin: 0 auto;
+    padding: 100px 0 60px; /* 위쪽 여백을 늘려 중앙 배치 유도 */
+    position: relative;
+    background-color: #fff;
+}
+
+.bx-wrapper {
+    border: none !important;
+    box-shadow: none !important;
+    background: transparent !important;
+}
+
+.car-slide {
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* [2] 텍스트 디자인: 앞 이미지처럼 조밀하고 세련되게 */
+.slide-link {
+    text-decoration: none !important;
+    color: #000 !important;
+    display: block;
+    width: 100%;
+}
+
+.car-title {
+    font-size: 64px; /* 크기를 약간 줄여 더 정갈하게 */
+    font-weight: 800;
+    margin-bottom: 8px; /* 간격 축소 */
+    letter-spacing: -2px;
+    opacity: 0;
+    transform: translateY(30px);
+}
+
+.car-sub {
+    font-size: 21px;
+    font-weight: 400;
+    margin-bottom: 45px; /* 이미지와의 적당한 거리 유지 */
+    color: #444;
+    opacity: 0;
+    transform: translateY(30px);
+}
+
+/* [3] 이미지 디자인: 85% 너비로 시원하게 배치 */
+.car-img {
+    margin: 0 auto;
+    width: 85%; 
+    max-width: 1300px;
+    height: auto;
+    object-fit: contain;
+    position: relative;
+    z-index: 1;
+    opacity: 0;
+}
+
+/* [4] 컨트롤 버튼 (화살표) */
+.bx-prev, .bx-next {
+    position: absolute;
+    top: 60%; /* 이미지 높이에 맞춰 약간 아래로 조정 */
+    transform: translateY(-50%);
+    z-index: 10;
+    width: 60px; height: 60px;
+    background: none; border: none;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+}
+.bx-prev { left: 60px; }
+.bx-next { right: 60px; }
+
+.bx-prev svg, .bx-next svg {
+    width: 45px; height: 45px; fill: #dbdbdb;
+    transition: fill 0.3s;
+}
+.bx-prev:hover svg, .bx-next:hover svg { fill: #000; }
+
+/* [5] 상담 아이콘 */
+.consult-icon {
+    position: fixed;
+    bottom: 50px;
+    right: 30px;
+    width: 80px;
+    height: 80px;
+    z-index: 1000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 50%;
+    background-color: #002c5f; /* 현대 네이비 컬러 */
+    box-shadow: 0 8px 16px rgba(0,0,0,0.15);
+    transition: all 0.3s ease;
+}
+.consult-icon img { width: 55%; height: 55%; }
+.consult-icon:hover { transform: scale(1.1); }

@@ -16,8 +16,11 @@ load_dotenv(override=True)
 
 GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
 st.write("현재 사용 중인 GEMINI_API_KEY =", GEMINI_API_KEY[:8] if GEMINI_API_KEY else "없음")
+FIVECORE_BASE_URL = "http://localhost:8090/5core"
+EXTERNAL_IMAGE_BASE_URL = "http://localhost:8090/5core"
 
-FIVECORE_BASE_URL = os.environ.get("FIVECORE_BASE_URL", "http://localhost:8090/5core")
+#FIVECORE_BASE_URL = "http://172.17.0.1:8090/5core"
+#EXTERNAL_IMAGE_BASE_URL = "http://3.35.97.120:8090/5core"
 
 # Counseling 상세 조회 경로
 COUNSELING_DETAIL_PATH = "/api/counseling/{counselingId}"
@@ -145,7 +148,7 @@ def get_vehicle_image_url(recommends: dict) -> str:
     # 추천 차량 정보의 fileName을 읽어서 URL 생성
     # /5core/images/{fileName} 형태의 URL을 만들어 줌
     file_name = recommends.get("fileName")
-    return f"http://localhost:8090/5core/images/{file_name}"
+    return f"http://3.35.97.120:8090/5core/images/{file_name}"
 
 
 # 차량 이미지와 가격을 불러오지 못하는 문제 해결

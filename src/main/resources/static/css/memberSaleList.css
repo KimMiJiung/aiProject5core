@@ -1,0 +1,125 @@
+.main-con { max-width: 100%; }
+
+/* 상단 */
+.saleList-top {
+  margin-top: -40px;
+  margin-bottom: 50px;
+  padding: 20px;
+  text-align: center;
+  background-color: #f8f8f8;
+}
+.saleList-top > h1 {
+  margin-top: 25px;
+  font-size: 40px;
+  font-weight: bold;
+}
+.saleList-top > p {
+  margin: 50px 0 50px 0;
+  font-size: 0.9em;
+}
+
+.contents { max-width: 1300px; margin: 0 auto; }
+
+/* 표 */
+.table thead th {
+  vertical-align: middle;
+  text-align: center;
+  background-color: navy;
+  color: #fff;
+}
+.table tbody td { vertical-align: middle; }
+.table tbody tr:hover { background-color: #e9f0ff; }
+.text-truncate { max-width: 230px; }
+
+/* 상담 상태 + 버튼 정렬/스타일 */
+.status-cell { white-space: nowrap; text-align: center; }
+.action-cell { white-space: nowrap; text-align: center; }
+.action-cell .btn-group {
+  display: flex;
+  gap: 0.25rem;
+  justify-content: center;
+}
+.status-cell .badge.status-badge {
+  width: 100px;
+  height: 30px;
+  font-size: 0.85rem;
+  padding: 7px;
+}
+.action-cell .btn-sm {
+  padding: 0.18rem 0.55rem;
+  font-size: 0.82rem;
+  line-height: 1.1;
+  font-weight: bold;
+  padding: 7px;
+}
+
+.btn-cancel {
+  height: 30px;
+  border: 1px solid red;
+  color: #555;
+}
+.btn-cancel:hover {
+  border: 1px solid red;
+  background-color: red;
+  color: #fff;
+}
+.btn-edit {
+  height: 30px;
+  border: 1px solid navy;
+  color: #555;
+}
+.btn-edit:hover {
+  border: 1px solid navy;
+  background-color: navy;
+  color: #fff;
+}
+
+
+/* 목록, 엑셀 다운 버튼 */
+.li-btn {
+  color: white;
+  background-color: navy;
+  border: 1px solid dimgray;
+  font-weight: bold;
+}
+.li-btn:hover {
+  background-color: white;
+  color: navy;
+  border: 1px solid dimgray;
+}
+.ex-btn {
+  margin-left: 5px;
+  color: gray;
+  border: 1px solid dimgray;
+  font-weight: bold;
+}
+.ex-btn:hover {
+  background-color: green;
+  color: white;
+  border: 1px solid dimgray;
+}
+
+/* 테이블 셀 크기 조정 */
+.table thead th:nth-child(1) { width: 4%; }   /* 상담번호 */
+.table thead th:nth-child(2) { width: 8%; }   /* 고객ID */
+.table thead th:nth-child(3) { width: 22%; }  /* 담당딜러 */
+.table thead th:nth-child(4) { width: 14%; }  /* 선택차량 */
+.table thead th:nth-child(5) { width: 15%; }  /* 가격 */
+.table thead th:nth-child(6) { width: 15%; }  /* 구매날짜 */
+
+/* 페이지 버튼 */
+.page-link { font-weight: bold; }
+.pagination .page-item .page-link {
+  background-color: #f0f0f0;
+  border-color: #777;
+  color: #333;
+}
+.pagination .page-item.active .page-link {
+  background-color: navy;
+  border-color: navy;
+  color: white;
+}
+.pagination .page-item .page-link:hover {
+  background-color: lightsteelblue;
+  border-color: #111;
+}

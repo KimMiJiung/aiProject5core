@@ -3,13 +3,21 @@ services:
     build: .
     ports:
       - "8090:8090"
+      - "8502-8513:8502-8513"
+    environment:
+      # 서버가 인식해야 할 변수들을 이곳으로 옮겼습니다.
+      #- AI_SERVER_BASE_URL=http://3.35.97.120
+      - AI_SERVER_BASE_URL=http://localhost
+      #- SPRING_DATASOURCE_URL=jdbc:mysql://my-db:3306/5core?serverTimezone=UTC&characterEncoding=UTF-8  
     depends_on:
       my-db:
         condition: service_healthy
   my-db:
-    image: mysql
+    image: mysql:8.0
+    container_name: 5core-my-db-1
+    restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: 1234	
+      MYSQL_ROOT_PASSWORD: 1234
       MYSQL_USER: "hm01"
       MYSQL_PASSWORD: "1234"
       MYSQL_DATABASE: 5core

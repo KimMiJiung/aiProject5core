@@ -276,7 +276,7 @@ public class MainController {
 			@RequestParam(value = "role", defaultValue = "ALL") String role,
 			@RequestParam(value = "keyword", defaultValue = "") String keyword,
 			// 기본 정렬: PK ID 오름차순
-			@PageableDefault(size = 15, sort = "id", direction = Sort.Direction.ASC) Pageable pageable) {
+			@PageableDefault(size = 10, sort = "id", direction = Sort.Direction.ASC) Pageable pageable) {
 
 		Page<Member> memberPage = memberService.getMemberList(pageable, role, keyword);
 

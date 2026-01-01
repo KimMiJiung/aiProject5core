@@ -3,7 +3,9 @@ package com.core.aiProject5core.service;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
@@ -73,11 +75,18 @@ public class EvChargerService {
 			List<ChargerDto> list = new ArrayList<>();
 			if (itemsNode == null) return list;
 
+			// 중복거제거용 map
+			Map<String, ChargerDto> uniqueMap = new LinkedHashMap<>();
+
 			if (itemsNode.isArray() ) {
 				for (JsonNode item : itemsNode) {
-					list.add(nodeToDto(item));
+					//list.add(nodeToDto(item));
+					ChargerDto dto = nodeToDto(item);
+					// 이미 동일한 statNm이 존재하면 skip
+					uniqueMap.putIfAbsent(dto.getStatNm(), dto);
 				}
-			}						
+			}
+			list.addAll(uniqueMap.values());
 			return list;		
 		} catch (Exception e) {
 			e.printStackTrace();
